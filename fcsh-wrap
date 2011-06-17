@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 FCSH_COMMAND = 'fcsh'
 # FCSH_COMMAND = 'sh /path/to/fcsh'
