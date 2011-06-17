@@ -28,16 +28,17 @@ package
 		
 		override public function update():void
 		{
-			
-			/*if (llama.acceleration.y == -400) {
+			var jumpUpAcceleration:int = -800;
+			if (llama.acceleration.y == jumpUpAcceleration) {
 				llama.acceleration.y = 200;
-			}*/
-			/*if (llama.y > 20) {
-				llama.acceleration.y = -400;
-			}*/
+			}
+			if (llama.y > 350) {
+				llama.acceleration.y = jumpUpAcceleration;
+			}
 			
 			FlxG.log(llama.y);
-			trace("test");
+			//trace("test");
+			trace(llama.y);
 			super.update();
 		}
 	}
