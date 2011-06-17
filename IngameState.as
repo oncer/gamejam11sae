@@ -37,7 +37,6 @@ package
 			}*/
 			
 			FlxG.log(llama.y);
-			trace("test");
 			super.update();
 		}
 	}

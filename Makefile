@@ -3,7 +3,10 @@ OPTIONS = -debug=true -static-link-runtime-shared-libraries=true
 FLIXEL = .
 NAME = llama
 SRC = main.as\
-      StartState.as
+      StartState.as\
+      IngameState.as\
+      Llama.as\
+      WrapSprite.as
 MAIN = main.as
 SWF = llama.swf
 
