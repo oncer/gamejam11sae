@@ -8,7 +8,7 @@ package
     {
         public function main():void
         {
-            super(800,500,StartState,1);
+            super(800,500,IngameState,1); // super(800,500,StartState,1);
         }
     }
 }
