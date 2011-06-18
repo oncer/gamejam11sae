@@ -7,10 +7,13 @@
 package
 {
     import org.flixel.*;
+	import flash.system.fscommand;
 
 	public class IngameState extends FlxState
 	{
 		//internal var llama:FlxSprite;
+		
+		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
 		public var llama:Llama;			//Refers to the little player llama
 		
@@ -18,7 +21,11 @@ package
 		{
 			FlxG.debug = true; // enable debug console
 			
-			add(new FlxText(0, 0, 100, "Hello, World!"));
+			//add(new FlxText(0, 0, 100, "Hello, World!"));
+			
+			var bg:FlxSprite = new FlxSprite(0,0);			
+			bg.loadGraphic(Background);
+			add(bg);
 			
 			trace("alsk");
 			//Initialize the llama and add it to the layer
@@ -28,6 +35,8 @@ package
 		
 		override public function update():void
 		{
+			super.update();
+			
 			var jumpUpAcceleration:int = -800;
 			if (llama.acceleration.y == jumpUpAcceleration) {
 				llama.acceleration.y = 200;
@@ -36,10 +45,15 @@ package
 				llama.acceleration.y = jumpUpAcceleration;
 			}
 			
-			FlxG.log(llama.y);
+			//FlxG.log(llama.y);
 			//trace("test");
-			trace(llama.y);
-			super.update();
+			trace("lama y: " + llama.y);
+			
+			// for faster debugging
+			if (FlxG.keys.ESCAPE) {
+				trace("quit");
+				fscommand("quit");
+			}
 		}
 	}
 }

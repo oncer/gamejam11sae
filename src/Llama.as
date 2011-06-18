@@ -31,15 +31,18 @@ package
 			//This is where we handle turning the ship left and right
 			angularVelocity = 0;
 			if(FlxG.keys.LEFT)
-				angularVelocity -= 240;
+				//angularVelocity -= 240;
+				acceleration.x = -50;
 			if(FlxG.keys.RIGHT)
-				angularVelocity += 240;
-			
+				//angularVelocity += 240;
+				acceleration.x = 50;
+				
+						
 			//This is where thrust is handled
 			//acceleration.x = 0;
 			//acceleration.y = 0;
-			if(FlxG.keys.UP)
-				FlxU.rotatePoint(90,0,0,0,angle,acceleration);
+			//if(FlxG.keys.UP)
+			//	FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 
 			if(FlxG.keys.justPressed("SPACE"))
 			{
