@@ -8,6 +8,7 @@ package
 {
     import org.flixel.*;
 	import flash.system.fscommand;
+	import com.divillysausages.gameobjeditor.Editor;
 
 	public class IngameState extends FlxState
 	{
@@ -15,13 +16,15 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
+		private var _editor:Editor;
 		public var llama:Llama;			//Refers to the little player llama
 		
 		override public function create():void
 		{
-			FlxG.debug = true; // enable debug console
-			
-			//add(new FlxText(0, 0, 100, "Hello, World!"));
+			_editor = new Editor(FlxG.stage);
+			_editor.registerClass(Llama);
+			_editor.visible = true;
+			FlxG.mouse.show();
 			
 			var bg:FlxSprite = new FlxSprite(0,0);			
 			bg.loadGraphic(Background);
@@ -30,6 +33,7 @@ package
 			trace("alsk");
 			//Initialize the llama and add it to the layer
 			llama = new Llama();
+			_editor.registerObject(llama);
 			add(llama);
 		}
 		
@@ -37,12 +41,11 @@ package
 		{
 			super.update();
 			
-			var jumpUpAcceleration:int = -800;
-			if (llama.acceleration.y == jumpUpAcceleration) {
+			if (llama.acceleration.y == llama.jumpUpAcceleration) {
 				llama.acceleration.y = 200;
 			}
 			if (llama.y > 350) {
-				llama.acceleration.y = jumpUpAcceleration;
+				llama.acceleration.y = llama.jumpUpAcceleration;
 			}
 			
 			//FlxG.log(llama.y);
