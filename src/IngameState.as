@@ -30,6 +30,8 @@ package
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		
+		private var ambientPlayer:AmbientPlayer;
+		
 		override public function create():void
 		{
 			_editor = new Editor(FlxG.stage);
@@ -70,7 +72,7 @@ package
 				visitors.add(new Visitor());
 			}
 			add(visitors);
-			
+
 			// Initialize spits
 			spits = new FlxGroup (Globals.MAX_SPITS);
 			for(i = 0; i < Globals.MAX_SPITS; i++)
@@ -81,6 +83,11 @@ package
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
+			
+			// sounds
+			ambientPlayer = new AmbientPlayer();
+			ambientPlayer.start();
+			add(ambientPlayer);
 		}
 		
 		override public function update():void
@@ -107,6 +114,9 @@ package
 			
 			// Visitors
 			var spawnInterval:Number = 100.0 / (difficulty + 40.0);
+			if (spawnInterval < 0.1) {
+				spawnInterval = 0.1;
+			}
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
