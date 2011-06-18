@@ -35,12 +35,13 @@ package
 		private var walkSpeed:Number;
 		private var climbSpeed:Number;
 		private var jumpSpeed:Number;
-		private var jumpHeight:Number; // not really height, just accel.y
+		private var jumpHeight:Number; // not really height, just velocity.y
 		private var hitPoints:uint;
 		public var scorePoints:uint; // killing this visitor is worth this much
 		public var comboCounter:uint; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
+		private var hasReachedGoal:Boolean; // then player loses a life
 		
 		private var explosion:FlxEmitter;
 		
@@ -57,6 +58,7 @@ package
 		{
 			hitPoints = 1;
 			comboCounter = 1;
+			hasReachedGoal = false;
 			
 			var visitorType:uint = Math.floor(Math.random()*5);
 			if (Math.random()*5 < 1) visitorType += 5; // rare variations
@@ -285,9 +287,20 @@ package
 			
 			play("jump");
 			
+			if (y > Globals.VISITOR_GOAL_Y)
+			{
+				alpha = Math.max(0, (Globals.VISITOR_GOAL_Y - y + 100) / 100);
+				
+				if (!hasReachedGoal)
+				{
+					hasReachedGoal = true;
+					(FlxG.state as IngameState).loseLife ();
+				}
+			}
+			
 			if (y > FlxG.height)
 			{
-				exists = false;
+				exists = false
 			}
 		}
 		

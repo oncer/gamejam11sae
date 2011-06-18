@@ -17,6 +17,7 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
+		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
@@ -26,7 +27,9 @@ package
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
 		private var scoreText:FlxText; // can hit normal visitors for combos
+		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		
+		private var lives:uint; // 0 == game over
 		private var difficulty:Number;
 		public var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:Number;
@@ -51,6 +54,7 @@ package
 			
 			FlxG.score = 0;
 			
+			lives = 3;
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
@@ -100,6 +104,15 @@ package
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
+			
+			livesDisplay = new FlxGroup (lives);
+			for(i = 0; i < Globals.MAX_SPITS; i++)
+			{
+				var life:FlxSprite = new FlxSprite (10 + i * 40, 10);
+				life.loadGraphic(LifeImage);
+				livesDisplay.add(life);
+			}
+			add(livesDisplay);
 			
 			// sounds
 			ambientPlayer = new AmbientPlayer();
@@ -231,6 +244,16 @@ package
 		
 		private function doCombo (counter:uint):void
 		{
+		}
+		
+		public function loseLife ():void
+		{
+			lives--;
+			livesDisplay.length = lives;
+			if (lives <= 0)
+			{
+				FlxG.switchState(new GameoverState());
+			}
 		}
 	} // end of class IngameState
 } // end of package
