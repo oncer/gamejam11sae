@@ -96,7 +96,18 @@ package
 		
 		private function spawnVisitor():void
 		{
-			visitors.add(new Visitor(difficulty));
+			// distribute left/right somewhat randomly, but avoid long streaks
+			if (visitors.length % 10 == 0) 
+			{
+				visitors.add(new Visitor(difficulty, FlxObject.LEFT));
+			} else
+			if (visitors.length % 10 == 5) 
+			{
+				visitors.add(new Visitor(difficulty, FlxObject.RIGHT));
+			} else
+			{
+				visitors.add(new Visitor(difficulty));
+			}
 		}
 	} // end of class IngameState
 } // end of package
