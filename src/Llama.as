@@ -8,7 +8,8 @@ package
 	{
 		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
 		[Embed(source = "../gfx/crosshair.png")] private var TargetClass:Class;
-		[Embed(source="../gfx/flectrum.png")] private var HealthBarClass:Class;
+		[Embed(source = "../gfx/bar2.png")] private var HealthBarClass:Class;
+		[Embed(source="../gfx/bar1.png")] private var Bar1Class:Class;
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
@@ -94,8 +95,11 @@ package
 			target.loadGraphic(TargetClass);
 			add(target);
 			
-			spitStrengthBar = new FlxBar(FlxG.width-20, 20, FlxBar.FILL_BOTTOM_TO_TOP, 10, 100);
-			spitStrengthBar.createImageBar(null, HealthBarClass, 0x88000000);
+			var barBorder:FlxSprite = new FlxSprite(FlxG.width - 40, 30);
+			barBorder.loadGraphic(Bar1Class);
+			add(barBorder);
+			spitStrengthBar = new FlxBar(barBorder.x, barBorder.y, FlxBar.FILL_BOTTOM_TO_TOP, 32, 96);
+			spitStrengthBar.createImageBar(null, HealthBarClass, 0x00000000);
 			add(spitStrengthBar);			
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;
