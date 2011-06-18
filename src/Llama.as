@@ -99,7 +99,16 @@ package
 			
 			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
 				lama.y = Globals.GROUND_LEVEL - lama.height;
-				lama.velocity.y = jumpUpVelocity;			
+				lama.velocity.y = jumpUpVelocity;		
+				
+				var currentFrame:Number = lama.frame;
+				var randomFrame:Number = currentFrame;
+				while (currentFrame == randomFrame) {
+					var rand:Number = Math.random()*10;
+					//trace(rand);
+					randomFrame = Math.ceil(rand) % 3;				
+				}
+				lama.frame = randomFrame;
 			}
 			
 			target.x = lama.x + spitOrigin.x + targetOffset.x - target.width/2;
