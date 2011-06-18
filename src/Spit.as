@@ -9,6 +9,11 @@ package
 	 */
 	public class Spit extends FlxSprite 
 	{
+		public static const TYPE_DEFAULT:uint = 0;
+		public static const TYPE_BIGSPIT:uint = 1;
+		public static const TYPE_MULTI_SPAWN:uint = 2;
+		
+		private var spitType:uint;
 		
 		[Embed(source="../gfx/spit.png")] private var SpitClass:Class;
 		[Embed(source="../gfx/spitfloor.png")] private var SpitFloorClass:Class;
@@ -26,9 +31,9 @@ package
 		public function Spit(center:FlxPoint) 
 		{			
 			// the spit is 16x16
-			super();
-			setCenterPosition(center.x, center.y);
+			super();			
 			loadGraphic(SpitClass);
+			setCenterPosition(center.x, center.y);
 			
 			acceleration.y = 200;
 			exists = false;
@@ -38,6 +43,8 @@ package
 			gfxFloor.loadGraphic(SpitFloorClass);
 			gfxFloor.visible = false;
 			floorTimer = 0;
+			
+			spitType = TYPE_DEFAULT;
 		}
 		
 		private function initParticles():void
@@ -58,8 +65,8 @@ package
 		}
 		
 		public function setCenterPosition(_x:Number, _y:Number):void {
-			x = _x - 8;
-			y = _y - 8;
+			x = _x - width / 2;
+			y = _y - height / 2;
 		}
 		
 		override public function update():void

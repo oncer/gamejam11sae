@@ -8,8 +8,19 @@ package
 	{
 		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
 		[Embed(source = "../gfx/crosshair.png")] private var TargetClass:Class;
-		[Embed(source = "../gfx/bar2.png")] private var HealthBarClass:Class;
-		[Embed(source="../gfx/bar1.png")] private var Bar1Class:Class;
+		[Embed(source = "../gfx/bar1.png")] private var Bar1Class:Class;
+		[Embed(source = "../gfx/bar2.png")] private var Bar2Class:Class;
+		
+		[Embed(source = "../gfx/bar2.png")] private var UpgradesClass:Class;
+		
+		
+		public static const UPGRADE_NONE:uint = 0;
+		public static const UPGRADE_RAPIDFIRE:uint = 1;
+		public static const UPGRADE_BIGSPIT:uint = 2;
+		public static const UPGRADE_MULTISPAWN:uint = 3;
+		public var upgradeType:uint;
+		
+		
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
@@ -32,15 +43,15 @@ package
 		
 		private var spitOrigin:FlxPoint;
 		// this is the px size from the left when the lama is facing right
-		private var spitOriginFromGrahpic:Number = 40;
+		private static const SPIT_ORIGIN_PIXELS:Number = 40;
 		private var targetOffset:FlxPoint;
-		private var targetDistance:Number = 30;
+		private var TARGET_DISTANCE:Number = 30;
 		
-		private var frameWidth:Number = 48;
-		private var frameHeight:Number = 64;
+		private static const FRAME_WIDTH:Number = 48;
+		private static const FRAME_HEIGHT:Number = 64;
 		
-		private var upperDegreeLimit:Number = 170;
-		private var lowerDegreeLimit:Number = 60;
+		private static const UPPER_TARGET_LIMIT_DEGREE:Number = 170;
+		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 60;
 		// value needed, because the function rotatePoint() generates no exact results for the border values
 		private var degreeThreshold:Number = 0;			
 		// ATTENTION maybe change that in accordance to the range borders!
@@ -62,8 +73,11 @@ package
 		// factor for balancing that regulates the power multiplication of strength
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
+		
+		private var spitCooldownArray = new Array(spitCooldown, 0.2, 4, 1);
+		
 		// the spit animation in seconds, until the original random jump frame is set again
-		private var spitAnimationDuration:Number = 0.6;
+		private static const SPIT_ANIMATION_DURATION:Number = 0.6;
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
@@ -77,7 +91,7 @@ package
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
 			lama = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
 			// set 3rd parameter to true because it must be flippable (by facing property)
-			lama.loadGraphic(LamaClass, false, true, frameWidth, frameHeight);			
+			lama.loadGraphic(LamaClass, false, true, FRAME_WIDTH, FRAME_HEIGHT);			
 			_thrust = 0;
 			
 			jumpUpVelocity = -560;
@@ -89,9 +103,9 @@ package
 			drag_x = lama.drag.x;
 			add(lama);
 			
-			targetOffset = new FlxPoint(targetDistance, 0);
+			targetOffset = new FlxPoint(TARGET_DISTANCE, 0);
 			// center of spitting where it should start, 39 from left, 31 from top
-			spitOrigin = new FlxPoint(spitOriginFromGrahpic, frameHeight - 31);
+			spitOrigin = new FlxPoint(SPIT_ORIGIN_PIXELS, FRAME_HEIGHT - 31);
 			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
@@ -102,7 +116,7 @@ package
 			barBorder.loadGraphic(Bar1Class);
 			add(barBorder);
 			spitStrengthBar = new FlxBar(barBorder.x, barBorder.y, FlxBar.FILL_BOTTOM_TO_TOP, 32, 96);
-			spitStrengthBar.createImageBar(null, HealthBarClass, 0x00000000);
+			spitStrengthBar.createImageBar(null, Bar2Class, 0x00000000);
 			add(spitStrengthBar);			
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;
@@ -112,6 +126,8 @@ package
 			spitCooldownCounter = 0;
 			spitAnimationCounter = 0;
 			currentLamaJumpFrame = 0;
+			
+			upgradeType = UPGRADE_NONE;
 			
 			// this doesnt work, because th first frame always changes randomly !
 			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);			
@@ -136,7 +152,7 @@ package
 			}
 			if (lama.frame == 3) {
 				spitAnimationCounter += FlxG.elapsed;
-				if (spitAnimationCounter >= spitAnimationDuration) {
+				if (spitAnimationCounter >= SPIT_ANIMATION_DURATION) {
 					spitAnimationCounter = 0;
 					lama.frame = currentLamaJumpFrame;
 				}
@@ -172,13 +188,13 @@ package
 				if(lama.facing!=FlxObject.LEFT) {
 					targetOffset.x *= -1;
 					//46 is the width of 1 frame
-					spitOrigin.x = frameWidth - spitOriginFromGrahpic;
+					spitOrigin.x = FRAME_WIDTH - SPIT_ORIGIN_PIXELS;
 				}
 				lama.facing = FlxObject.LEFT;				
 			} else if (FlxG.keys.justPressed("RIGHT")) {
 				if (lama.facing != FlxObject.RIGHT) {
 					targetOffset.x *= -1;
-					spitOrigin.x = spitOriginFromGrahpic;
+					spitOrigin.x = SPIT_ORIGIN_PIXELS;
 				}
 				lama.facing = FlxObject.RIGHT;				
 			}			
@@ -206,25 +222,25 @@ package
 				
 				var newRotation:Number = angleBefore - rotationDifferenceInDegrees;
 				trace("newRotation: " + newRotation);
-				if (Math.abs(newRotation) > (upperDegreeLimit-degreeThreshold)) {
+				if (Math.abs(newRotation) > (UPPER_TARGET_LIMIT_DEGREE-degreeThreshold)) {
 					//var targetPoint
 					//var tooMuchDegrees:Number = Math.abs(newRotation) - upperDegreeLimit;
 					
 					// 
 					if (newRotation<0) {
-						rotatedPoint = rotatePoint(0, -targetDistance, 0, 0, -upperDegreeLimit);
+						rotatedPoint = rotatePoint(0, -TARGET_DISTANCE, 0, 0, -UPPER_TARGET_LIMIT_DEGREE);
 					} else {
-						rotatedPoint = rotatePoint(0, -targetDistance, 0, 0, upperDegreeLimit);
+						rotatedPoint = rotatePoint(0, -TARGET_DISTANCE, 0, 0, UPPER_TARGET_LIMIT_DEGREE);
 					}
 					rotatedPoint.y *= -1;
 					//trace("fix set point x: " + rotatedPoint.x, ", y: " + rotatedPoint.y);										
 					// newRotation might be 175, or -175; when 175 rotDif is +5, when -175 rotDif is -5
 					//rotationDifferenceInDegrees = upperDegreeLimit-rotationDifferenceInDegrees;
-				} else if (Math.abs(newRotation) < (lowerDegreeLimit-degreeThreshold)) {
+				} else if (Math.abs(newRotation) < (LOWER_TARGET_LIMIT_DEGREE-degreeThreshold)) {
 					if (newRotation<0) {
-						rotatedPoint = rotatePoint(0, -targetDistance, 0, 0, -lowerDegreeLimit);
+						rotatedPoint = rotatePoint(0, -TARGET_DISTANCE, 0, 0, -LOWER_TARGET_LIMIT_DEGREE);
 					} else {
-						rotatedPoint = rotatePoint(0, -targetDistance, 0, 0, lowerDegreeLimit);
+						rotatedPoint = rotatePoint(0, -TARGET_DISTANCE, 0, 0, LOWER_TARGET_LIMIT_DEGREE);
 					}
 					rotatedPoint.y *= -1;
 				} else {
@@ -245,9 +261,7 @@ package
 				var angleAfter:Number = FlxU.getAngle(targetOffset, new FlxPoint(0,0));
 				//angle = FlxU.getAngle(rotatedPoint, new FlxPoint(lama.x, lama.y));
 				trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
-			}
-			trace("lama.x: " + lama.x);
-			trace("spit.x: " + spitOrigin.x);
+			}			
 			
 			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
@@ -296,6 +310,12 @@ package
 			}
 			
 		}// end of update
+		
+		public function setUpgradeType(UpgradeType:uint):void {
+			upgradeType = UpgradeType;
+			spitCooldownCounter = 0;
+			spitCooldown = spitCooldownArray[upgradeType];
+		}
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {
 			var flxp:FlxPoint = new FlxPoint();

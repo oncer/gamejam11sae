@@ -166,6 +166,17 @@ package
 			//trace("test");
 			//trace("lama y: " + llama.lama.y);
 			
+			// for testing the different upgrades
+			if (FlxG.keys.ONE) {				
+				llama.setUpgradeType(Llama.UPGRADE_NONE);
+			} else if (FlxG.keys.TWO) {
+				llama.setUpgradeType(Llama.UPGRADE_RAPIDFIRE);
+			} else if (FlxG.keys.THREE) {
+				llama.setUpgradeType(Llama.UPGRADE_BIGSPIT);
+			} else if (FlxG.keys.FOUR) {
+				llama.setUpgradeType(Llama.UPGRADE_MULTISPAWN);
+			} 
+						
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
 				trace("quit");
