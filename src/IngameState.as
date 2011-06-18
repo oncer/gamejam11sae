@@ -23,6 +23,7 @@ package
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
+		private var scoreText:FlxText; // can hit normal visitors for combos
 		
 		private var difficulty:Number;
 		public var elapsedTime:Number; // total in seconds
@@ -46,6 +47,8 @@ package
 			add(bg);
 			
 			trace("IngameState.onCreate()");
+			
+			FlxG.score = 0;
 			
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
@@ -80,6 +83,11 @@ package
 				spits.add(new Spit(new FlxPoint(0,0)));
 			}
 			add(spits);
+			
+			// score display
+			scoreText = new FlxText (FlxG.width-200, 15, 180, "SCORE", true);
+			scoreText.alignment = "right";
+			add(scoreText);
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
@@ -181,13 +189,14 @@ package
 			return v.canBeHit() && (spit as Spit).canHit(v);
 		}
 		
-		private function visitorsVsSpits(visitor:FlxObject,spit:FlxObject):void
+		private function visitorsVsSpits(victim:FlxObject,spit:FlxObject):void
 		{
-			var v:Visitor = visitor as Visitor;
+			var v:Visitor = victim as Visitor;
 			var s:Spit = spit as Spit;
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
+			addScore(v.scorePoints);
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
@@ -197,7 +206,22 @@ package
 		
 		private function visitorsVsFlying(victim:FlxObject,flying:FlxObject):void
 		{
-			(victim as Visitor).getHitByPerson(flying as Visitor);
+			var v:Visitor = victim as Visitor;
+			var f:Visitor = flying as Visitor;
+			
+			v.getHitByPerson(f);
+			addScore(v.scorePoints * v.comboCounter);
+			doCombo(v.comboCounter);
+		}
+		
+		private function addScore (score:int):void
+		{
+			FlxG.score += score;
+			scoreText.text = FlxG.score.toString();
+		}
+		
+		private function doCombo (counter:uint):void
+		{
 		}
 	} // end of class IngameState
 } // end of package
