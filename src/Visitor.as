@@ -48,6 +48,10 @@ package
 				jumpSpeed = 100;
 				jumpHeight = -200;
 				loadGraphic (Visitor1Image, true, true, WIDTH, HEIGHT);
+				width = 16;
+				height = 21;
+				offset.x = -8;
+				offset.y = -27;
 			} else 
 			if (visitorType < 2) // man with glasses & hat
 			{
@@ -56,6 +60,10 @@ package
 				jumpSpeed = 130;
 				jumpHeight = -250;
 				loadGraphic (Visitor2Image, true, true, WIDTH, HEIGHT);
+				width = 16;
+				height = 28;
+				offset.x = -8;
+				offset.y = -20;
 			} else
 			if (visitorType < 3) // woman
 			{
@@ -64,6 +72,10 @@ package
 				jumpSpeed = 130;
 				jumpHeight = -250;
 				loadGraphic (Visitor3Image, true, true, WIDTH, HEIGHT);
+				width = 18;
+				height = 25;
+				offset.x = -7;
+				offset.y = -23;
 			} else // fat tourist
 			{
 				walkSpeed = 17;
@@ -71,6 +83,10 @@ package
 				jumpSpeed = 80;
 				jumpHeight = -130;
 				loadGraphic (Visitor4Image, true, true, WIDTH, HEIGHT);
+				width = 18;
+				height = 25;
+				offset.x = -7;
+				offset.y = -23;
 				hitPoints = 2;
 			} 
 			
@@ -222,7 +238,6 @@ package
 				
 				if (Math.abs(velocity.x) < 10)
 				{
-					hitPoints--;
 					if (hitPoints <= 0)
 					{
 						state = STATE_DYING;
@@ -259,6 +274,7 @@ package
 		
 		public function getSpitOn (spit:Spit):void
 		{
+			hitPoints--;
 			state = STATE_FLYING;
 			play("fly");
 			velocity.x = spit.velocity.x;
