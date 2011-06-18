@@ -11,7 +11,10 @@ package
 		protected var _thrust:Number;
 		
 		[Editable (type="slider", min="-2000", max="-100")]
-		public var jumpUpAcceleration:Number;
+		public var jumpUpVelocity:Number;
+		
+		[Editable (type="slider", min="100", max="1000")]
+		public var acceleration_y:Number;
 		
 		[Editable (type="watch")]
 		public var watch_y:Number;
@@ -19,13 +22,13 @@ package
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama()
 		{
-			super(FlxG.width/2-8, FlxG.height/2-8);
-			loadRotatedGraphic(ImgLlama,32,-1,false,true);
+			super(FlxG.width/2-16, FlxG.height/2-16);
+			loadGraphic(ImgLlama,false,true);
 			//alterBoundingBox();
 			_thrust = 0;
 			//acceleration = new FlxPoint(0,200);
-			acceleration.y = 200;
-			jumpUpAcceleration = -800;
+			acceleration_y = acceleration.y = 800;
+			jumpUpVelocity = -560;
 		}
 		
 		//The main game loop function
@@ -33,6 +36,7 @@ package
 		{
 			//wrap();
 			watch_y = y;
+			acceleration.y = acceleration_y;
 			
 			
 			//This is where we handle turning the ship left and right

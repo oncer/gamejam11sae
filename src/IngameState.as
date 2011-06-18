@@ -22,6 +22,8 @@ package
 		override public function create():void
 		{
 			_editor = new Editor(FlxG.stage);
+			_editor.registerClass(FlxObject);
+			_editor.registerClass(FlxSprite);
 			_editor.registerClass(Llama);
 			_editor.visible = true;
 			FlxG.mouse.show();
@@ -41,11 +43,8 @@ package
 		{
 			super.update();
 			
-			if (llama.acceleration.y == llama.jumpUpAcceleration) {
-				llama.acceleration.y = 200;
-			}
 			if (llama.y > 350) {
-				llama.acceleration.y = llama.jumpUpAcceleration;
+				llama.velocity.y = llama.jumpUpVelocity;
 			}
 			
 			//FlxG.log(llama.y);
