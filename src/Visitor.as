@@ -8,11 +8,14 @@ package
 	{
 		[Embed(source="../gfx/visitor1.png")] private var VisitorImage:Class;
 		
-		public static const STATE_WALKING:uint = 1;
-		public static const STATE_CLIMBING:uint = 2;
-		public static const STATE_JUMPING:uint = 3;
-		public static const STATE_FLYING:uint = 4;
-		public static const STATE_DYING:uint = 5;
+		private static const WIDTH:uint = 32;
+		private static const HEIGHT:uint = 48;
+		
+		private static const STATE_WALKING:uint = 0;
+		private static const STATE_CLIMBING:uint = 1;
+		private static const STATE_JUMPING:uint = 2;
+		private static const STATE_FLYING:uint = 3;
+		private static const STATE_DYING:uint = 4;
 		
 		private var walkSpeed:Number;
 		private var climbSpeed:Number;
@@ -23,20 +26,56 @@ package
 		// is inferred from the current game difficulty.
 		public function Visitor (difficulty:Number)
 		{
-			var fromLeft:Boolean; // enter from left side or from right side
+			super(0, Globals.GROUND_LEVEL - HEIGHT);
+			walkSpeed = 50;
+			climbSpeed = 50;
 			
-			if (Math.random() >= .5)
-				fromLeft = true;
-			else
-				fromLeft = false;
-			
-			super(0, 400);
-			loadGraphic(VisitorImage,true,false,32,32);
-			acceleration.x = 200;
+			create(); // todo: this can also be used as revive() maybe
 		}
 		
-		override public function update():void
+		private function create():void
 		{
+			loadGraphic (VisitorImage, true, true, WIDTH, HEIGHT);
+			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
+			play("walk");
+			
+			hitPoints = 1;
+			state = STATE_WALKING;
+			
+			if (Math.random()*2 < 1) // enter from left side
+			{
+				velocity.x = walkSpeed;
+				x = -WIDTH;
+				facing = RIGHT;
+			}
+			else  // enter from right side
+			{
+				velocity.x = -walkSpeed;
+				x = FlxG.width + WIDTH;
+				facing = LEFT;
+			}
+		}
+		
+		public override function update():void
+		{
+			if (state == STATE_WALKING)
+			{
+				if ((facing == LEFT) && (x < Globals.CAGE_RIGHT)) {
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_RIGHT;
+				}
+				
+				if ((facing == RIGHT) && (x > Globals.CAGE_LEFT - WIDTH)) {
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_LEFT - WIDTH;
+				}
+			}
+			
+			if (state == STATE_CLIMBING)
+			{
+				velocity.x = 0;
+				velocity.y = -50;
+			}
 		}
 	}
 }
