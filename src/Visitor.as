@@ -50,8 +50,8 @@ package
 				loadGraphic (Visitor1Image, true, true, WIDTH, HEIGHT);
 				width = 16;
 				height = 21;
-				offset.x = -8;
-				offset.y = -27;
+				offset.x = 8;
+				offset.y = 27;
 			} else 
 			if (visitorType < 2) // man with glasses & hat
 			{
@@ -62,8 +62,8 @@ package
 				loadGraphic (Visitor2Image, true, true, WIDTH, HEIGHT);
 				width = 16;
 				height = 28;
-				offset.x = -8;
-				offset.y = -20;
+				offset.x = 8;
+				offset.y = 20;
 			} else
 			if (visitorType < 3) // woman
 			{
@@ -74,8 +74,8 @@ package
 				loadGraphic (Visitor3Image, true, true, WIDTH, HEIGHT);
 				width = 18;
 				height = 25;
-				offset.x = -7;
-				offset.y = -23;
+				offset.x = 7;
+				offset.y = 23;
 			} else // fat tourist
 			{
 				walkSpeed = 17;
@@ -85,14 +85,11 @@ package
 				loadGraphic (Visitor4Image, true, true, WIDTH, HEIGHT);
 				width = 18;
 				height = 25;
-				offset.x = -7;
-				offset.y = -23;
+				offset.x = 7;
+				offset.y = 23;
 				hitPoints = 2;
 			} 
 			
-			y = Globals.GROUND_LEVEL - HEIGHT;
-			velocity.y = 0;
-			acceleration.y = 0;
 			super.facing = facing;
 		}
 		
@@ -114,21 +111,21 @@ package
 			{
 				if (Math.random()*2 < 1) // enter from left side
 				{
-					x = -WIDTH;
+					x = -width;
 					facing = RIGHT;
 				}
 				else // enter from right side
 				{
-					x = FlxG.width + WIDTH;
+					x = FlxG.width + width;
 					facing = LEFT;
 				}
 			}
 			else if (facing == RIGHT) // enter from left side
 			{
-				x = -WIDTH;
+				x = -width;
 			} else // enter from right side
 			{
-				x = FlxG.width + WIDTH;
+				x = FlxG.width + width;
 			}
 		}
 		
@@ -167,6 +164,7 @@ package
 		
 		private function update_walking():void
 		{
+			y = Globals.GROUND_LEVEL - height;
 			velocity.y = 0;
 			play("walk");
 			
@@ -185,10 +183,10 @@ package
 			{
 				velocity.x = walkSpeed;
 				
-				if (x > Globals.CAGE_LEFT - WIDTH)
+				if (x > Globals.CAGE_LEFT - width)
 				{
 					state = STATE_CLIMBING;
-					x = Globals.CAGE_LEFT - WIDTH;
+					x = Globals.CAGE_LEFT - width;
 				}
 			}
 		}
@@ -199,7 +197,7 @@ package
 			velocity.x = 0;
 			velocity.y = -climbSpeed;
 			
-			if (y < Globals.CAGE_TOP - HEIGHT)
+			if (y < Globals.CAGE_TOP - height)
 			{
 				state = STATE_JUMPING;
 				velocity.y = jumpHeight;
@@ -231,9 +229,9 @@ package
 			acceleration.y = 200;
 			drag.x = 50;
 			
-			if (y > Globals.GROUND_LEVEL - HEIGHT)
+			if (y > Globals.GROUND_LEVEL - height)
 			{
-				y = Globals.GROUND_LEVEL - HEIGHT;
+				y = Globals.GROUND_LEVEL - height;
 				velocity.y = -velocity.y * .4;
 				
 				if (Math.abs(velocity.x) < 10)
@@ -263,7 +261,7 @@ package
 		{
 			velocity.x = 0;
 			velocity.y = 0;
-			y = Globals.GROUND_LEVEL - HEIGHT;
+			y = Globals.GROUND_LEVEL - height;
 			play("die");
 			
 			if (!flickering)
@@ -274,13 +272,13 @@ package
 		
 		public function getSpitOn (spit:Spit):void
 		{
-			hitPoints--;
+			if (hitPoints > 0) hitPoints--;
 			state = STATE_FLYING;
 			play("fly");
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
 			
-			if (y > Globals.GROUND_LEVEL - HEIGHT - 2) // if standing on ground
+			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
 			{
 				velocity.x /= 2;
 			}
