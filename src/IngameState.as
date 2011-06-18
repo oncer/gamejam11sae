@@ -14,7 +14,8 @@ package
 	{
 		//internal var llama:FlxSprite;
 		
-		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
+		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
+		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		
 		private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
@@ -23,6 +24,7 @@ package
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:uint;
+		private var lastVisitor:uint; // most recent array index
 		
 		override public function create():void
 		{
@@ -34,7 +36,7 @@ package
 			FlxG.mouse.show();
 			
 			var bg:FlxSprite = new FlxSprite(0,0);
-			bg.loadGraphic(Background);
+			bg.loadGraphic(BackgroundImage);
 			add(bg);
 			
 			trace("IngameState.onCreate()");
@@ -42,21 +44,25 @@ package
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
+			lastVisitor = 0;
 			
 			// Initialize llama
 			llama = new Llama();
 			_editor.registerObject(llama);
 			add(llama);
 			
+			// Initialize cage
+			var cage:FlxSprite = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
+			cage.loadGraphic(CageImage);
+			add(cage);
+			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
+			for(var i:uint = 0; i < Globals.MAX_VISITORS; i++)
+			{
+				visitors.add(new Visitor());
+			}
 			add(visitors);
-			
-			/*var target:FlxPoint = new FlxPoint(110, 100);
-			var pivot:FlxPoint = new FlxPoint(100, 100);
-			//var rotatedPoint:FlxPoint = FlxU.rotatePoint(target.x, target.y, pivot.x, pivot.y, 0);
-			var rotatedPoint:FlxPoint = rotatePoint(target.x, target.y, pivot.x, pivot.y, 180);
-			trace("x: " + rotatedPoint.x + " y: " + rotatedPoint.y);*/
 		}
 		
 		
@@ -96,18 +102,26 @@ package
 		
 		private function spawnVisitor():void
 		{
+			var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+			
+			if (v.exists) return; // keep on screen until dead
+			
+			lastVisitor++;
+			
 			// distribute left/right somewhat randomly, but avoid long streaks
-			if (visitors.length % 10 == 0) 
+			if (visitors.length % 6 == 0) 
 			{
-				visitors.add(new Visitor(difficulty, FlxObject.LEFT));
+				v.init(difficulty, FlxObject.LEFT);
 			} else
-			if (visitors.length % 10 == 5) 
+			if (visitors.length % 6 == 3) 
 			{
-				visitors.add(new Visitor(difficulty, FlxObject.RIGHT));
+				v.init(difficulty, FlxObject.RIGHT);
 			} else
 			{
-				visitors.add(new Visitor(difficulty));
+				v.init(difficulty);
 			}
+			
+			v.revive();
 		}
 	} // end of class IngameState
 } // end of package

@@ -24,22 +24,31 @@ package
 		private var hitPoints:uint;
 		private var state:uint;
 		
-		// Creates a new visitor. Type, position, speed, everything
-		// is inferred from the current game difficulty.
-		public function Visitor (difficulty:Number, facing:uint = 0)
+		public function Visitor()
 		{
-			super(0, Globals.GROUND_LEVEL - HEIGHT);
+			super(0,0);
+			exists = false;
+		}
+		
+		// Type, position, speed, everything
+		// is inferred from the current game difficulty.
+		public function init(difficulty:Number, facing:uint = 0):void
+		{
 			walkSpeed = 50;
 			climbSpeed = 50;
 			jumpSpeed = 100;
 			jumpHeight = -200;
-			super.facing = facing;
 			
-			create(); // todo: this can also be used as revive() maybe
+			y = Globals.GROUND_LEVEL - HEIGHT;
+			velocity.y = 0;
+			acceleration.y = 0;
+			super.facing = facing;
 		}
 		
-		private function create():void
+		public override function revive():void
 		{
+			super.revive();
+			
 			loadGraphic (VisitorImage, true, true, WIDTH, HEIGHT);
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			addAnimation("climb", [7], Globals.ANIM_SPEED);
@@ -121,6 +130,11 @@ package
 				acceleration.y = 800;
 				
 				play("jump");
+				
+				if (y > FlxG.height)
+				{
+					exists = false;
+				}
 			}
 		}
 	}
