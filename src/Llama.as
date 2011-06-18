@@ -14,13 +14,13 @@ package
 		
 		public var lama:FlxSprite;		
 		private var target:FlxSprite;
+		public var jumpUpAcceleration : int;	
 		
 		[Editable (type = "slider", min = "-2000", max = "-100")]
 		public var jumpUpVelocity:Number;	
 		
 		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
-		
 		
 		private var targetOffset:FlxPoint;
 		//private var targetYOffset:Number;
@@ -40,6 +40,8 @@ package
 			//acceleration = new FlxPoint(0,200);
 			
 			jumpUpVelocity = -200;
+			jumpUpAcceleration = -800;
+			
 			lama.acceleration.y = 200;			
 			acceleration_y = lama.acceleration.y
 			add(lama);
@@ -59,11 +61,18 @@ package
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
 			
+			if (lama.acceleration.y == jumpUpAcceleration) {
+				lama.acceleration.y = 200;
+			}
+			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
+				lama.velocity.y = jumpUpVelocity;
+			} if (lama.y > Globals.GROUND_LEVEL - lama.height) {
+				lama.acceleration.y = jumpUpAcceleration;
+			}
+			
 			target.x = lama.getMidpoint().x + targetOffset.x;
 			target.y = lama.getMidpoint().y + targetOffset.y;
 			
-			//This is where we handle turning the ship left and right
-			//angularVelocity = 0;
 			if(FlxG.keys.LEFT)
 				//angularVelocity -= 240;
 				lama.acceleration.x = -50;
