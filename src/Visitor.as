@@ -26,6 +26,7 @@ package
 		private var jumpHeight:Number; // not really height, just accel.y
 		private var hitPoints:uint;
 		private var state:uint;
+		private var flyStartTime:Number; // timestamp of last start flying
 		
 		public function Visitor()
 		{
@@ -234,7 +235,8 @@ package
 				y = Globals.GROUND_LEVEL - height;
 				velocity.y = -velocity.y * .4;
 				
-				if (Math.abs(velocity.x) < 10)
+				var flyTime:Number = (FlxG.state as IngameState).elapsedTime - flyStartTime;
+				if ((flyTime >= Globals.FLY_TIMEOUT) && (Math.abs(velocity.x) < 10))
 				{
 					if (hitPoints <= 0)
 					{
@@ -270,6 +272,11 @@ package
 			}
 		}
 		
+		public function canHitSomeone ():Boolean
+		{
+			return exists && (state == STATE_FLYING) && (Math.abs(velocity.x) >= 30);
+		}
+		
 		// visitors can be hit by spit as long
 		// as they are not already being hit
 		public function canBeHit ():Boolean
@@ -281,6 +288,7 @@ package
 		{
 			if (hitPoints > 0) hitPoints--;
 			state = STATE_FLYING;
+			flyStartTime = (FlxG.state as IngameState).elapsedTime;
 			play("fly");
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
@@ -295,6 +303,7 @@ package
 		{
 			if (hitPoints > 0) hitPoints--;
 			state = STATE_FLYING;
+			flyStartTime = (FlxG.state as IngameState).elapsedTime;
 			play("fly");
 			velocity.x = flying.velocity.x * .7;
 			velocity.y = flying.velocity.y * .7;

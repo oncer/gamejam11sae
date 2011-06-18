@@ -25,7 +25,7 @@ package
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		
 		private var difficulty:Number;
-		private var elapsedTime:Number; // total in seconds
+		public var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
@@ -191,8 +191,8 @@ package
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
-		{
-			return (victim as Visitor).canBeHit();
+		{ 
+			return (flying as Visitor).canHitSomeone() && (victim as Visitor).canBeHit();
 		}
 		
 		private function visitorsVsFlying(victim:FlxObject,flying:FlxObject):void
