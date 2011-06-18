@@ -16,12 +16,21 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
+		public static const MAX_VISITORS:uint = 1024;
+		
 		private var _editor:Editor;
 		public var llama:Llama;			//Refers to the little player llama
+		private var visitors:FlxGroup;
+		
+		private var difficulty:Number;
+		private var elapsedTime:Number; // total in seconds
+		private var lastSpawnTime:uint;
 		
 		override public function create():void
 		{
 			_editor = new Editor(FlxG.stage);
+			_editor.registerClass(FlxObject);
+			_editor.registerClass(FlxSprite);
 			_editor.registerClass(Llama);
 			_editor.visible = true;
 			FlxG.mouse.show();
@@ -30,33 +39,71 @@ package
 			bg.loadGraphic(Background);
 			add(bg);
 			
-			trace("alsk");
-			//Initialize the llama and add it to the layer
+			trace("IngameState.onCreate()");
+			
+			difficulty = 1.0;
+			elapsedTime = 0.0;
+			lastSpawnTime = elapsedTime;
+			
+			// Initialize llama
 			llama = new Llama();
 			_editor.registerObject(llama);
 			add(llama);
+			
+			// Initialize visitors
+			visitors = new FlxGroup (MAX_VISITORS);
+			add(visitors);
+			
+			/*var target:FlxPoint = new FlxPoint(110, 100);
+			var pivot:FlxPoint = new FlxPoint(100, 100);
+			//var rotatedPoint:FlxPoint = FlxU.rotatePoint(target.x, target.y, pivot.x, pivot.y, 0);
+			var rotatedPoint:FlxPoint = rotatePoint(target.x, target.y, pivot.x, pivot.y, 180);
+			trace("x: " + rotatedPoint.x + " y: " + rotatedPoint.y);*/
 		}
+		
+		
 		
 		override public function update():void
 		{
+			// update time
+			elapsedTime += FlxG.elapsed;
+			
 			super.update();
 			
-			if (llama.acceleration.y == llama.jumpUpAcceleration) {
-				llama.acceleration.y = 200;
+			var jumpUpAcceleration:int = -800;
+			if (llama.lama.acceleration.y == jumpUpAcceleration) {
+				llama.lama.acceleration.y = 200;
 			}
-			if (llama.y > 350) {
-				llama.acceleration.y = llama.jumpUpAcceleration;
+			if (llama.lama.y > 350) {
+				llama.lama.velocity.y = llama.jumpUpVelocity;
+			} if (llama.lama.y > 350) {
+				llama.lama.acceleration.y = jumpUpAcceleration;
+			}
+			
+			// Visitors
+			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);
+			
+			while (lastSpawnTime < elapsedTime) 
+			{
+				spawnVisitor ();
+				lastSpawnTime += spawnInterval;
 			}
 			
 			//FlxG.log(llama.y);
 			//trace("test");
-			trace("lama y: " + llama.y);
+			//trace("lama y: " + llama.lama.y);
 			
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
 				trace("quit");
 				fscommand("quit");
 			}
+		} // end of update
+		
+		
+		function spawnVisitor():void
+		{
+			visitors.add(new Visitor(difficulty));
 		}
-	}
-}
+	} // end of class IngameState
+} // end of package
