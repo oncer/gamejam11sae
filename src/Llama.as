@@ -249,7 +249,8 @@ package
 				if (spitStrength > 100)
 					spitStrength = 100;
 			}*/
-			if(FlxG.keys.justReleased("SPACE"))
+			//if(FlxG.keys.justReleased("SPACE"))
+			if (FlxG.keys.SPACE) 
 			{				
 				//Space bar was pressed!  FIRE A BULLET
 				/*var bullet:FlxSprite = (FlxG.state as PlayState).bullets.recycle() as FlxSprite;
@@ -259,6 +260,7 @@ package
 				bullet.velocity.x += velocity.x;
 				bullet.velocity.y += velocity.y;*/
 				
+				//trace("spitCooldownCounter: " + spitCooldownCounter);
 				// only allow to spit when counter is higher than cooldown
 				if(spitCooldownCounter>=spitCooldown) {
 				
@@ -272,11 +274,11 @@ package
 					spitAnimationCounter = 0;
 					// set it to the spitting frame
 					lama.frame = 3;
-				}
-				
-				// this would set the time,overwrites the speed
-				//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
-				spitStrength = 0;
+					
+					// this would set the time,overwrites the speed
+					//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
+					spitStrength = 0;
+				}			
 			}
 			
 		}// end of update
