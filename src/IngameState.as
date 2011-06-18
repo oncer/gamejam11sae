@@ -6,7 +6,7 @@
 
 package
 {
-    import org.flixel.*;
+	import org.flixel.*;
 	import flash.system.fscommand;
 	import com.divillysausages.gameobjeditor.Editor;
 
@@ -16,10 +16,8 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
-		public static const MAX_VISITORS:uint = 1024;
-		
 		private var _editor:Editor;
-		public var llama:Llama;			//Refers to the little player llama
+		public var llama:Llama;  //Refers to the little player llama
 		private var visitors:FlxGroup;
 		
 		private var difficulty:Number;
@@ -35,13 +33,13 @@ package
 			_editor.visible = true;
 			FlxG.mouse.show();
 			
-			var bg:FlxSprite = new FlxSprite(0,0);			
+			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(Background);
 			add(bg);
 			
 			trace("IngameState.onCreate()");
 			
-			difficulty = 1.0;
+			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
 			
@@ -51,7 +49,7 @@ package
 			add(llama);
 			
 			// Initialize visitors
-			visitors = new FlxGroup (MAX_VISITORS);
+			visitors = new FlxGroup (Globals.MAX_VISITORS);
 			add(visitors);
 			
 			/*var target:FlxPoint = new FlxPoint(110, 100);
@@ -65,8 +63,9 @@ package
 		
 		override public function update():void
 		{
-			// update time
+			// update time & difficulty
 			elapsedTime += FlxG.elapsed;
+			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
 			
 			super.update();
 			
@@ -75,7 +74,7 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);
+			var spawnInterval:uint = 100.0 / (difficulty + 40.0);
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
@@ -95,7 +94,7 @@ package
 		} // end of update
 		
 		
-		function spawnVisitor():void
+		private function spawnVisitor():void
 		{
 			visitors.add(new Visitor(difficulty));
 		}

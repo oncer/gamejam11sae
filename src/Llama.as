@@ -5,26 +5,21 @@ package
 	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
 	{
-<<<<<<< HEAD
-		[Embed(source="../gfx/lama.png")] private var ImgLlama:Class;
-=======
-		[Embed(source="../gfx/lama.png")] private var ImgLlama:Class;	//Graphic of the player's ship
-		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;	//Graphic of the player's ship
-		[Embed(source="../gfx/crosshair.png")] private var TargetClass:Class;	//Graphic of the player's ship
->>>>>>> 0421daa3ad0ce777889f7854fcdbad0a32a08d8e
+		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
+		[Embed(source="../gfx/crosshair.png")] private var TargetClass:Class;
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
 		
 		public var lama:FlxSprite;		
 		private var target:FlxSprite;
+		public var jumpUpAcceleration : int;	
 		
 		[Editable (type = "slider", min = "-2000", max = "-100")]
 		public var jumpUpVelocity:Number;	
 		
 		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
-		
 		
 		private var targetOffset:FlxPoint;
 		//private var targetYOffset:Number;
@@ -44,6 +39,8 @@ package
 			//acceleration = new FlxPoint(0,200);
 			
 			jumpUpVelocity = -200;
+			jumpUpAcceleration = -800;
+			
 			lama.acceleration.y = 200;			
 			acceleration_y = lama.acceleration.y
 			add(lama);
@@ -63,11 +60,18 @@ package
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
 			
+			if (lama.acceleration.y == jumpUpAcceleration) {
+				lama.acceleration.y = 200;
+			}
+			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
+				lama.velocity.y = jumpUpVelocity;
+			} if (lama.y > Globals.GROUND_LEVEL - lama.height) {
+				lama.acceleration.y = jumpUpAcceleration;
+			}
+			
 			target.x = lama.getMidpoint().x + targetOffset.x;
 			target.y = lama.getMidpoint().y + targetOffset.y;
 			
-			//This is where we handle turning the ship left and right
-			//angularVelocity = 0;
 			if(FlxG.keys.LEFT)
 				//angularVelocity -= 240;
 				lama.acceleration.x = -50;
