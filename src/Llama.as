@@ -33,15 +33,14 @@ package
 			//super(FlxG.width/2-8, FlxG.height/2-8);
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
 			lama = new FlxSprite(FlxG.width/2, FlxG.height/2);
-			lama.loadGraphic(LamaClass);			
+			lama.loadGraphic(LamaClass, false, true, 48, 64);			
 			//alterBoundingBox();
 			_thrust = 0;
 			//acceleration = new FlxPoint(0,200);
 			
-			jumpUpVelocity = -200;
-			jumpUpAcceleration = -800;
+			jumpUpVelocity = -560;
 			
-			lama.acceleration.y = 200;			
+			lama.acceleration.y = 800;			
 			acceleration_y = lama.acceleration.y
 			add(lama);
 			
@@ -60,13 +59,8 @@ package
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
 			
-			if (lama.acceleration.y == jumpUpAcceleration) {
-				lama.acceleration.y = 200;
-			}
 			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
 				lama.velocity.y = jumpUpVelocity;
-			} if (lama.y > Globals.GROUND_LEVEL - lama.height) {
-				lama.acceleration.y = jumpUpAcceleration;
 			}
 			
 			target.x = lama.getMidpoint().x + targetOffset.x;
