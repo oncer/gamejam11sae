@@ -14,7 +14,8 @@ package
 	{
 		//internal var llama:FlxSprite;
 		
-		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
+		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
+		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		
 		private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
@@ -35,7 +36,7 @@ package
 			FlxG.mouse.show();
 			
 			var bg:FlxSprite = new FlxSprite(0,0);
-			bg.loadGraphic(Background);
+			bg.loadGraphic(BackgroundImage);
 			add(bg);
 			
 			trace("IngameState.onCreate()");
@@ -49,6 +50,11 @@ package
 			llama = new Llama();
 			_editor.registerObject(llama);
 			add(llama);
+			
+			// Initialize cage
+			var cage:FlxSprite = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
+			cage.loadGraphic(CageImage);
+			add(cage);
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
