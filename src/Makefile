@@ -8,7 +8,7 @@ SRC = main.as\
       Llama.as\
       WrapSprite.as
 MAIN = main.as
-SWF = llama.swf
+SWF = ../bin/llama.swf
 
 $(SWF) : $(SRC)
 	$(MXMLC) $(OPTIONS) -sp $(FLIXEL) -o $(SWF) -- $(MAIN)
