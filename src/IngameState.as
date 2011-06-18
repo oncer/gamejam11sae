@@ -39,7 +39,7 @@ package
 			bg.loadGraphic(Background);
 			add(bg);
 			
-			trace("alsk");
+			trace("IngameState.onCreate()");
 			
 			difficulty = 1.0;
 			elapsedTime = 0.0;
@@ -53,7 +53,15 @@ package
 			// Initialize visitors
 			visitors = new FlxGroup (MAX_VISITORS);
 			add(visitors);
+			
+			/*var target:FlxPoint = new FlxPoint(110, 100);
+			var pivot:FlxPoint = new FlxPoint(100, 100);
+			//var rotatedPoint:FlxPoint = FlxU.rotatePoint(target.x, target.y, pivot.x, pivot.y, 0);
+			var rotatedPoint:FlxPoint = rotatePoint(target.x, target.y, pivot.x, pivot.y, 180);
+			trace("x: " + rotatedPoint.x + " y: " + rotatedPoint.y);*/
 		}
+		
+		
 		
 		override public function update():void
 		{
@@ -62,8 +70,8 @@ package
 			
 			super.update();
 			
-			if (llama.y > 350) {
-				llama.velocity.y = llama.jumpUpVelocity;
+			if (llama.lama.y > 350) {
+				llama.lama.velocity.y = llama.jumpUpVelocity;
 			}
 			
 			// Visitors
@@ -77,18 +85,19 @@ package
 			
 			//FlxG.log(llama.y);
 			//trace("test");
-			trace("lama y: " + llama.y);
+			//trace("lama y: " + llama.lama.y);
 			
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
 				trace("quit");
 				fscommand("quit");
 			}
-		}
+		} // end of update
 		
-		private function spawnVisitor():void
+		
+		function spawnVisitor():void
 		{
 			visitors.add(new Visitor(difficulty));
 		}
-	}
-}
+	} // end of class IngameState
+} // end of package
