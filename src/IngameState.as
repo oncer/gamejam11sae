@@ -19,6 +19,7 @@ package
 		
 		private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
+		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
 		
@@ -57,7 +58,7 @@ package
 			add(llama);
 			
 			// Initialize cage
-			var cage:FlxSprite = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
+			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
 			cage.loadGraphic(CageImage);
 			add(cage);
 			
@@ -88,6 +89,16 @@ package
 			
 			if (llama.lama.y > 350) {
 				llama.lama.velocity.y = llama.jumpUpVelocity;
+			}
+			
+			if (llama.lama.x < cage.x) {
+				llama.lama.x = cage.x;
+				llama.lama.velocity.x = 0;
+			}
+			
+			if (llama.lama.x + llama.lama.width > cage.x + cage.width) {
+				llama.lama.x = cage.x + cage.width - llama.lama.width;
+				llama.lama.velocity.x = 0;
 			}
 			
 			// Visitors
