@@ -1,17 +1,17 @@
 /**
- * DropDownFX - Special FX Plugin
+ * FloodFillFX - Special FX Plugin
  * -- Part of the Flixel Power Tools set
  * 
+ * v1.1 Renamed - was "DropDown", but now a more accurate "flood fill"
  * v1.0 First release
  * 
- * @version 1.0 - May 11th 2011
+ * @version 1.1 - May 31st 2011
  * @link http://www.photonstorm.com
  * @author Richard Davey / Photon Storm
 */
 
 package org.flixel.plugin.photonstorm.FX 
 {
-	import com.greensock.motionPaths.RectanglePath2D;
 	import flash.display.BitmapData;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -20,28 +20,24 @@ package org.flixel.plugin.photonstorm.FX
 	import org.flixel.plugin.photonstorm.*;
 	
 	/**
-	 * Creates a drop-down effect FlxSprite, useful for bringing in images in cool ways
+	 * Creates a flood fill effect FlxSprite, useful for bringing in images in cool ways
 	 */
-	public class DropDownFX extends BaseFX
+	public class FloodFillFX extends BaseFX
 	{
-		private var image:BitmapData;
+		private var complete:Boolean;
 		private var chunk:uint;
 		private var offset:uint;
-		private var updateLimit:uint = 0;
-		private var lastUpdate:uint = 0;
-		private var complete:Boolean = false;
-		private var ready:Boolean = false;
 		private var dropDirection:uint;
 		private var dropRect:Rectangle;
 		private var dropPoint:Point;
 		private var dropY:uint;
 		
-		public function DropDownFX() 
+		public function FloodFillFX() 
 		{
 		}
 		
 		/**
-		 * Creates a new DropDown effect from the given image
+		 * Creates a new Flood Fill effect from the given image
 		 * 
 		 * @param	source				The source image bitmapData to use for the drop
 		 * @param	x					The x coordinate to place the resulting effect sprite
@@ -81,18 +77,6 @@ package org.flixel.plugin.photonstorm.FX
 			active = true;
 			
 			return sprite;
-		}
-		
-		/**
-		 * Starts the Effect runnning
-		 * 
-		 * @param	delay	How many "game updates" should pass between each update? If your game runs at 30fps a value of 0 means it will do 30 drops per second. A value of 1 means it will do 15 drops per second, etc.
-		 */
-		public function start(delay:uint = 0):void
-		{
-			updateLimit = delay;
-			lastUpdate = 0;
-			ready = true;
 		}
 		
 		public function draw():void
