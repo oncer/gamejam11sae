@@ -5,7 +5,7 @@ package
 	//This is the class declaration for the little player ship that you fly around in
 	public class Llama extends FlxSprite
 	{
-		[Embed(source="gfx/lama.png")] private var ImgShip:Class;	//Graphic of the player's ship
+		[Embed(source="../gfx/lama.png")] private var ImgShip:Class;	//Graphic of the player's ship
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
