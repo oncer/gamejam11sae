@@ -21,6 +21,12 @@ package
 		public var jumpUpVelocity:Number;	
 		
 		[Editable (type="slider", min="100", max="1000")]
+		public var acceleration_x:Number;
+		
+		[Editable (type="slider", min="10", max="500")]
+		public var drag_x:Number;
+		
+		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
 		
 		[Editable (type="slider", min="100", max="1000")]
@@ -48,14 +54,18 @@ package
 		{
 			//super(FlxG.width/2-8, FlxG.height/2-8);
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
-			lama = new FlxSprite(FlxG.width/2, FlxG.height/2);
+			lama = new FlxSprite(FlxG.width/2 - 16, FlxG.height/2 - 16);
 			lama.loadGraphic(LamaClass, false, true, 48, 64);			
 			_thrust = 0;
 			
 			jumpUpVelocity = -560;
 			
-			lama.acceleration.y = 800;			
+			lama.acceleration.x = 100;
+			acceleration_x = lama.acceleration.x;
+			lama.acceleration.y = 800;
 			acceleration_y = lama.acceleration.y
+			lama.drag.x = 400;
+			drag_x = lama.drag.x;
 			add(lama);
 			
 			targetOffset = new FlxPoint(30, -30);
@@ -77,6 +87,7 @@ package
 			spitStrengthModifier = 2;
 			spitIncreasePerFrame = 3;
 			
+			lama.maxVelocity.x = 50;
 		}
 		
 		//The main game loop function
@@ -84,7 +95,9 @@ package
 		{	
 			super.update();
 			watch_y = lama.y;
+			lama.acceleration.x = acceleration_x;
 			lama.acceleration.y = acceleration_y;
+			lama.drag.x = drag_x;
 			// updating the bar
 			spitStrengthBar.percent = spitStrength;
 			
@@ -96,9 +109,12 @@ package
 			target.y = lama.y + spitOrigin.y + targetOffset.y - target.height/2;			
 			
 			if(FlxG.keys.LEFT)
-				lama.acceleration.x = -50;
-			if(FlxG.keys.RIGHT)
-				lama.acceleration.x = 50;
+				lama.acceleration.x = -acceleration_x;
+			else if(FlxG.keys.RIGHT)
+				lama.acceleration.x = acceleration_x;
+			else
+				lama.acceleration.x = 0;
+				lama.velocity.x = 0;
 				
 						
 			var rotationDifferenceInDegrees:Number = 10;
