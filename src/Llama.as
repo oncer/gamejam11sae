@@ -13,7 +13,7 @@ package
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
 		
-		public var lama:FlxSprite;		
+		public var lama:FlxSprite;
 		private var target:FlxSprite;
 		public var jumpUpAcceleration : int;	
 		
@@ -21,10 +21,13 @@ package
 		public var jumpUpVelocity:Number;	
 		
 		[Editable (type="slider", min="100", max="1000")]
-		public var acceleration_y:Number;
+		public var max_acceleration_x:Number;
+		
+		[Editable (type="slider", min="10", max="5000")]
+		public var drag_x:Number;
 		
 		[Editable (type="slider", min="100", max="1000")]
-		public var spit_acceleration_y:Number;
+		public var acceleration_y:Number;
 		
 		private var spitOrigin:FlxPoint;
 		// this is the px size from the left when the lama is facing right
@@ -41,7 +44,7 @@ package
 		
 		[Editable (type = "slider", min = "0.1", max = "10")]
 		// factor for balancing that regulates the power multiplication of strength
-		public var spitIncreasePerFrame:Number;
+		public var spitIncreasePerSecond:Number;
 		
 		[Editable (type="watch")]
 		public var watch_y:Number;
@@ -58,16 +61,16 @@ package
 			
 			jumpUpVelocity = -560;
 			
-			lama.acceleration.y = 800;			
+			max_acceleration_x = 1000;
+			lama.acceleration.y = 800;
 			acceleration_y = lama.acceleration.y
+			lama.drag.x = 400;
+			drag_x = lama.drag.x;
 			add(lama);
 			
 			targetOffset = new FlxPoint(targetDistance, 0);
 			// center of spitting where it should start, 39 from left, 31 from top
 			spitOrigin = new FlxPoint(spitOriginFromGrahpic, 64 - 31);
-			
-			// default value for the acceleration of spits
-			spit_acceleration_y = 200;
 			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
@@ -79,8 +82,9 @@ package
 			add(spitStrengthBar);			
 			spitStrength = 0;
 			spitStrengthModifier = 2;
-			spitIncreasePerFrame = 3;
+			spitIncreasePerSecond = 200;
 			
+			lama.maxVelocity.x = 150;
 		}
 		
 		//The main game loop function
@@ -89,16 +93,26 @@ package
 			super.update();
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
+			lama.drag.x = drag_x;
 			// updating the bar
 			spitStrengthBar.percent = spitStrength;
 			
-			if (lama.y > Globals.GROUND_LEVEL - lama.height) {			
+			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
+				lama.y = Globals.GROUND_LEVEL - lama.height;
 				lama.velocity.y = jumpUpVelocity;			
 			}
 			
 			target.x = lama.x + spitOrigin.x + targetOffset.x - target.width/2;
 			target.y = lama.y + spitOrigin.y + targetOffset.y - target.height/2;			
 			
+			if(FlxG.keys.LEFT) {
+				lama.acceleration.x = -max_acceleration_x;				
+			} else if(FlxG.keys.RIGHT) {
+				lama.acceleration.x = max_acceleration_x;
+			} else {
+				lama.acceleration.x = 0;
+				//lama.velocity.x = 0;
+			}
 			if (FlxG.keys.justPressed("LEFT")) {					
 				if(lama.facing!=FlxObject.LEFT) {
 					targetOffset.x *= -1;
@@ -112,17 +126,7 @@ package
 					spitOrigin.x = spitOriginFromGrahpic;
 				}
 				lama.facing = FlxObject.RIGHT;				
-			}
-			
-			if(FlxG.keys.LEFT) {
-				//lama.acceleration.x = -5;
-				lama.velocity.x = -50;						
-			}
-			if (FlxG.keys.RIGHT) {
-				//lama.acceleration.x = 50;
-				lama.velocity.x = 50;						
-			}
-				
+			}			
 						
 			var upperDegreeLimit:Number = 170;
 			var lowerDegreeLimit:Number = 10;
@@ -194,7 +198,7 @@ package
 			//FlxU.getAngle()
 
 			if (FlxG.keys.SPACE) {
-				spitStrength += spitIncreasePerFrame;
+				spitStrength += spitIncreasePerSecond * FlxG.elapsed;
 				if (spitStrength > 100)
 					spitStrength = 100;
 			}
@@ -208,13 +212,12 @@ package
 				bullet.velocity.x += velocity.x;
 				bullet.velocity.y += velocity.y;*/
 				
-				var spit:Spit = new Spit(new FlxPoint(lama.x + spitOrigin.x, lama.y + spitOrigin.y));
-				spit.acceleration.y = spit_acceleration_y;
+				var currentState:IngameState = FlxG.state as IngameState;
+				var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 				// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
 				FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
 				// this would set the time,overwrites the speed
 				//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
-				add(spit);
 				spitStrength = 0;
 			}
 			
