@@ -6,7 +6,7 @@ package
 	// When they reach the top and jump down the other side, you lose.
 	public class Visitor extends FlxSprite
 	{
-		[Embed(source="../gfx/visitor.png")] private var VisitorImage:Class;
+		[Embed(source="../gfx/visitor1.png")] private var VisitorImage:Class;
 		
 		public static const STATE_WALKING:uint = 1;
 		public static const STATE_CLIMBING:uint = 2;
