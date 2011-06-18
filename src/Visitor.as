@@ -35,6 +35,8 @@ package
 		private var jumpSpeed:Number;
 		private var jumpHeight:Number; // not really height, just accel.y
 		private var hitPoints:uint;
+		public var scorePoints:uint; // killing this visitor is worth this much
+		public var comboCounter:uint; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
 		
@@ -50,6 +52,7 @@ package
 		public function init (difficulty:Number, facing:uint = 0):void
 		{
 			hitPoints = 1;
+			comboCounter = 1;
 			
 			var visitorType:uint = Math.floor(Math.random()*5);
 			if (Math.random()*5 < 1) visitorType += 5; // rare variations
@@ -68,6 +71,7 @@ package
 					height = 21;
 					offset.x = 8;
 					offset.y = 27;
+					scorePoints = 40;
 					break;
 					
 				case 1: // man with glasses & hat
@@ -80,6 +84,7 @@ package
 					height = 28;
 					offset.x = 8;
 					offset.y = 20;
+					scorePoints = 15;
 					break;
 					
 				case 2: // woman
@@ -92,6 +97,7 @@ package
 					height = 25;
 					offset.x = 7;
 					offset.y = 23;
+					scorePoints = 15;
 					break;
 					
 				case 3: // fat tourist
@@ -105,6 +111,7 @@ package
 					offset.x = 7;
 					offset.y = 23;
 					hitPoints = 2;
+					scorePoints = 30;
 					break;
 					
 				case 4: // old lady
@@ -116,6 +123,7 @@ package
 					height = 24;
 					offset.x = 9;
 					offset.y = 24;
+					scorePoints = 10;
 					break;
 					
 				case 9: // zombie lady
@@ -128,6 +136,7 @@ package
 					offset.x = 9;
 					offset.y = 24;
 					hitPoints = 3;
+					scorePoints = 100;
 					break;
 					
 			}
@@ -353,6 +362,8 @@ package
 			{
 				velocity.x /= 2;
 			}
+			
+			comboCounter = flying.comboCounter * 2;
 		}
 	}
 }
