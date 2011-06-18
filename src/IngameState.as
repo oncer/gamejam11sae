@@ -23,6 +23,7 @@ package
 		private var visitors:FlxGroup;
 		
 		private var difficulty:Number;
+		private var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:uint;
 		
 		override public function create():void
@@ -39,7 +40,8 @@ package
 			trace("alsk");
 			
 			difficulty = 1.0;
-			lastSpawnTime = FlxG._game._total;
+			elapsedTime = 0.0;
+			lastSpawnTime = elapsedTime;
 			
 			// Initialize llama
 			llama = new Llama();
@@ -53,6 +55,9 @@ package
 		
 		override public function update():void
 		{
+			// update time
+			elapsedTime += FlxG.elapsed;
+			
 			super.update();
 			
 			if (llama.acceleration.y == llama.jumpUpAcceleration) {
@@ -64,9 +69,8 @@ package
 			
 			// Visitors
 			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);
-			var currentTime:uint = FlxG._game._total;
 			
-			while (lastSpawnTime < currentTime) 
+			while (lastSpawnTime < elapsedTime) 
 			{
 				spawnVisitor ();
 				lastSpawnTime += spawnInterval;
