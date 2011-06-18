@@ -23,14 +23,23 @@ package
 			_bg = new FlxSprite(0, 0, ImgMenu);
 			add(_bg);
 			
-			_play = new FlxButton(400 - 75, 200);
+			_play = new FlxButton(400 - 75, 200, null, onPlay);
 			_play.loadGraphic(ImgButtonPlay, false, true, 150, 50);
-			_howto = new FlxButton(400 - 75, 260);
+			_howto = new FlxButton(400 - 75, 260, null, onHowto);
 			_howto.loadGraphic(ImgButtonHowto, false, true, 150, 50);
 			add(_play);
 			add(_howto);
 			
 			FlxG.mouse.show();
+		}
+				
+		public function onPlay():void
+		{
+			FlxG.switchState(new IngameState());
+		}
+		
+		public function onHowto():void
+		{
 		}
 	}
 }
