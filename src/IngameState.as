@@ -21,11 +21,13 @@ package
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
+		private var spits:FlxGroup;
 		
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
+		private var lastSpit:uint; // most recent array index
 		
 		private var ambientPlayer:AmbientPlayer;
 		
@@ -48,6 +50,9 @@ package
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
+			lastSpit = 0;
+			
+			var i:uint = 0;
 			
 			// Initialize llama
 			llama = new Llama();
@@ -61,18 +66,24 @@ package
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
-			for(var i:uint = 0; i < Globals.MAX_VISITORS; i++)
+			for(i = 0; i < Globals.MAX_VISITORS; i++)
 			{
 				visitors.add(new Visitor());
 			}
 			add(visitors);
+
+			// Initialize spits
+			spits = new FlxGroup (Globals.MAX_SPITS);
+			for(i = 0; i < Globals.MAX_SPITS; i++)
+			{
+				spits.add(new Spit(new FlxPoint(0,0)));
+			}
+			add(spits);
 			
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
 		}
-		
-		
 		
 		override public function update():void
 		{
@@ -108,6 +119,9 @@ package
 				lastSpawnTime += spawnInterval;
 			}
 			
+			// Collision visitors vs. spit
+			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitHit);
+			
 			//FlxG.log(llama.y);
 			//trace("test");
 			//trace("lama y: " + llama.lama.y);
@@ -142,6 +156,26 @@ package
 			}
 			
 			v.revive();
+		}
+		
+		public function spawnSpit(X:Number, Y:Number):Spit
+		{
+			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
+			s.reset(X,Y);
+			return s;
+		}
+		
+		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
+		{
+			return (spit as Spit).canHit(visitor as Visitor);
+		}
+		
+		private function visitorsVsSpits(visitor:FlxObject,spit:FlxObject):void
+		{
+			var v:Visitor = visitor as Visitor;
+			var s:Spit = spit as Spit;
+			s.hitSomething();
+			v.getSpitOn(s);
 		}
 	} // end of class IngameState
 } // end of package
