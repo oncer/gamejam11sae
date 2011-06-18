@@ -6,15 +6,25 @@ package
 	// When they reach the top and jump down the other side, you lose.
 	public class Visitor extends FlxSprite
 	{
-		[Embed(source="../gfx/visitor1.png")] private var Visitor1Image:Class;
-		[Embed(source="../gfx/visitor2.png")] private var Visitor2Image:Class;
-		[Embed(source="../gfx/visitor3.png")] private var Visitor3Image:Class;
-		[Embed(source="../gfx/visitor4.png")] private var Visitor4Image:Class;
+		[Embed(source="../gfx/visitor1.png")]  private var Visitor1Image:Class;
+		[Embed(source="../gfx/visitor2.png")]  private var Visitor2Image:Class;
+		[Embed(source="../gfx/visitor3.png")]  private var Visitor3Image:Class;
+		[Embed(source="../gfx/visitor4.png")]  private var Visitor4Image:Class;
+		[Embed(source="../gfx/visitor5.png")]  private var Visitor5Image:Class;
+		[Embed(source="../gfx/visitor6.png")]  private var Visitor6Image:Class;
+		[Embed(source="../gfx/visitor7.png")]  private var Visitor7Image:Class;
+		[Embed(source="../gfx/visitor8.png")]  private var Visitor8Image:Class;
+		[Embed(source="../gfx/visitor9.png")]  private var Visitor9Image:Class;
+		[Embed(source="../gfx/visitor10.png")] private var Visitor10Image:Class;
 		
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
 		
-		private static const WIDTH:uint = 32;
-		private static const HEIGHT:uint = 48;
+		private var visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
+			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
+			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
+		
+		private static const SPRITE_WIDTH:uint = 32;
+		private static const SPRITE_HEIGHT:uint = 48;
 		
 		private static const STATE_WALKING:uint = 0;
 		private static const STATE_CLIMBING:uint = 1;
@@ -27,6 +37,8 @@ package
 		private var jumpSpeed:Number;
 		private var jumpHeight:Number; // not really height, just accel.y
 		private var hitPoints:uint;
+		public var scorePoints:uint; // killing this visitor is worth this much
+		public var comboCounter:uint; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
 		
@@ -44,56 +56,94 @@ package
 		public function init (difficulty:Number, facing:uint = 0):void
 		{
 			hitPoints = 1;
+			comboCounter = 1;
 			
-			var visitorType:Number = Math.random()*4;
-			if (visitorType < 1) // Child
+			var visitorType:uint = Math.floor(Math.random()*5);
+			if (Math.random()*5 < 1) visitorType += 5; // rare variations
+			
+			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
+			
+			switch (visitorType)
 			{
-				walkSpeed = 75;
-				climbSpeed = 50;
-				jumpSpeed = 100;
-				jumpHeight = -200;
-				loadGraphic (Visitor1Image, true, true, WIDTH, HEIGHT);
-				width = 16;
-				height = 21;
-				offset.x = 8;
-				offset.y = 27;
-			} else 
-			if (visitorType < 2) // man with glasses & hat
-			{
-				walkSpeed = 53;
-				climbSpeed = 35;
-				jumpSpeed = 130;
-				jumpHeight = -250;
-				loadGraphic (Visitor2Image, true, true, WIDTH, HEIGHT);
-				width = 16;
-				height = 28;
-				offset.x = 8;
-				offset.y = 20;
-			} else
-			if (visitorType < 3) // woman
-			{
-				walkSpeed = 38;
-				climbSpeed = 70;
-				jumpSpeed = 130;
-				jumpHeight = -250;
-				loadGraphic (Visitor3Image, true, true, WIDTH, HEIGHT);
-				width = 18;
-				height = 25;
-				offset.x = 7;
-				offset.y = 23;
-			} else // fat tourist
-			{
-				walkSpeed = 25;
-				climbSpeed = 28;
-				jumpSpeed = 80;
-				jumpHeight = -130;
-				loadGraphic (Visitor4Image, true, true, WIDTH, HEIGHT);
-				width = 18;
-				height = 25;
-				offset.x = 7;
-				offset.y = 23;
-				hitPoints = 2;
-			} 
+				case 0: // Child
+				case 5:
+					walkSpeed = 75;
+					climbSpeed = 50;
+					jumpSpeed = 100;
+					jumpHeight = -200;
+					width = 16;
+					height = 21;
+					offset.x = 8;
+					offset.y = 27;
+					scorePoints = 40;
+					break;
+					
+				case 1: // man with glasses & hat
+				case 6:
+					walkSpeed = 53;
+					climbSpeed = 35;
+					jumpSpeed = 130;
+					jumpHeight = -250;
+					width = 16;
+					height = 28;
+					offset.x = 8;
+					offset.y = 20;
+					scorePoints = 15;
+					break;
+					
+				case 2: // woman
+				case 7:
+					walkSpeed = 38;
+					climbSpeed = 70;
+					jumpSpeed = 130;
+					jumpHeight = -250;
+					width = 18;
+					height = 25;
+					offset.x = 7;
+					offset.y = 23;
+					scorePoints = 15;
+					break;
+					
+				case 3: // fat tourist
+				case 8:
+					walkSpeed = 30;
+					climbSpeed = 28;
+					jumpSpeed = 80;
+					jumpHeight = -130;
+					width = 18;
+					height = 25;
+					offset.x = 7;
+					offset.y = 23;
+					hitPoints = 2;
+					scorePoints = 30;
+					break;
+					
+				case 4: // old lady
+					walkSpeed = 25;
+					climbSpeed = 45;
+					jumpSpeed = 90;
+					jumpHeight = -150;
+					width = 16;
+					height = 24;
+					offset.x = 9;
+					offset.y = 24;
+					scorePoints = 10;
+					break;
+					
+				case 9: // zombie lady
+					walkSpeed = 16;
+					climbSpeed = 45;
+					jumpSpeed = 90;
+					jumpHeight = -150;
+					width = 16;
+					height = 24;
+					offset.x = 9;
+					offset.y = 24;
+					hitPoints = 3;
+					scorePoints = 100;
+					break;
+					
+			}
 			
 			super.facing = facing;
 			
@@ -345,6 +395,7 @@ package
 			}
 			
 			startSpitExplosion();
+			comboCounter = flying.comboCounter * 2;
 		}
 	}
 }

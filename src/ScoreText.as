@@ -7,7 +7,7 @@ package
 		
 		public function ScoreText():void
 		{
-			super(0,0,0);
+			super(0,0,100);
 			this.size = 16;
 			this.alignment = "center";
 			this.exists = false;
@@ -15,7 +15,6 @@ package
 		
 		public function init(X:int, Y:int, MULTIPLIER:int, SCORE:int):void
 		{
-			this.width = 100;
 			this.text = "" + SCORE + "x" + MULTIPLIER;
 			this.exists = true;
 		}

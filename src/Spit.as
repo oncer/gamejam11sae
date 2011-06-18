@@ -11,12 +11,17 @@ package
 	{
 		
 		[Embed(source="../gfx/spit.png")] private var SpitClass:Class;
+		[Embed(source="../gfx/spitfloor.png")] private var SpitFloorClass:Class;
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
 		
 		private var _canHit:Boolean;
 		
 		private var particles:FlxEmitter;
 		private var explosion:FlxEmitter;
+		private var gfxFloor:FlxSprite;
+		
+		private var floorTimer:Number;
+		private var floorDead:Boolean;
 		
 		public function Spit(center:FlxPoint) 
 		{
@@ -26,6 +31,11 @@ package
 			acceleration.y = 200;
 			exists = false;
 			_canHit = true;
+			
+			gfxFloor = new FlxSprite(0,0);
+			gfxFloor.loadGraphic(SpitFloorClass);
+			gfxFloor.visible = false;
+			floorTimer = 0;
 		}
 		
 		private function initParticles():void
@@ -53,9 +63,34 @@ package
 			
 			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
 			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
-			if (y > FlxG.height) {
+			
+			if (_canHit && y + height >= Globals.GROUND_LEVEL) {
+				hitGround();
+			}
+			
+			gfxFloor.update();
+			
+			gfxFloor.x = x;
+			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
+			
+			if (floorTimer > 0)
+			{	
+				floorTimer -= FlxG.elapsed;
+				if (floorTimer <= 0) {
+					gfxFloor.flicker(1);
+					floorDead = true;
+				}
+			}
+			
+			if (floorDead && !gfxFloor.flickering)
+			{
 				kill();
 			}
+			
+			
+			/*if (y > FlxG.height) {
+				kill();
+			}*/
 		}
 		
 		override public function draw():void
@@ -64,6 +99,9 @@ package
 				super.draw();
 			}
 			particles.draw();
+			if (gfxFloor.visible) {
+				gfxFloor.draw();
+			}
 		}
 		
 		public override function revive():void
@@ -82,7 +120,21 @@ package
 			velocity.x /= 1.5;
 			velocity.y = 0;
 			_canHit = false;
-			particles.kill();
+			particles.on = false;
+		}
+		
+		public function hitGround ():void
+		{
+			_canHit = false;
+			particles.on = false;
+			gfxFloor.x = x;
+			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
+			gfxFloor.visible = true;
+			drag.x = velocity.x * 10;
+			velocity.y = 0;
+			acceleration.y = 0;
+			floorTimer = 1;
+			floorDead = false;
 		}
 	}
 
