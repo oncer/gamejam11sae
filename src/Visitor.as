@@ -44,7 +44,7 @@ package
 			var visitorType:Number = Math.random()*4;
 			if (visitorType < 1) // Child
 			{
-				walkSpeed = 50;
+				walkSpeed = 75;
 				climbSpeed = 50;
 				jumpSpeed = 100;
 				jumpHeight = -200;
@@ -56,7 +56,7 @@ package
 			} else 
 			if (visitorType < 2) // man with glasses & hat
 			{
-				walkSpeed = 35;
+				walkSpeed = 53;
 				climbSpeed = 35;
 				jumpSpeed = 130;
 				jumpHeight = -250;
@@ -68,7 +68,7 @@ package
 			} else
 			if (visitorType < 3) // woman
 			{
-				walkSpeed = 25;
+				walkSpeed = 38;
 				climbSpeed = 70;
 				jumpSpeed = 130;
 				jumpHeight = -250;
@@ -79,7 +79,7 @@ package
 				offset.y = 23;
 			} else // fat tourist
 			{
-				walkSpeed = 17;
+				walkSpeed = 25;
 				climbSpeed = 28;
 				jumpSpeed = 80;
 				jumpHeight = -130;
