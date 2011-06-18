@@ -27,12 +27,14 @@ package
 		private static const SPRITE_HEIGHT:uint = 48;
 		
 		private static const STATE_WALKING:uint = 0;
-		private static const STATE_CLIMBING:uint = 1;
-		private static const STATE_JUMPING:uint = 2;
-		private static const STATE_FLYING:uint = 3;
-		private static const STATE_DYING:uint = 4;
+		private static const STATE_FLOATING:uint = 1;
+		private static const STATE_CLIMBING:uint = 2;
+		private static const STATE_JUMPING:uint = 3;
+		private static const STATE_FLYING:uint = 4;
+		private static const STATE_DYING:uint = 5;
 		
 		private var walkSpeed:Number;
+		private var floatSpeed:Number;
 		private var climbSpeed:Number;
 		private var jumpSpeed:Number;
 		private var jumpHeight:Number; // not really height, just velocity.y
@@ -41,6 +43,7 @@ package
 		public var comboCounter:uint; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
+		private var floatTime:Number; // timestamp of last start flying
 		private var hasReachedGoal:Boolean; // then player loses a life
 		
 		private var explosion:FlxEmitter;
@@ -59,11 +62,13 @@ package
 			hitPoints = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
+			floatTime = 0;
 			
 			var visitorType:uint = Math.floor(Math.random()*5);
 			if (Math.random()*5 < 1) visitorType += 5; // rare variations
 			
 			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
+			floatSpeed = 30;
 			
 			switch (visitorType)
 			{
@@ -151,6 +156,17 @@ package
 			
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
+			
+			// more difficulty = floaters more likely, up to 40%
+			var floatChance:Number = 0.4 - Math.exp(-difficulty/3) * 0.2;
+			if (Math.random() < floatChance)
+			{
+				state = STATE_FLOATING;
+			}
+			else
+			{
+				state = STATE_WALKING;
+			}
 		}
 		
 		public override function revive():void
@@ -158,13 +174,12 @@ package
 			super.revive();
 			
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
+			addAnimation("float", [7], Globals.ANIM_SPEED);
 			addAnimation("climb", [7], Globals.ANIM_SPEED);
 			addAnimation("jump", [0], Globals.ANIM_SPEED);
 			addAnimation("fly", [4,5], 1.2, false);
 			addAnimation("die", [6], Globals.ANIM_SPEED, false);
 			play("walk");
-			
-			state = STATE_WALKING;
 			
 			// set direction-dependent values
 			if (facing == 0)
@@ -198,6 +213,11 @@ package
 			if (state == STATE_WALKING)
 			{
 				update_walking();
+			}
+			
+			if (state == STATE_FLOATING)
+			{
+				update_floating();
 			}
 			
 			// not 'else if' because state may have changed in update_walking
@@ -257,6 +277,49 @@ package
 					state = STATE_CLIMBING;
 					x = Globals.CAGE_LEFT - width;
 				}
+			}
+		}
+		
+		private function update_floating():void
+		{
+			play("float");
+			floatTime += FlxG.elapsed;
+			velocity.y = 0;
+			var minY:int = y;
+			
+			if (facing == LEFT)
+			{
+				velocity.x = -floatSpeed;
+				minY = Globals.CAGE_TOP - height - (x - Globals.CAGE_RIGHT);
+				
+				if (x < Globals.CAGE_RIGHT)
+				{
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_RIGHT;
+					y = Globals.CAGE_TOP - height;
+				}
+			}
+			
+			if (facing == RIGHT)
+			{
+				velocity.x = floatSpeed;
+				minY = Globals.CAGE_TOP - height - (Globals.CAGE_LEFT - x - width);
+				
+				if (x > Globals.CAGE_LEFT - width)
+				{
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_LEFT - width;
+					y = Globals.CAGE_TOP - height;
+				}
+			}
+			
+			if (y <= minY)
+			{
+				y = minY;
+			}
+			else
+			{
+				y = Globals.FLOAT_LEVEL + Math.sin(floatTime*2) * 70;
 			}
 		}
 		
