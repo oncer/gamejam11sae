@@ -2,12 +2,7 @@ MXMLC = ./fcsh-wrap
 OPTIONS = -debug=true -static-link-runtime-shared-libraries=true\
 	  -library-path+=lib/MinimalComps_0_9_9.swc
 FLIXEL = src
-NAME = llama
-SRC = src/main.as\
-      src/StartState.as\
-      src/IngameState.as\
-      src/Llama.as\
-      src/WrapSprite.as
+SRC = src/*.as
 MAIN = src/main.as
 SWF = bin/Llama.swf
 
