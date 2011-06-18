@@ -1,14 +1,14 @@
 MXMLC = ./fcsh-wrap
 OPTIONS = -debug=true -static-link-runtime-shared-libraries=true
-FLIXEL = .
+FLIXEL = src
 NAME = llama
-SRC = main.as\
-      StartState.as\
-      IngameState.as\
-      Llama.as\
-      WrapSprite.as
-MAIN = main.as
-SWF = ../bin/llama.swf
+SRC = src/main.as\
+      src/StartState.as\
+      src/IngameState.as\
+      src/Llama.as\
+      src/WrapSprite.as
+MAIN = src/main.as
+SWF = Llama.swf
 
 $(SWF) : $(SRC)
 	$(MXMLC) $(OPTIONS) -sp $(FLIXEL) -o $(SWF) -- $(MAIN)
