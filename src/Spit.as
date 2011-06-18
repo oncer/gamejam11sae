@@ -15,13 +15,20 @@ package
 		private var _canHit:Boolean;
 		
 		public function Spit(center:FlxPoint) 
-		{
+		{			
 			// the spit is 16x16
-			super(center.x-8, center.y-8);
+			super();
+			setCenterPosition(center.x, center.y);
 			loadGraphic(SpitClass);
+			
 			acceleration.y = 200;
 			exists = false;
 			_canHit = true;
+		}
+		
+		public function setCenterPosition(_x:Number, _y:Number):void {
+			x = _x - 8;
+			y = _y - 8;
 		}
 		
 		override public function update():void

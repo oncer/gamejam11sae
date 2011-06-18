@@ -36,10 +36,13 @@ package
 		private var targetOffset:FlxPoint;
 		private var targetDistance:Number = 30;
 		
+		private var frameWidth:Number = 48;
+		private var frameHeight:Number = 64;
+		
 		private var upperDegreeLimit:Number = 170;
 		private var lowerDegreeLimit:Number = 60;
 		// value needed, because the function rotatePoint() generates no exact results for the border values
-		private var degreeThreshold:Number = 2;			
+		private var degreeThreshold:Number = 0;			
 		// ATTENTION maybe change that in accordance to the range borders!
 		private var rotationDifferenceInDegreesPerFrame:Number = 4;
 		
@@ -74,7 +77,7 @@ package
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
 			lama = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
 			// set 3rd parameter to true because it must be flippable (by facing property)
-			lama.loadGraphic(LamaClass, false, true, 48, 64);			
+			lama.loadGraphic(LamaClass, false, true, frameWidth, frameHeight);			
 			_thrust = 0;
 			
 			jumpUpVelocity = -560;
@@ -88,7 +91,7 @@ package
 			
 			targetOffset = new FlxPoint(targetDistance, 0);
 			// center of spitting where it should start, 39 from left, 31 from top
-			spitOrigin = new FlxPoint(spitOriginFromGrahpic, 64 - 31);
+			spitOrigin = new FlxPoint(spitOriginFromGrahpic, frameHeight - 31);
 			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
@@ -169,7 +172,7 @@ package
 				if(lama.facing!=FlxObject.LEFT) {
 					targetOffset.x *= -1;
 					//46 is the width of 1 frame
-					spitOrigin.x = 46 - spitOriginFromGrahpic;
+					spitOrigin.x = frameWidth - spitOriginFromGrahpic;
 				}
 				lama.facing = FlxObject.LEFT;				
 			} else if (FlxG.keys.justPressed("RIGHT")) {
@@ -243,7 +246,8 @@ package
 				//angle = FlxU.getAngle(rotatedPoint, new FlxPoint(lama.x, lama.y));
 				trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}
-			
+			trace("lama.x: " + lama.x);
+			trace("spit.x: " + spitOrigin.x);
 			
 			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
@@ -269,9 +273,15 @@ package
 				if(spitCooldownCounter>=spitCooldown) {
 				
 					var currentState:IngameState = FlxG.state as IngameState;
-					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+					
+					
+					var spit:Spit = currentState.spawnSpit(0, 0);
+					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
+					spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+					//var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
 					//FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
+					
 					FlxVelocity.moveTowardsObject(spit, target, spitStrengthModifier);
 					
 					spitCooldownCounter = 0;
