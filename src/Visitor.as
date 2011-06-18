@@ -270,6 +270,13 @@ package
 			}
 		}
 		
+		// visitors can be hit by spit as long
+		// as they are not already being hit
+		public function canBeHit ():Boolean
+		{
+			return (state != STATE_FLYING) && (state != STATE_DYING);
+		}
+		
 		public function getSpitOn (spit:Spit):void
 		{
 			if (hitPoints > 0) hitPoints--;
@@ -277,6 +284,20 @@ package
 			play("fly");
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
+			
+			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
+			{
+				velocity.x /= 2;
+			}
+		}
+		
+		public function getHitByPerson (flying:Visitor):void
+		{
+			if (hitPoints > 0) hitPoints--;
+			state = STATE_FLYING;
+			play("fly");
+			velocity.x = flying.velocity.x * .7;
+			velocity.y = flying.velocity.y * .7;
 			
 			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
 			{
