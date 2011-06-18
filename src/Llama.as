@@ -2,20 +2,31 @@ package
 {
 	import org.flixel.*;
 
-	//This is the class declaration for the little player ship that you fly around in
+	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
 	{
+		[Embed(source="../gfx/lama.png")] private var ImgLlama:Class;	//Graphic of the player's ship
 		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;	//Graphic of the player's ship
 		[Embed(source="../gfx/crosshair.png")] private var TargetClass:Class;	//Graphic of the player's ship
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
 		
-		public var lama:FlxSprite;
+		public var lama:FlxSprite;		
 		private var target:FlxSprite;
+		
+		[Editable (type = "slider", min = "-2000", max = "-100")]
+		public var jumpUpVelocity:Number;	
+		
+		[Editable (type="slider", min="100", max="1000")]
+		public var acceleration_y:Number;
+		
 		
 		private var targetOffset:FlxPoint;
 		//private var targetYOffset:Number;
+		
+		[Editable (type="watch")]
+		public var watch_y:Number;
 		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama()
@@ -27,7 +38,10 @@ package
 			//alterBoundingBox();
 			_thrust = 0;
 			//acceleration = new FlxPoint(0,200);
-			lama.acceleration.y = 200;
+			
+			jumpUpVelocity = -200;
+			lama.acceleration.y = 200;			
+			acceleration_y = lama.acceleration.y
 			add(lama);
 			
 			targetOffset = new FlxPoint(0, -40);
@@ -40,8 +54,10 @@ package
 		//The main game loop function
 		override public function update():void
 		{
-			//wrap();
+			//wrap();			
 			super.update();
+			watch_y = lama.y;
+			lama.acceleration.y = acceleration_y;
 			
 			target.x = lama.getMidpoint().x + targetOffset.x;
 			target.y = lama.getMidpoint().y + targetOffset.y;
