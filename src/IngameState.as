@@ -15,7 +15,13 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
+		public static const MAX_VISITORS:uint = 1024;
+		
 		public var llama:Llama;			//Refers to the little player llama
+		private var visitors:FlxGroup;
+		
+		private var difficulty:Number;
+		private var lastSpawnTime:uint;
 		
 		override public function create():void
 		{
@@ -28,9 +34,17 @@ package
 			add(bg);
 			
 			trace("alsk");
-			//Initialize the llama and add it to the layer
+			
+			difficulty = 1.0;
+			lastSpawnTime = FlxG._game._total;
+			
+			// Initialize llama
 			llama = new Llama();
 			add(llama);
+			
+			// Initialize visitors
+			visitors = new FlxGroup (MAX_VISITORS);
+			add(visitors);
 		}
 		
 		override public function update():void
@@ -45,6 +59,16 @@ package
 				llama.acceleration.y = jumpUpAcceleration;
 			}
 			
+			// Visitors
+			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);
+			var currentTime:uint = FlxG._game._total;
+			
+			while (lastSpawnTime < currentTime) 
+			{
+				spawnVisitor ();
+				lastSpawnTime += spawnInterval;
+			}
+			
 			//FlxG.log(llama.y);
 			//trace("test");
 			trace("lama y: " + llama.y);
@@ -54,6 +78,11 @@ package
 				trace("quit");
 				fscommand("quit");
 			}
+		}
+		
+		private function spawnVisitor():void
+		{
+			visitors.add(new Visitor(difficulty));
 		}
 	}
 }
