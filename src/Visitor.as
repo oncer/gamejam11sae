@@ -34,7 +34,7 @@ package
 		// This function resets all values to represent a NEW visitor.
 		// Type, position, speed, everything
 		// is inferred from the current game difficulty.
-		public function init(difficulty:Number, facing:uint = 0):void
+		public function init (difficulty:Number, facing:uint = 0):void
 		{
 			var visitorType:Number = Math.random()*2;
 			if (visitorType < 1) // Child

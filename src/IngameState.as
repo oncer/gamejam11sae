@@ -20,11 +20,13 @@ package
 		private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
 		private var visitors:FlxGroup;
+		private var spits:FlxGroup;
 		
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:uint;
 		private var lastVisitor:uint; // most recent array index
+		private var lastSpit:uint; // most recent array index
 		
 		override public function create():void
 		{
@@ -45,6 +47,9 @@ package
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
+			lastSpit = 0;
+			
+			var i:uint = 0;
 			
 			// Initialize llama
 			llama = new Llama();
@@ -58,14 +63,20 @@ package
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
-			for(var i:uint = 0; i < Globals.MAX_VISITORS; i++)
+			for(i = 0; i < Globals.MAX_VISITORS; i++)
 			{
 				visitors.add(new Visitor());
 			}
 			add(visitors);
+			
+			// Initialize spits
+			spits = new FlxGroup (Globals.MAX_SPITS);
+			for(i = 0; i < Globals.MAX_SPITS; i++)
+			{
+				spits.add(new Spit(new FlxPoint(0,0)));
+			}
+			add(spits);
 		}
-		
-		
 		
 		override public function update():void
 		{
@@ -122,6 +133,13 @@ package
 			}
 			
 			v.revive();
+		}
+		
+		public function spawnSpit(X:Number, Y:Number):Spit
+		{
+			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
+			s.reset(X,Y);
+			return s;
 		}
 	} // end of class IngameState
 } // end of package

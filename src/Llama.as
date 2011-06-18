@@ -13,7 +13,7 @@ package
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
 		
-		public var lama:FlxSprite;		
+		public var lama:FlxSprite;
 		private var target:FlxSprite;
 		public var jumpUpAcceleration : int;	
 		
@@ -29,9 +29,6 @@ package
 		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
 		
-		[Editable (type="slider", min="100", max="1000")]
-		public var spit_acceleration_y:Number;
-		
 		private var spitOrigin:FlxPoint;
 		private var targetOffset:FlxPoint;
 		
@@ -44,7 +41,7 @@ package
 		
 		[Editable (type = "slider", min = "0.1", max = "10")]
 		// factor for balancing that regulates the power multiplication of strength
-		public var spitIncreasePerFrame:Number;
+		public var spitIncreasePerSecond:Number;
 		
 		[Editable (type="watch")]
 		public var watch_y:Number;
@@ -72,9 +69,6 @@ package
 			// center of spitting where it should start, 39 from left, 31 from top
 			spitOrigin = new FlxPoint(40, 64 - 31);
 			
-			// default value for the acceleration of spits
-			spit_acceleration_y = 200;
-			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
 			target.loadGraphic(TargetClass);
@@ -85,7 +79,7 @@ package
 			add(spitStrengthBar);			
 			spitStrength = 0;
 			spitStrengthModifier = 2;
-			spitIncreasePerFrame = 3;
+			spitIncreasePerSecond = 200;
 			
 			lama.maxVelocity.x = 50;
 		}
@@ -151,7 +145,7 @@ package
 			//FlxU.getAngle()
 
 			if (FlxG.keys.SPACE) {
-				spitStrength += spitIncreasePerFrame;
+				spitStrength += spitIncreasePerSecond * FlxG.elapsed;
 				if (spitStrength > 100)
 					spitStrength = 100;
 			}
@@ -165,13 +159,12 @@ package
 				bullet.velocity.x += velocity.x;
 				bullet.velocity.y += velocity.y;*/
 				
-				var spit:Spit = new Spit(new FlxPoint(lama.x + spitOrigin.x, lama.y + spitOrigin.y));
-				spit.acceleration.y = spit_acceleration_y;
+				var currentState:IngameState = FlxG.state as IngameState;
+				var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 				// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
 				FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
 				// this would set the time,overwrites the speed
 				//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
-				add(spit);
 				spitStrength = 0;
 			}
 			
