@@ -1,12 +1,14 @@
 package
 {
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.*;
 
 	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
 	{
 		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
-		[Embed(source="../gfx/crosshair.png")] private var TargetClass:Class;
+		[Embed(source = "../gfx/crosshair.png")] private var TargetClass:Class;
+		[Embed(source="../gfx/flectrum.png")] private var HealthBarClass:Class;
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
@@ -21,8 +23,22 @@ package
 		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
 		
+		[Editable (type="slider", min="100", max="1000")]
+		public var spit_acceleration_y:Number;
+		
+		private var spitOrigin:FlxPoint;
 		private var targetOffset:FlxPoint;
-		//private var targetYOffset:Number;
+		
+		/** Gets increased by holding the space key - is in range between 0 and 100*/
+		private var spitStrength:Number;
+		private var spitStrengthBar:FlxBar;
+		[Editable (type = "slider", min = "1", max = "20")]
+		// factor for balancing that regulates the power multiplication of strength
+		public var spitStrengthModifier:Number;
+		
+		[Editable (type = "slider", min = "0.1", max = "10")]
+		// factor for balancing that regulates the power multiplication of strength
+		public var spitIncreasePerFrame:Number;
 		
 		[Editable (type="watch")]
 		public var watch_y:Number;
@@ -34,9 +50,7 @@ package
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
 			lama = new FlxSprite(FlxG.width/2, FlxG.height/2);
 			lama.loadGraphic(LamaClass, false, true, 48, 64);			
-			//alterBoundingBox();
 			_thrust = 0;
-			//acceleration = new FlxPoint(0,200);
 			
 			jumpUpVelocity = -560;
 			
@@ -44,41 +58,51 @@ package
 			acceleration_y = lama.acceleration.y
 			add(lama);
 			
-			targetOffset = new FlxPoint(0, -40);
+			targetOffset = new FlxPoint(30, -30);
+			// center of spitting where it should start, 39 from left, 31 from top
+			spitOrigin = new FlxPoint(40, 64 - 31);
+			
+			// default value for the acceleration of spits
+			spit_acceleration_y = 200;
+			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
 			target.loadGraphic(TargetClass);
 			add(target);
+			
+			spitStrengthBar = new FlxBar(FlxG.width-20, 20, FlxBar.FILL_BOTTOM_TO_TOP, 10, 100);
+			spitStrengthBar.createImageBar(null, HealthBarClass, 0x88000000);
+			add(spitStrengthBar);			
+			spitStrength = 0;
+			spitStrengthModifier = 2;
+			spitIncreasePerFrame = 3;
+			
 		}
 		
 		//The main game loop function
 		override public function update():void
-		{
-			//wrap();			
+		{	
 			super.update();
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
+			// updating the bar
+			spitStrengthBar.percent = spitStrength;
 			
-			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
-				lama.velocity.y = jumpUpVelocity;
+			if (lama.y > Globals.GROUND_LEVEL - lama.height) {			
+				lama.velocity.y = jumpUpVelocity;			
 			}
 			
-			target.x = lama.getMidpoint().x + targetOffset.x;
-			target.y = lama.getMidpoint().y + targetOffset.y;
+			target.x = lama.x + spitOrigin.x + targetOffset.x - target.width/2;
+			target.y = lama.y + spitOrigin.y + targetOffset.y - target.height/2;			
 			
 			if(FlxG.keys.LEFT)
-				//angularVelocity -= 240;
 				lama.acceleration.x = -50;
 			if(FlxG.keys.RIGHT)
-				//angularVelocity += 240;
 				lama.acceleration.x = 50;
 				
 						
 			var rotationDifferenceInDegrees:Number = 10;
 				
-			//This is where thrust is handled
-			//acceleration.x = 0;
-			//acceleration.y = 0;
 			if (FlxG.keys.UP || FlxG.keys.DOWN) {
 				
 				var angleBefore:Number = FlxU.getAngle(targetOffset, new FlxPoint(0,0));
@@ -106,12 +130,17 @@ package
 				trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}
 			
-			//FlxVelocity.moveTowardsObject(blue, green, 180);
-			//	FlxU.rotatePoint(90,0,0,0,angle,acceleration);
+			
+			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
 
-			if(FlxG.keys.justPressed("SPACE"))
-			{
+			if (FlxG.keys.SPACE) {
+				spitStrength += spitIncreasePerFrame;
+				if (spitStrength > 100)
+					spitStrength = 100;
+			}
+			if(FlxG.keys.justReleased("SPACE"))
+			{				
 				//Space bar was pressed!  FIRE A BULLET
 				/*var bullet:FlxSprite = (FlxG.state as PlayState).bullets.recycle() as FlxSprite;
 				bullet.reset(x + (width - bullet.width)/2, y + (height - bullet.height)/2);
@@ -119,7 +148,17 @@ package
 				FlxU.rotatePoint(150,0,0,0,bullet.angle,bullet.velocity);
 				bullet.velocity.x += velocity.x;
 				bullet.velocity.y += velocity.y;*/
+				
+				var spit:Spit = new Spit(new FlxPoint(lama.x + spitOrigin.x, lama.y + spitOrigin.y));
+				spit.acceleration.y = spit_acceleration_y;
+				// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
+				FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
+				// this would set the time,overwrites the speed
+				//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
+				add(spit);
+				spitStrength = 0;
 			}
+			
 		}// end of update
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {

@@ -2,15 +2,20 @@
  * FlxMath
  * -- Part of the Flixel Power Tools set
  * 
+ * v1.6 Added wrapAngle, angleLimit and more documentation
+ * v1.5 Added pointInCoordinates, pointInFlxRect and pointInRectangle
  * v1.4 Updated for the Flixel 2.5 Plugin system
  * 
- * @version 1.4 - April 23rd 2011
+ * @version 1.6 - June 12th 2011
  * @link http://www.photonstorm.com
  * @author Richard Davey / Photon Storm
 */
 
 package org.flixel.plugin.photonstorm 
 {
+	import flash.geom.Rectangle;
+	import org.flixel.FlxRect;
+	
 	/**
 	 * Adds a set of fast Math functions and extends a few commonly used ones
 	 */
@@ -27,6 +32,67 @@ package org.flixel.plugin.photonstorm
 		
 		public function FlxMath() 
 		{
+		}
+		
+		/**
+		 * Returns true if the given x/y coordinate is within the given rectangular block
+		 * 
+		 * @param	pointX		The X value to test
+		 * @param	pointY		The Y value to test
+		 * @param	rectX		The X value of the region to test within
+		 * @param	rectY		The Y value of the region to test within
+		 * @param	rectWidth	The width of the region to test within
+		 * @param	rectHeight	The height of the region to test within
+		 * 
+		 * @return	true if pointX/pointY is within the region, otherwise false
+		 */
+		public static function pointInCoordinates(pointX:int, pointY:int, rectX:int, rectY:int, rectWidth:int, rectHeight:int):Boolean
+		{
+			if (pointX >= rectX && pointX <= (rectX + rectWidth))
+			{
+				if (pointY >= rectY && pointY <= (rectY + rectHeight))
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		/**
+		 * Returns true if the given x/y coordinate is within the given rectangular block
+		 * 
+		 * @param	pointX		The X value to test
+		 * @param	pointY		The Y value to test
+		 * @param	rect		The FlxRect to test within
+		 * @return	true if pointX/pointY is within the FlxRect, otherwise false
+		 */
+		public static function pointInFlxRect(pointX:int, pointY:int, rect:FlxRect):Boolean
+		{
+			if (pointX >= rect.x && pointX <= rect.right && pointY >= rect.y && pointY <= rect.bottom)
+			{
+				return true;
+			}
+			
+			return false;
+		}
+		
+		/**
+		 * Returns true if the given x/y coordinate is within the Rectangle
+		 * 
+		 * @param	pointX		The X value to test
+		 * @param	pointY		The Y value to test
+		 * @param	rect		The Rectangle to test within
+		 * @return	true if pointX/pointY is within the Rectangle, otherwise false
+		 */
+		public static function pointInRectangle(pointX:int, pointY:int, rect:Rectangle):Boolean
+		{
+			if (pointX >= rect.x && pointX <= rect.right && pointY >= rect.y && pointY <= rect.bottom)
+			{
+				return true;
+			}
+			
+			return false;
 		}
 		
 		/**
@@ -74,14 +140,15 @@ package org.flixel.plugin.photonstorm
 		 * The parameters allow you to specify the length, amplitude and frequency of the wave. Once you have called this function
 		 * you should get the results via getSinTable() and getCosTable(). This generator is fast enough to be used in real-time.
 		 * </p>
-		 * @param length The length of the wave
-		 * @param sinAmplitude The amplitude to apply to the sine table (default 1.0) if you need values between say -+ 125 then give 125 as the value
-		 * @param cosAmplitude The amplitude to apply to the cosine table (default 1.0) if you need values between say -+ 125 then give 125 as the value
-		 * @param frequency The frequency of the sine and cosine table data
+		 * @param length 		The length of the wave
+		 * @param sinAmplitude 	The amplitude to apply to the sine table (default 1.0) if you need values between say -+ 125 then give 125 as the value
+		 * @param cosAmplitude 	The amplitude to apply to the cosine table (default 1.0) if you need values between say -+ 125 then give 125 as the value
+		 * @param frequency 	The frequency of the sine and cosine table data
+		 * @return	Returns the sine table
 		 * @see getSinTable
 		 * @see getCosTable
 		 */
-		public static function sinCosGenerator(length:uint, sinAmplitude:Number = 1.0, cosAmplitude:Number = 1.0, frequency:Number = 1.0):void
+		public static function sinCosGenerator(length:uint, sinAmplitude:Number = 1.0, cosAmplitude:Number = 1.0, frequency:Number = 1.0):Array
 		{
 			var sin:Number = sinAmplitude;
 			var cos:Number = cosAmplitude;
@@ -98,6 +165,8 @@ package org.flixel.plugin.photonstorm
 				cosTable[c] = cos;
 				sinTable[c] = sin;
 			}
+			
+			return sinTable;
 		}
 		
 		/**
@@ -372,17 +441,117 @@ package org.flixel.plugin.photonstorm
             return Math.sqrt(dx * dx + dy * dy);
         }
 		
-        // Finds the dot product value of two vectors
+		/**
+		 * Finds the dot product value of two vectors
+		 * 
+		 * @param	ax		Vector X
+		 * @param	ay		Vector Y
+		 * @param	bx		Vector X
+		 * @param	by		Vector Y
+		 * 
+		 * @return	Dot product
+		 */
         public static function dotProduct(ax:Number, ay:Number, bx:Number, by:Number):Number
         {
             return ax * bx + ay * by;
         }
         
-		// Returns 1 or -1 at random
+		/**
+		 * Randomly returns either a 1 or -1
+		 * 
+		 * @return	1 or -1
+		 */
         public static function randomSign():Number
         {
             return (Math.random() > 0.5) ? 1 : -1;
         }
+		
+		/**
+		 * Returns true if the number given is odd.
+		 * 
+		 * @param	n	The number to check
+		 * 
+		 * @return	True if the given number is odd. False if the given number is even.
+		 */
+		public static function isOdd(n:Number):Boolean
+		{
+			if (n & 1)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		/**
+		 * Returns true if the number given is even.
+		 * 
+		 * @param	n	The number to check
+		 * 
+		 * @return	True if the given number is even. False if the given number is odd.
+		 */
+		public static function isEven(n:Number):Boolean
+		{
+			if (n & 1)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		
+		/**
+		 * Keeps an angle value between -180 and +180<br>
+		 * Should be called whenever the angle is updated on the FlxSprite to stop it from going insane.
+		 * 
+		 * @param	angle	The angle value to check
+		 * 
+		 * @return	The new angle value, returns the same as the input angle if it was within bounds
+		 */
+		public static function wrapAngle(angle:Number):int
+		{
+			var result:int = int(angle);
+			
+			if (angle > 180)
+			{
+				result = -180;
+			}
+			else if (angle < -180)
+			{
+				result = 180;
+			}
+			
+			return result;
+		}
+		
+		/**
+		 * Keeps an angle value between the given min and max values
+		 * 
+		 * @param	angle	The angle value to check. Must be between -180 and +180
+		 * @param	min		The minimum angle that is allowed (must be -180 or greater)
+		 * @param	max		The maximum angle that is allowed (must be 180 or less)
+		 * 
+		 * @return	The new angle value, returns the same as the input angle if it was within bounds
+		 */
+		public static function angleLimit(angle:int, min:int, max:int):int
+		{
+			var result:int = angle;
+			
+			if (angle > max)
+			{
+				result = max;
+			}
+			else if (angle < min)
+			{
+				result = min;
+			}
+			
+			return result;
+		}
 		
 		/**
 		 * Converts a Radian value into a Degree
