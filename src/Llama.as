@@ -5,27 +5,34 @@ package
 	//This is the class declaration for the little player ship that you fly around in
 	public class Llama extends FlxSprite
 	{
-		[Embed(source="../gfx/lama.png")] private var ImgShip:Class;	//Graphic of the player's ship
+		[Embed(source="../gfx/lama.png")] private var ImgLlama:Class;	//Graphic of the player's ship
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
+		
+		[Editable (type="slider", min="-2000", max="-100")]
+		public var jumpUpAcceleration:Number;
+		
+		[Editable (type="watch")]
+		public var watch_y:Number;
 		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama()
 		{
 			super(FlxG.width/2-8, FlxG.height/2-8);
-			loadRotatedGraphic(ImgShip,32,-1,false,true);
+			loadRotatedGraphic(ImgLlama,32,-1,false,true);
 			//alterBoundingBox();
 			_thrust = 0;
 			//acceleration = new FlxPoint(0,200);
 			acceleration.y = 200;
+			jumpUpAcceleration = -800;
 		}
 		
 		//The main game loop function
 		override public function update():void
 		{
 			//wrap();
-			
+			watch_y = y;
 			
 			
 			//This is where we handle turning the ship left and right
