@@ -49,7 +49,7 @@ package
 				var i:int = Math.random() * kidsClasses.length;
 				kids.loadEmbedded(kidsClasses[i], false);
 				kids.play();
-				targetTime = Math.random() * 10 + 10;
+				targetTime = Math.random() * 10 + 20;
 				elapsedTime = 0;
 			}
 		}

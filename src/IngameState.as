@@ -9,6 +9,7 @@ package
 	import org.flixel.*;
 	import flash.system.fscommand;
 	import com.divillysausages.gameobjeditor.Editor;
+	import flash.utils.getTimer;
 
 	public class IngameState extends FlxState
 	{
@@ -23,6 +24,7 @@ package
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
+		private var scoretexts:FlxGroup;
 		
 		private var difficulty:Number;
 		public var elapsedTime:Number; // total in seconds
@@ -34,6 +36,7 @@ package
 		
 		override public function create():void
 		{
+			trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
 			_editor.registerClass(FlxObject);
 			_editor.registerClass(FlxSprite);
@@ -44,8 +47,6 @@ package
 			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(BackgroundImage);
 			add(bg);
-			
-			trace("IngameState.onCreate()");
 			
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
@@ -80,6 +81,14 @@ package
 				spits.add(new Spit(new FlxPoint(0,0)));
 			}
 			add(spits);
+			
+			// Initialize score
+			scoretexts = new FlxGroup (Globals.MAX_SCORETEXTS);
+			for(i = 0; i < Globals.MAX_SCORETEXTS; i++)
+			{
+				scoretexts.add(new ScoreText());
+			}
+			add(scoretexts);
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);

@@ -11,6 +11,8 @@ package
 		[Embed(source="../gfx/visitor3.png")] private var Visitor3Image:Class;
 		[Embed(source="../gfx/visitor4.png")] private var Visitor4Image:Class;
 		
+		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
+		
 		private static const WIDTH:uint = 32;
 		private static const HEIGHT:uint = 48;
 		
@@ -27,6 +29,8 @@ package
 		private var hitPoints:uint;
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
+		
+		private var explosion:FlxEmitter;
 		
 		public function Visitor()
 		{
@@ -92,6 +96,9 @@ package
 			} 
 			
 			super.facing = facing;
+			
+			explosion = new FlxEmitter();
+			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 		}
 		
 		public override function revive():void
@@ -130,7 +137,7 @@ package
 			}
 		}
 		
-		public override function update():void
+		override public function update():void
 		{
 			acceleration.x = 0;
 			acceleration.y = 0;
@@ -161,6 +168,15 @@ package
 			{
 				update_dying();
 			}
+			
+			explosion.at(this);
+			explosion.update();
+		}
+		
+		override public function draw():void
+		{
+			super.draw();
+			explosion.draw();
 		}
 		
 		private function update_walking():void
@@ -284,6 +300,19 @@ package
 			return (state != STATE_FLYING) && (state != STATE_DYING);
 		}
 		
+		private function startSpitExplosion():void
+		{
+			var d:Number = 50;
+			var x1:Number = velocity.x - d;
+			var x2:Number = velocity.x + d;
+			var y1:Number = velocity.y - d * 1.5;
+			var y2:Number = velocity.y + d * 0.5;
+			explosion.setXSpeed(Math.min(x1,x2), Math.max(x1,x2));
+			explosion.setYSpeed(Math.min(y1,y2), Math.max(y1,y2));
+			explosion.gravity = acceleration.y;
+			explosion.start(true,0.5);
+		}
+		
 		public function getSpitOn (spit:Spit):void
 		{
 			if (hitPoints > 0) hitPoints--;
@@ -297,6 +326,8 @@ package
 			{
 				velocity.x /= 2;
 			}
+			
+			startSpitExplosion();
 		}
 		
 		public function getHitByPerson (flying:Visitor):void
@@ -312,6 +343,8 @@ package
 			{
 				velocity.x /= 2;
 			}
+			
+			startSpitExplosion();
 		}
 	}
 }
