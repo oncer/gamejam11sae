@@ -38,7 +38,7 @@ package
 			watch_y = y;
 			acceleration.y = acceleration_y;
 			
-			if (y > Globals.GROUND_LEVEL) {
+			if (y > Globals.GROUND_LEVEL - height) {
 				velocity.y = jumpUpVelocity;
 			}
 			

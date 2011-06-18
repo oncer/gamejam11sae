@@ -39,7 +39,7 @@ package
 			
 			trace("alsk");
 			
-			difficulty = 1.0;
+			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
 			
@@ -55,13 +55,14 @@ package
 		
 		override public function update():void
 		{
-			// update time
+			// update time & difficulty
 			elapsedTime += FlxG.elapsed;
+			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
 			
 			super.update();
 			
 			// Visitors
-			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);
+			var spawnInterval:uint = 100.0 / (difficulty + 40.0);
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
