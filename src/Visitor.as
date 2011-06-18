@@ -17,14 +17,10 @@ package
 		private static const STATE_FLYING:uint = 3;
 		private static const STATE_DYING:uint = 4;
 		
-		private static const DIR_LEFT:uint = 1; // coming from right
-		private static const DIR_RIGHT:uint = 2; // coming from left
-		
 		private var walkSpeed:Number;
 		private var climbSpeed:Number;
 		private var hitPoints:uint;
 		private var state:uint;
-		private var direction:uint;
 		
 		// Creates a new visitor. Type, position, speed, everything
 		// is inferred from the current game difficulty.
@@ -39,25 +35,46 @@ package
 		
 		private function create():void
 		{
-			loadGraphic(VisitorImage,true,false,WIDTH,HEIGHT);
-			addAnimation("walk", [0,1,2,3], 10);
+			loadGraphic (VisitorImage, true, true, WIDTH, HEIGHT);
+			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			play("walk");
 			
 			hitPoints = 1;
 			state = STATE_WALKING;
-			direction = 0;
 			
-			if (Math.random() >= .5) // enter from left side
+			if (Math.random()*2 < 1) // enter from left side
 			{
-				direction = DIR_RIGHT;
 				velocity.x = walkSpeed;
-				x = 0;
+				x = -WIDTH;
+				facing = RIGHT;
 			}
 			else  // enter from right side
 			{
-				direction = DIR_LEFT;
 				velocity.x = -walkSpeed;
-				x = FlxG.width;
+				x = FlxG.width + WIDTH;
+				facing = LEFT;
+			}
+		}
+		
+		public override function update():void
+		{
+			if (state == STATE_WALKING)
+			{
+				if ((facing == LEFT) && (x < Globals.CAGE_RIGHT)) {
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_RIGHT;
+				}
+				
+				if ((facing == RIGHT) && (x > Globals.CAGE_LEFT - WIDTH)) {
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_LEFT - WIDTH;
+				}
+			}
+			
+			if (state == STATE_CLIMBING)
+			{
+				velocity.x = 0;
+				velocity.y = -50;
 			}
 		}
 	}
