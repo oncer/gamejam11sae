@@ -33,6 +33,7 @@ package
 			// the spit is 16x16
 			super();			
 			loadGraphic(SpitClass);
+			loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			setCenterPosition(center.x, center.y);
 			
 			acceleration.y = 200;
@@ -41,8 +42,6 @@ package
 			
 			gfxFloor = new FlxSprite(0,0);
 			gfxFloor.loadGraphic(SpitFloorClass);
-			gfxFloor.visible = false;
-			floorTimer = 0;
 			
 			spitType = TYPE_DEFAULT;
 		}
@@ -62,11 +61,25 @@ package
 		{
 			super.reset(X,Y);
 			initParticles();
+			gfxFloor.visible = false;
+			floorTimer = 0;
+			floorDead = false;
+			velocity.x = 0;
+			velocity.y = 0;
+			acceleration.x = 0;
+			acceleration.y = 200;
+			drag.x = drag.y = 0;
 		}
 		
-		public function setCenterPosition(_x:Number, _y:Number):void {
-			x = _x - width / 2;
-			y = _y - height / 2;
+		override public function preUpdate():void
+		{
+			super.preUpdate();
+			gfxFloor.preUpdate();
+		}
+		
+		public function setCenterPosition(X:Number, Y:Number):void {
+			x = X - 8;// width / 2;
+			y = Y - 8;// height / 2;
 		}
 		
 		override public function update():void
@@ -74,6 +87,8 @@ package
 			super.update();
 			particles.at(this);
 			particles.update();
+			
+			angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
 			
 			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
 			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
@@ -86,18 +101,20 @@ package
 			
 			gfxFloor.x = x;
 			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
-			
+
+
 			if (floorTimer > 0)
 			{	
 				floorTimer -= FlxG.elapsed;
-				if (floorTimer <= 0) {
-					gfxFloor.flicker(1);
+				if ((floorTimer <= 0) && !floorDead) {
+					gfxFloor.flicker(0.5);
 					floorDead = true;
 				}
 			}
 			
 			if (floorDead && !gfxFloor.flickering)
 			{
+				trace("[spit] kill");
 				kill();
 			}
 			
@@ -144,10 +161,10 @@ package
 			gfxFloor.x = x;
 			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
 			gfxFloor.visible = true;
-			drag.x = velocity.x * 10;
+			drag.x = Math.abs(velocity.x) * 10;
 			velocity.y = 0;
 			acceleration.y = 0;
-			floorTimer = 1;
+			floorTimer = 0.5;
 			floorDead = false;
 		}
 	}

@@ -8,7 +8,7 @@ package
 {
 	import org.flixel.*;
 	import flash.system.fscommand;
-	import com.divillysausages.gameobjeditor.Editor;
+	//import com.divillysausages.gameobjeditor.Editor;
 	import flash.utils.getTimer;
 
 	public class IngameState extends FlxState
@@ -19,7 +19,7 @@ package
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
-		private var _editor:Editor;
+		//private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
@@ -35,18 +35,20 @@ package
 		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
+		private var lastScoreText:uint; // most recent array index
 		
 		private var ambientPlayer:AmbientPlayer;
 		
 		override public function create():void
 		{
-			trace("[loading editor] " + getTimer());
+			/*trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
 			_editor.registerClass(FlxObject);
 			_editor.registerClass(FlxSprite);
 			_editor.registerClass(Llama);
 			_editor.visible = true;
-			FlxG.mouse.show();
+			FlxG.mouse.show();*/
+			FlxG.mouse.hide();
 			
 			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(BackgroundImage);
@@ -60,12 +62,13 @@ package
 			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
 			lastSpit = 0;
+			lastScoreText = 0;
 			
 			var i:uint = 0;
 			
 			// Initialize llama
 			llama = new Llama();
-			_editor.registerObject(llama);
+			//_editor.registerObject(llama);
 			add(llama);
 			
 			// Initialize cage
@@ -132,13 +135,13 @@ package
 				llama.lama.velocity.y = llama.jumpUpVelocity;
 			}
 			
-			if (llama.lama.x < cage.x) {
-				llama.lama.x = cage.x;
+			if (llama.lama.x < cage.x + 10) {
+				llama.lama.x = cage.x + 10;
 				llama.lama.velocity.x = 0;
 			}
 			
-			if (llama.lama.x + llama.lama.width > cage.x + cage.width) {
-				llama.lama.x = cage.x + cage.width - llama.lama.width;
+			if (llama.lama.x + llama.lama.width > cage.x + cage.width - 10) {
+				llama.lama.x = cage.x + cage.width - llama.lama.width - 10;
 				llama.lama.velocity.x = 0;
 			}
 			
@@ -216,6 +219,13 @@ package
 			return s;
 		}
 		
+		public function spawnScoreText(X:Number, Y:Number, MULTIPLIER:int, SCORE:int):ScoreText
+		{
+			var s:ScoreText = scoretexts.members[lastScoreText++ % Globals.MAX_SCORETEXTS];
+			s.init(X,Y,MULTIPLIER,SCORE);
+			return s;
+		}
+		
 		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
 			var v:Visitor = visitor as Visitor;
@@ -230,6 +240,7 @@ package
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
 			addScore(v.scorePoints);
+			spawnScoreText(v.x + v.width/2, v.y, 1, v.scorePoints);
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
@@ -245,6 +256,7 @@ package
 			v.getHitByPerson(f);
 			addScore(v.scorePoints * v.comboCounter);
 			doCombo(v.comboCounter);
+			spawnScoreText(v.x + v.width/2, v.y, v.comboCounter, v.scorePoints);
 		}
 		
 		private function addScore (score:int):void
