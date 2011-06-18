@@ -29,7 +29,6 @@ package
 			super();
 			loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			setCenterPosition(center.x, center.y);
-			acceleration.y = 200;
 			exists = false;
 			_canHit = true;
 			
@@ -55,6 +54,11 @@ package
 			gfxFloor.visible = false;
 			floorTimer = 0;
 			floorDead = false;
+			velocity.x = 0;
+			velocity.y = 0;
+			acceleration.x = 0;
+			acceleration.y = 200;
+			drag.x = drag.y = 0;
 		}
 		
 		override public function preUpdate():void

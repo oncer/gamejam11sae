@@ -67,11 +67,6 @@ package
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
-		[Editable (type="watch")]
-		public var watch_y:Number;
-		
-		public var testgfx:FlxSprite;
-		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama()
 		{
@@ -123,7 +118,6 @@ package
 		override public function update():void
 		{	
 			super.update();
-			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
 			lama.drag.x = drag_x;
 			// updating the bar - old, which was the spitStrength
@@ -248,8 +242,6 @@ package
 				//angle = FlxU.getAngle(rotatedPoint, new FlxPoint(lama.x, lama.y));
 				//trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}
-			trace("lama.x: " + lama.x);
-			trace("spit.x: " + spitOrigin.x);
 			
 			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
@@ -283,7 +275,7 @@ package
 					//var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
 					//FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
-					
+
 					FlxVelocity.moveTowardsObject(spit, target, spitStrengthModifier);
 					
 					spitCooldownCounter = 0;

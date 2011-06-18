@@ -8,7 +8,7 @@ package
 {
 	import org.flixel.*;
 	import flash.system.fscommand;
-	import com.divillysausages.gameobjeditor.Editor;
+	//import com.divillysausages.gameobjeditor.Editor;
 	import flash.utils.getTimer;
 
 	public class IngameState extends FlxState
@@ -19,7 +19,7 @@ package
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
-		private var _editor:Editor;
+		//private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
@@ -41,13 +41,14 @@ package
 		
 		override public function create():void
 		{
-			trace("[loading editor] " + getTimer());
+			/*trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
 			_editor.registerClass(FlxObject);
 			_editor.registerClass(FlxSprite);
 			_editor.registerClass(Llama);
 			_editor.visible = true;
-			FlxG.mouse.show();
+			FlxG.mouse.show();*/
+			FlxG.mouse.hide();
 			
 			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(BackgroundImage);
@@ -67,7 +68,7 @@ package
 			
 			// Initialize llama
 			llama = new Llama();
-			_editor.registerObject(llama);
+			//_editor.registerObject(llama);
 			add(llama);
 			
 			// Initialize cage
