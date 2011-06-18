@@ -66,8 +66,8 @@ package
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			addAnimation("climb", [7], Globals.ANIM_SPEED);
 			addAnimation("jump", [0], Globals.ANIM_SPEED);
-			addAnimation("fly", [4,5], .6);
-			addAnimation("die", [6], Globals.ANIM_SPEED);
+			addAnimation("fly", [4,5], 1.2, false);
+			addAnimation("die", [6], Globals.ANIM_SPEED, false);
 			play("walk");
 			
 			hitPoints = 1;
@@ -117,10 +117,21 @@ package
 			{
 				update_jumping();
 			}
+			
+			if (state == STATE_FLYING)
+			{
+				update_flying();
+			}
+			
+			if (state == STATE_DYING)
+			{
+				update_dying();
+			}
 		}
 		
 		private function update_walking():void
 		{
+			drag.x = 0;
 			play("walk");
 			
 			if ((facing == LEFT) && (x < Globals.CAGE_RIGHT))
@@ -167,6 +178,47 @@ package
 			{
 				exists = false;
 			}
+		}
+		
+		private function update_flying():void
+		{
+			acceleration.y = 200;
+			drag.x = 50;
+			
+			if (y > Globals.GROUND_LEVEL - HEIGHT)
+			{
+				y = Globals.GROUND_LEVEL - HEIGHT;
+				velocity.y = -velocity.y * .4;
+				
+				if (Math.abs(velocity.x) < 10)
+				{
+					state = STATE_DYING;
+					flicker(1);
+				}
+			}
+		}
+		
+		private function update_dying():void
+		{
+			drag.x = 0;
+			acceleration.y = 0;
+			velocity.x = 0;
+			velocity.y = 0;
+			y = Globals.GROUND_LEVEL - HEIGHT;
+			play("die");
+			
+			if (!flickering)
+			{
+				exists = false;
+			}
+		}
+		
+		public function getSpitOn (spit:Spit):void
+		{
+			state = STATE_FLYING;
+			play("fly");
+			velocity.x = spit.velocity.x;
+			velocity.y = spit.velocity.y;
 		}
 	}
 }
