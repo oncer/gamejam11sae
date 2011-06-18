@@ -40,6 +40,8 @@ package
 		private function create():void
 		{
 			loadGraphic(VisitorImage,true,false,WIDTH,HEIGHT);
+			addAnimation("walk", [0,1,2,3], 10);
+			play("walk");
 			
 			hitPoints = 1;
 			state = STATE_WALKING;
@@ -57,10 +59,6 @@ package
 				velocity.x = -walkSpeed;
 				x = FlxG.width;
 			}
-		}
-		
-		override public function update():void
-		{
 		}
 	}
 }
