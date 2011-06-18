@@ -17,6 +17,8 @@ package
 			// the spit is 16x16
 			super(center.x-8, center.y-8);
 			loadGraphic(SpitClass);
+			acceleration.y = 200;
+			exists = false;
 		}
 		
 		override public function update():void
