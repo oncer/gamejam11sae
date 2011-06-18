@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.*;
 
 	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
@@ -21,9 +22,14 @@ package
 		[Editable (type="slider", min="100", max="1000")]
 		public var acceleration_y:Number;
 		
+		[Editable (type="slider", min="100", max="1000")]
+		public var spit_acceleration_y:Number;
 		
+		private var spitOrigin:FlxPoint;
 		private var targetOffset:FlxPoint;
-		//private var targetYOffset:Number;
+		
+		/** Gets increased by holding the space key - is in range between 0 and 100*/
+		private var spitStrength:Number;
 		
 		[Editable (type="watch")]
 		public var watch_y:Number;
@@ -44,7 +50,13 @@ package
 			acceleration_y = lama.acceleration.y
 			add(lama);
 			
-			targetOffset = new FlxPoint(0, -40);
+			targetOffset = new FlxPoint(30, -30);
+			// center of spitting where it should start, 39 from left, 31 from top
+			spitOrigin = new FlxPoint(40, 64 - 31);
+			
+			// default value for the acceleration of spits
+			spit_acceleration_y = 200;
+			
 			// position doesnt matter, gets updated in update anyway
 			target = new FlxSprite(0,0);
 			target.loadGraphic(TargetClass);
@@ -53,14 +65,13 @@ package
 		
 		//The main game loop function
 		override public function update():void
-		{
-			//wrap();			
+		{	
 			super.update();
 			watch_y = lama.y;
 			lama.acceleration.y = acceleration_y;
 			
-			target.x = lama.getMidpoint().x + targetOffset.x;
-			target.y = lama.getMidpoint().y + targetOffset.y;
+			target.x = lama.x + spitOrigin.x + targetOffset.x-target.width/2;
+			target.y = lama.y + spitOrigin.y + targetOffset.y-target.height/2;
 			
 			//This is where we handle turning the ship left and right
 			//angularVelocity = 0;
@@ -104,8 +115,8 @@ package
 				trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}
 			
-			//FlxVelocity.moveTowardsObject(blue, green, 180);
-			//	FlxU.rotatePoint(90,0,0,0,angle,acceleration);
+			
+			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
 
 			if(FlxG.keys.justPressed("SPACE"))
@@ -117,6 +128,15 @@ package
 				FlxU.rotatePoint(150,0,0,0,bullet.angle,bullet.velocity);
 				bullet.velocity.x += velocity.x;
 				bullet.velocity.y += velocity.y;*/
+				
+				var spit:Spit = new Spit(new FlxPoint(lama.x + spitOrigin.x, lama.y + spitOrigin.y));
+				spit.acceleration.y = spit_acceleration_y;
+				// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
+				FlxVelocity.moveTowardsObject(spit, target, 180);
+				// this would set the time,overwrites the speed
+				//FlxVelocity.moveTowardsObject(spit, target, 180, 100);
+				add(spit);
+				
 			}
 		}// end of update
 		

@@ -101,7 +101,7 @@ package
 		} // end of update
 		
 		
-		function spawnVisitor():void
+		private function spawnVisitor():void
 		{
 			visitors.add(new Visitor(difficulty));
 		}
