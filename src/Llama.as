@@ -67,6 +67,8 @@ package
 		[Editable (type="watch")]
 		public var watch_y:Number;
 		
+		public var testgfx:FlxSprite;
+		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama()
 		{
@@ -202,7 +204,7 @@ package
 				
 				
 				var newRotation:Number = angleBefore - rotationDifferenceInDegrees;
-				trace("newRotation: " + newRotation);
+				//trace("newRotation: " + newRotation);
 				if (Math.abs(newRotation) > (upperDegreeLimit-degreeThreshold)) {
 					//var targetPoint
 					//var tooMuchDegrees:Number = Math.abs(newRotation) - upperDegreeLimit;
@@ -236,12 +238,12 @@ package
 				// gets updated next frame
 				//target.x = lama.x + targetOffset.x;
 				//target.y = lama.y + targetOffset.y;
-				trace("rotatedPoint x: " + rotatedPoint.x + ", y: " + rotatedPoint.y);
+				//trace("rotatedPoint x: " + rotatedPoint.x + ", y: " + rotatedPoint.y);
 				
 				//var angleAfter:Number = FlxU.getAngle(targetOffset.x, targetOffset.y);
 				var angleAfter:Number = FlxU.getAngle(targetOffset, new FlxPoint(0,0));
 				//angle = FlxU.getAngle(rotatedPoint, new FlxPoint(lama.x, lama.y));
-				trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
+				//trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}
 			
 			
@@ -284,7 +286,7 @@ package
 					spitStrength = 0;
 				}			
 			}
-			
+
 		}// end of update
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {

@@ -132,13 +132,13 @@ package
 				llama.lama.velocity.y = llama.jumpUpVelocity;
 			}
 			
-			if (llama.lama.x < cage.x) {
-				llama.lama.x = cage.x;
+			if (llama.lama.x < cage.x + 10) {
+				llama.lama.x = cage.x + 10;
 				llama.lama.velocity.x = 0;
 			}
 			
-			if (llama.lama.x + llama.lama.width > cage.x + cage.width) {
-				llama.lama.x = cage.x + cage.width - llama.lama.width;
+			if (llama.lama.x + llama.lama.width > cage.x + cage.width - 10) {
+				llama.lama.x = cage.x + cage.width - llama.lama.width - 10;
 				llama.lama.velocity.x = 0;
 			}
 			

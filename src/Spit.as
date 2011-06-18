@@ -26,16 +26,14 @@ package
 		public function Spit(center:FlxPoint) 
 		{
 			// the spit is 16x16
-			super(center.x-8, center.y-8);
-			loadGraphic(SpitClass);
+			super(center.x-12, center.y-12);
+			loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			acceleration.y = 200;
 			exists = false;
 			_canHit = true;
 			
 			gfxFloor = new FlxSprite(0,0);
 			gfxFloor.loadGraphic(SpitFloorClass);
-			gfxFloor.visible = false;
-			floorTimer = 0;
 		}
 		
 		private function initParticles():void
@@ -53,6 +51,15 @@ package
 		{
 			super.reset(X,Y);
 			initParticles();
+			gfxFloor.visible = false;
+			floorTimer = 0;
+			floorDead = false;
+		}
+		
+		override public function preUpdate():void
+		{
+			super.preUpdate();
+			gfxFloor.preUpdate();
 		}
 		
 		override public function update():void
@@ -60,6 +67,8 @@ package
 			super.update();
 			particles.at(this);
 			particles.update();
+			
+			angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
 			
 			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
 			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
@@ -72,18 +81,20 @@ package
 			
 			gfxFloor.x = x;
 			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
-			
+
+
 			if (floorTimer > 0)
 			{	
 				floorTimer -= FlxG.elapsed;
-				if (floorTimer <= 0) {
-					gfxFloor.flicker(1);
+				if ((floorTimer <= 0) && !floorDead) {
+					gfxFloor.flicker(0.5);
 					floorDead = true;
 				}
 			}
 			
 			if (floorDead && !gfxFloor.flickering)
 			{
+				trace("[spit] kill");
 				kill();
 			}
 			
@@ -130,10 +141,10 @@ package
 			gfxFloor.x = x;
 			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
 			gfxFloor.visible = true;
-			drag.x = velocity.x * 10;
+			drag.x = Math.abs(velocity.x) * 10;
 			velocity.y = 0;
 			acceleration.y = 0;
-			floorTimer = 1;
+			floorTimer = 0.5;
 			floorDead = false;
 		}
 	}
