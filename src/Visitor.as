@@ -17,6 +17,8 @@ package
 		[Embed(source="../gfx/visitor9.png")]  private var Visitor9Image:Class;
 		[Embed(source="../gfx/visitor10.png")] private var Visitor10Image:Class;
 		
+		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
+		
 		private var visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
 			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
 			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
@@ -33,12 +35,15 @@ package
 		private var walkSpeed:Number;
 		private var climbSpeed:Number;
 		private var jumpSpeed:Number;
-		private var jumpHeight:Number; // not really height, just accel.y
+		private var jumpHeight:Number; // not really height, just velocity.y
 		private var hitPoints:uint;
 		public var scorePoints:uint; // killing this visitor is worth this much
 		public var comboCounter:uint; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
+		private var hasReachedGoal:Boolean; // then player loses a life
+		
+		private var explosion:FlxEmitter;
 		
 		public function Visitor()
 		{
@@ -53,6 +58,7 @@ package
 		{
 			hitPoints = 1;
 			comboCounter = 1;
+			hasReachedGoal = false;
 			
 			var visitorType:uint = Math.floor(Math.random()*5);
 			if (Math.random()*5 < 1) visitorType += 5; // rare variations
@@ -142,6 +148,9 @@ package
 			}
 			
 			super.facing = facing;
+			
+			explosion = new FlxEmitter();
+			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 		}
 		
 		public override function revive():void
@@ -180,7 +189,7 @@ package
 			}
 		}
 		
-		public override function update():void
+		override public function update():void
 		{
 			acceleration.x = 0;
 			acceleration.y = 0;
@@ -211,6 +220,15 @@ package
 			{
 				update_dying();
 			}
+			
+			explosion.at(this);
+			explosion.update();
+		}
+		
+		override public function draw():void
+		{
+			super.draw();
+			explosion.draw();
 		}
 		
 		private function update_walking():void
@@ -269,9 +287,20 @@ package
 			
 			play("jump");
 			
+			if (y > Globals.VISITOR_GOAL_Y)
+			{
+				alpha = Math.max(0, (Globals.VISITOR_GOAL_Y - y + 100) / 100);
+				
+				if (!hasReachedGoal)
+				{
+					hasReachedGoal = true;
+					(FlxG.state as IngameState).loseLife ();
+				}
+			}
+			
 			if (y > FlxG.height)
 			{
-				exists = false;
+				exists = false
 			}
 		}
 		
@@ -334,6 +363,19 @@ package
 			return (state != STATE_FLYING) && (state != STATE_DYING);
 		}
 		
+		private function startSpitExplosion():void
+		{
+			var d:Number = 50;
+			var x1:Number = velocity.x - d;
+			var x2:Number = velocity.x + d;
+			var y1:Number = velocity.y - d * 1.5;
+			var y2:Number = velocity.y + d * 0.5;
+			explosion.setXSpeed(Math.min(x1,x2), Math.max(x1,x2));
+			explosion.setYSpeed(Math.min(y1,y2), Math.max(y1,y2));
+			explosion.gravity = acceleration.y;
+			explosion.start(true,0.5);
+		}
+		
 		public function getSpitOn (spit:Spit):void
 		{
 			if (hitPoints > 0) hitPoints--;
@@ -347,6 +389,8 @@ package
 			{
 				velocity.x /= 2;
 			}
+			
+			startSpitExplosion();
 		}
 		
 		public function getHitByPerson (flying:Visitor):void
@@ -363,6 +407,7 @@ package
 				velocity.x /= 2;
 			}
 			
+			startSpitExplosion();
 			comboCounter = flying.comboCounter * 2;
 		}
 	}
