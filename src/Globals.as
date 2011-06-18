@@ -11,5 +11,6 @@ package
 		public static const ANIM_SPEED:Number = 10; // in fps
 		public static const CAGE_LEFT:uint = 320;  // px boundary
 		public static const CAGE_RIGHT:uint = 479; // px boundary
+		public static const CAGE_TOP:uint = 288; // px boundary
 	}
 }

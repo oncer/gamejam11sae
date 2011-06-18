@@ -23,6 +23,7 @@ package
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:uint;
+		private var lastVisitor:uint; // most recent array index
 		
 		override public function create():void
 		{
@@ -42,6 +43,7 @@ package
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
+			lastVisitor = 0;
 			
 			// Initialize llama
 			llama = new Llama();
@@ -50,13 +52,11 @@ package
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
+			for(var i:uint = 0; i < Globals.MAX_VISITORS; i++)
+			{
+				visitors.add(new Visitor());
+			}
 			add(visitors);
-			
-			/*var target:FlxPoint = new FlxPoint(110, 100);
-			var pivot:FlxPoint = new FlxPoint(100, 100);
-			//var rotatedPoint:FlxPoint = FlxU.rotatePoint(target.x, target.y, pivot.x, pivot.y, 0);
-			var rotatedPoint:FlxPoint = rotatePoint(target.x, target.y, pivot.x, pivot.y, 180);
-			trace("x: " + rotatedPoint.x + " y: " + rotatedPoint.y);*/
 		}
 		
 		
@@ -96,7 +96,26 @@ package
 		
 		private function spawnVisitor():void
 		{
-			visitors.add(new Visitor(difficulty));
+			var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+			
+			if (v.exists) return; // keep on screen until dead
+			
+			lastVisitor++;
+			
+			// distribute left/right somewhat randomly, but avoid long streaks
+			if (visitors.length % 6 == 0) 
+			{
+				v.init(difficulty, FlxObject.LEFT);
+			} else
+			if (visitors.length % 6 == 3) 
+			{
+				v.init(difficulty, FlxObject.RIGHT);
+			} else
+			{
+				v.init(difficulty);
+			}
+			
+			v.revive();
 		}
 	} // end of class IngameState
 } // end of package
