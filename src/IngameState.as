@@ -27,27 +27,35 @@ package
 			bg.loadGraphic(Background);
 			add(bg);
 			
-			trace("alsk");
+			trace("IngameState.onCreate()");
 			//Initialize the llama and add it to the layer
 			llama = new Llama();
 			add(llama);
+			
+			/*var target:FlxPoint = new FlxPoint(110, 100);
+			var pivot:FlxPoint = new FlxPoint(100, 100);
+			//var rotatedPoint:FlxPoint = FlxU.rotatePoint(target.x, target.y, pivot.x, pivot.y, 0);
+			var rotatedPoint:FlxPoint = rotatePoint(target.x, target.y, pivot.x, pivot.y, 180);
+			trace("x: " + rotatedPoint.x + " y: " + rotatedPoint.y);*/
 		}
+		
+		
 		
 		override public function update():void
 		{
 			super.update();
 			
 			var jumpUpAcceleration:int = -800;
-			if (llama.acceleration.y == jumpUpAcceleration) {
-				llama.acceleration.y = 200;
+			if (llama.lama.acceleration.y == jumpUpAcceleration) {
+				llama.lama.acceleration.y = 200;
 			}
-			if (llama.y > 350) {
-				llama.acceleration.y = jumpUpAcceleration;
+			if (llama.lama.y > 350) {
+				llama.lama.acceleration.y = jumpUpAcceleration;
 			}
 			
 			//FlxG.log(llama.y);
 			//trace("test");
-			trace("lama y: " + llama.y);
+			//trace("lama y: " + llama.lama.y);
 			
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
