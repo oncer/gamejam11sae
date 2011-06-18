@@ -54,7 +54,7 @@ package
 			
 			FlxG.score = 0;
 			
-			lives = 3;
+			lives = 10;
 			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
