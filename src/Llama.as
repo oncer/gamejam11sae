@@ -38,9 +38,10 @@ package
 			watch_y = y;
 			acceleration.y = acceleration_y;
 			
+			if (y > Globals.GROUND_LEVEL) {
+				velocity.y = jumpUpVelocity;
+			}
 			
-			//This is where we handle turning the ship left and right
-			angularVelocity = 0;
 			if(FlxG.keys.LEFT)
 				//angularVelocity -= 240;
 				acceleration.x = -50;

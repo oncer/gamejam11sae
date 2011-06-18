@@ -6,7 +6,7 @@
 
 package
 {
-    import org.flixel.*;
+	import org.flixel.*;
 	import flash.system.fscommand;
 	import com.divillysausages.gameobjeditor.Editor;
 
@@ -16,10 +16,8 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var Background:Class;	//Graphic of the player's ship
 		
-		public static const MAX_VISITORS:uint = 1024;
-		
 		private var _editor:Editor;
-		public var llama:Llama;			//Refers to the little player llama
+		public var llama:Llama;  //Refers to the little player llama
 		private var visitors:FlxGroup;
 		
 		private var difficulty:Number;
@@ -35,7 +33,7 @@ package
 			_editor.visible = true;
 			FlxG.mouse.show();
 			
-			var bg:FlxSprite = new FlxSprite(0,0);			
+			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(Background);
 			add(bg);
 			
@@ -51,7 +49,7 @@ package
 			add(llama);
 			
 			// Initialize visitors
-			visitors = new FlxGroup (MAX_VISITORS);
+			visitors = new FlxGroup (Globals.MAX_VISITORS);
 			add(visitors);
 		}
 		
@@ -61,10 +59,6 @@ package
 			elapsedTime += FlxG.elapsed;
 			
 			super.update();
-			
-			if (llama.y > 350) {
-				llama.velocity.y = llama.jumpUpVelocity;
-			}
 			
 			// Visitors
 			var spawnInterval:uint = 10000.0 / (difficulty + 40.0);

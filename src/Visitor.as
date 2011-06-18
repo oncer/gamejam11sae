@@ -30,9 +30,9 @@ package
 			else
 				fromLeft = false;
 			
-			super(0, 400);
-			loadGraphic(VisitorImage,true,false,32,32);
-			acceleration.x = 200;
+			super(0, Globals.GROUND_LEVEL);
+			loadGraphic(VisitorImage,true,false,32,48);
+			velocity.x = 200;
 		}
 		
 		override public function update():void
