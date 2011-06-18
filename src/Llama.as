@@ -159,7 +159,7 @@ package
 				// value needed, because the function rotatePoint() generates no exact results for the border values
 				var degreeThreshold:Number = 1;				
 				
-				var newRotation = angleBefore - rotationDifferenceInDegrees;
+				var newRotation:Number = angleBefore - rotationDifferenceInDegrees;
 				trace("newRotation: " + newRotation);
 				if (Math.abs(newRotation) > (upperDegreeLimit-degreeThreshold)) {
 					//var targetPoint

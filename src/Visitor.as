@@ -8,6 +8,8 @@ package
 	{
 		[Embed(source="../gfx/visitor1.png")] private var Visitor1Image:Class;
 		[Embed(source="../gfx/visitor2.png")] private var Visitor2Image:Class;
+		[Embed(source="../gfx/visitor3.png")] private var Visitor3Image:Class;
+		[Embed(source="../gfx/visitor4.png")] private var Visitor4Image:Class;
 		
 		private static const WIDTH:uint = 32;
 		private static const HEIGHT:uint = 48;
@@ -36,7 +38,9 @@ package
 		// is inferred from the current game difficulty.
 		public function init (difficulty:Number, facing:uint = 0):void
 		{
-			var visitorType:Number = Math.random()*2;
+			hitPoints = 1;
+			
+			var visitorType:Number = Math.random()*4;
 			if (visitorType < 1) // Child
 			{
 				walkSpeed = 50;
@@ -44,18 +48,48 @@ package
 				jumpSpeed = 100;
 				jumpHeight = -200;
 				loadGraphic (Visitor1Image, true, true, WIDTH, HEIGHT);
-			} else // man with glasses & hat
+				width = 16;
+				height = 21;
+				offset.x = 8;
+				offset.y = 27;
+			} else 
+			if (visitorType < 2) // man with glasses & hat
 			{
 				walkSpeed = 35;
 				climbSpeed = 35;
 				jumpSpeed = 130;
 				jumpHeight = -250;
 				loadGraphic (Visitor2Image, true, true, WIDTH, HEIGHT);
+				width = 16;
+				height = 28;
+				offset.x = 8;
+				offset.y = 20;
+			} else
+			if (visitorType < 3) // woman
+			{
+				walkSpeed = 25;
+				climbSpeed = 70;
+				jumpSpeed = 130;
+				jumpHeight = -250;
+				loadGraphic (Visitor3Image, true, true, WIDTH, HEIGHT);
+				width = 18;
+				height = 25;
+				offset.x = 7;
+				offset.y = 23;
+			} else // fat tourist
+			{
+				walkSpeed = 17;
+				climbSpeed = 28;
+				jumpSpeed = 80;
+				jumpHeight = -130;
+				loadGraphic (Visitor4Image, true, true, WIDTH, HEIGHT);
+				width = 18;
+				height = 25;
+				offset.x = 7;
+				offset.y = 23;
+				hitPoints = 2;
 			} 
 			
-			y = Globals.GROUND_LEVEL - HEIGHT;
-			velocity.y = 0;
-			acceleration.y = 0;
 			super.facing = facing;
 		}
 		
@@ -70,7 +104,6 @@ package
 			addAnimation("die", [6], Globals.ANIM_SPEED, false);
 			play("walk");
 			
-			hitPoints = 1;
 			state = STATE_WALKING;
 			
 			// set direction-dependent values
@@ -78,30 +111,30 @@ package
 			{
 				if (Math.random()*2 < 1) // enter from left side
 				{
-					velocity.x = walkSpeed;
-					x = -WIDTH;
+					x = -width;
 					facing = RIGHT;
 				}
 				else // enter from right side
 				{
-					velocity.x = -walkSpeed;
-					x = FlxG.width + WIDTH;
+					x = FlxG.width + width;
 					facing = LEFT;
 				}
 			}
 			else if (facing == RIGHT) // enter from left side
 			{
-				velocity.x = walkSpeed;
-				x = -WIDTH;
+				x = -width;
 			} else // enter from right side
 			{
-				velocity.x = -walkSpeed;
-				x = FlxG.width + WIDTH;
+				x = FlxG.width + width;
 			}
 		}
 		
 		public override function update():void
 		{
+			acceleration.x = 0;
+			acceleration.y = 0;
+			drag.x = 0;
+			
 			if (state == STATE_WALKING)
 			{
 				update_walking();
@@ -131,19 +164,30 @@ package
 		
 		private function update_walking():void
 		{
-			drag.x = 0;
+			y = Globals.GROUND_LEVEL - height;
+			velocity.y = 0;
 			play("walk");
 			
-			if ((facing == LEFT) && (x < Globals.CAGE_RIGHT))
+			if (facing == LEFT)
 			{
-				state = STATE_CLIMBING;
-				x = Globals.CAGE_RIGHT;
+				velocity.x = -walkSpeed;
+				
+				if (x < Globals.CAGE_RIGHT)
+				{
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_RIGHT;
+				}
 			}
 			
-			if ((facing == RIGHT) && (x > Globals.CAGE_LEFT - WIDTH))
+			if (facing == RIGHT)
 			{
-				state = STATE_CLIMBING;
-				x = Globals.CAGE_LEFT - WIDTH;
+				velocity.x = walkSpeed;
+				
+				if (x > Globals.CAGE_LEFT - width)
+				{
+					state = STATE_CLIMBING;
+					x = Globals.CAGE_LEFT - width;
+				}
 			}
 		}
 		
@@ -153,7 +197,7 @@ package
 			velocity.x = 0;
 			velocity.y = -climbSpeed;
 			
-			if (y < Globals.CAGE_TOP - HEIGHT)
+			if (y < Globals.CAGE_TOP - height)
 			{
 				state = STATE_JUMPING;
 				velocity.y = jumpHeight;
@@ -185,26 +229,39 @@ package
 			acceleration.y = 200;
 			drag.x = 50;
 			
-			if (y > Globals.GROUND_LEVEL - HEIGHT)
+			if (y > Globals.GROUND_LEVEL - height)
 			{
-				y = Globals.GROUND_LEVEL - HEIGHT;
+				y = Globals.GROUND_LEVEL - height;
 				velocity.y = -velocity.y * .4;
 				
 				if (Math.abs(velocity.x) < 10)
 				{
-					state = STATE_DYING;
-					flicker(1);
+					if (hitPoints <= 0)
+					{
+						state = STATE_DYING;
+						flicker(1);
+					}
+					else
+					{
+						state = STATE_WALKING;
+						if (x < FlxG.width/2)
+						{
+							facing = RIGHT;
+						}
+						else
+						{
+							facing = LEFT;
+						}
+					}
 				}
 			}
 		}
 		
 		private function update_dying():void
 		{
-			drag.x = 0;
-			acceleration.y = 0;
 			velocity.x = 0;
 			velocity.y = 0;
-			y = Globals.GROUND_LEVEL - HEIGHT;
+			y = Globals.GROUND_LEVEL - height;
 			play("die");
 			
 			if (!flickering)
@@ -215,10 +272,16 @@ package
 		
 		public function getSpitOn (spit:Spit):void
 		{
+			if (hitPoints > 0) hitPoints--;
 			state = STATE_FLYING;
 			play("fly");
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
+			
+			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
+			{
+				velocity.x /= 2;
+			}
 		}
 	}
 }
