@@ -35,6 +35,7 @@ package
 		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
+		private var lastScoreText:uint; // most recent array index
 		
 		private var ambientPlayer:AmbientPlayer;
 		
@@ -60,6 +61,7 @@ package
 			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
 			lastSpit = 0;
+			lastScoreText = 0;
 			
 			var i:uint = 0;
 			
@@ -205,6 +207,13 @@ package
 			return s;
 		}
 		
+		public function spawnScoreText(X:Number, Y:Number, MULTIPLIER:int, SCORE:int):ScoreText
+		{
+			var s:ScoreText = scoretexts.members[lastScoreText++ % Globals.MAX_SCORETEXTS];
+			s.init(X,Y,MULTIPLIER,SCORE);
+			return s;
+		}
+		
 		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
 			var v:Visitor = visitor as Visitor;
@@ -219,6 +228,7 @@ package
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
 			addScore(v.scorePoints);
+			spawnScoreText(v.x + v.width/2, v.y, 1, v.scorePoints);
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
@@ -234,6 +244,7 @@ package
 			v.getHitByPerson(f);
 			addScore(v.scorePoints * v.comboCounter);
 			doCombo(v.comboCounter);
+			spawnScoreText(v.x + v.width/2, v.y, v.comboCounter, v.scorePoints);
 		}
 		
 		private function addScore (score:int):void
