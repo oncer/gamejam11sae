@@ -24,8 +24,10 @@ package
 		
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
-		private var lastSpawnTime:uint;
+		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
+		
+		private var ambientPlayer:AmbientPlayer;
 		
 		override public function create():void
 		{
@@ -64,6 +66,10 @@ package
 				visitors.add(new Visitor());
 			}
 			add(visitors);
+			
+			ambientPlayer = new AmbientPlayer();
+			ambientPlayer.start();
+			add(ambientPlayer);
 		}
 		
 		
@@ -91,7 +97,10 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:uint = 100.0 / (difficulty + 40.0);
+			var spawnInterval:Number = 100.0 / (difficulty + 40.0);
+			if (spawnInterval < 0.1) {
+				spawnInterval = 0.1;
+			}
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
