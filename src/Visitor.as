@@ -117,6 +117,11 @@ package
 			{
 				update_jumping();
 			}
+			
+			if (state == STATE_FLYING)
+			{
+				update_flying();
+			}
 		}
 		
 		private function update_walking():void
@@ -167,6 +172,24 @@ package
 			{
 				exists = false;
 			}
+		}
+		
+		private function update_flying():void
+		{
+			acceleration.y = 200;
+			play("fly");
+			
+			if (y > FlxG.height)
+			{
+				exists = false;
+			}
+		}
+		
+		public function getSpitOn (spit:Spit):void
+		{
+			state = STATE_FLYING;
+			velocity.x = spit.velocity.x;
+			velocity.y = spit.velocity.y;
 		}
 	}
 }

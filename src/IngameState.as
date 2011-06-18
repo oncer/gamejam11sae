@@ -25,7 +25,7 @@ package
 		
 		private var difficulty:Number;
 		private var elapsedTime:Number; // total in seconds
-		private var lastSpawnTime:uint;
+		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		
@@ -102,13 +102,16 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:uint = 100.0 / (difficulty + 40.0);
+			var spawnInterval:Number = 100.0 / (difficulty + 40.0);
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
 				spawnVisitor ();
 				lastSpawnTime += spawnInterval;
 			}
+			
+			// Collision visitors vs. spit
+			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitHit);
 			
 			//FlxG.log(llama.y);
 			//trace("test");
@@ -151,6 +154,19 @@ package
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			s.reset(X,Y);
 			return s;
+		}
+		
+		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
+		{
+			return (spit as Spit).canHit(visitor as Visitor);
+		}
+		
+		private function visitorsVsSpits(visitor:FlxObject,spit:FlxObject):void
+		{
+			var v:Visitor = visitor as Visitor;
+			var s:Spit = spit as Spit;
+			s.hitSomething();
+			v.getSpitOn(s);
 		}
 	} // end of class IngameState
 } // end of package
