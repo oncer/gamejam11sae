@@ -24,10 +24,11 @@ package
 		private var floorDead:Boolean;
 		
 		public function Spit(center:FlxPoint) 
-		{
+		{			
 			// the spit is 16x16
-			super(center.x-12, center.y-12);
+			super();
 			loadRotatedGraphic(SpitClass, 16, -1, true, true);
+			setCenterPosition(center.x, center.y);
 			acceleration.y = 200;
 			exists = false;
 			_canHit = true;
@@ -60,6 +61,11 @@ package
 		{
 			super.preUpdate();
 			gfxFloor.preUpdate();
+		}
+		
+		public function setCenterPosition(_x:Number, _y:Number):void {
+			x = _x - 8;
+			y = _y - 8;
 		}
 		
 		override public function update():void
