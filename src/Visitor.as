@@ -6,7 +6,8 @@ package
 	// When they reach the top and jump down the other side, you lose.
 	public class Visitor extends FlxSprite
 	{
-		[Embed(source="../gfx/visitor1.png")] private var VisitorImage:Class;
+		[Embed(source="../gfx/visitor1.png")] private var Visitor1Image:Class;
+		[Embed(source="../gfx/visitor2.png")] private var Visitor2Image:Class;
 		
 		private static const WIDTH:uint = 32;
 		private static const HEIGHT:uint = 48;
@@ -30,14 +31,27 @@ package
 			exists = false;
 		}
 		
+		// This function resets all values to represent a NEW visitor.
 		// Type, position, speed, everything
 		// is inferred from the current game difficulty.
 		public function init(difficulty:Number, facing:uint = 0):void
 		{
-			walkSpeed = 50;
-			climbSpeed = 50;
-			jumpSpeed = 100;
-			jumpHeight = -200;
+			var visitorType:Number = Math.random()*2;
+			if (visitorType < 1) // Child
+			{
+				walkSpeed = 50;
+				climbSpeed = 50;
+				jumpSpeed = 100;
+				jumpHeight = -200;
+				loadGraphic (Visitor1Image, true, true, WIDTH, HEIGHT);
+			} else // man with glasses & hat
+			{
+				walkSpeed = 35;
+				climbSpeed = 35;
+				jumpSpeed = 130;
+				jumpHeight = -250;
+				loadGraphic (Visitor2Image, true, true, WIDTH, HEIGHT);
+			} 
 			
 			y = Globals.GROUND_LEVEL - HEIGHT;
 			velocity.y = 0;
@@ -49,7 +63,6 @@ package
 		{
 			super.revive();
 			
-			loadGraphic (VisitorImage, true, true, WIDTH, HEIGHT);
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			addAnimation("climb", [7], Globals.ANIM_SPEED);
 			addAnimation("jump", [0], Globals.ANIM_SPEED);
@@ -91,50 +104,68 @@ package
 		{
 			if (state == STATE_WALKING)
 			{
-				if ((facing == LEFT) && (x < Globals.CAGE_RIGHT))
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_RIGHT;
-				}
-				
-				if ((facing == RIGHT) && (x > Globals.CAGE_LEFT - WIDTH))
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_LEFT - WIDTH;
-				}
+				update_walking();
 			}
 			
+			// not 'else if' because state may have changed in update_walking
 			if (state == STATE_CLIMBING)
 			{
-				play("climb");
-				velocity.x = 0;
-				velocity.y = -climbSpeed;
-				
-				if (y < Globals.CAGE_TOP - HEIGHT)
-				{
-					state = STATE_JUMPING;
-					velocity.y = jumpHeight;
-				}
+				update_climbing();
 			}
 			
 			if (state == STATE_JUMPING)
 			{
-				if (facing == LEFT) 
-				{
-					velocity.x = -jumpSpeed;
-				}
-				else
-				{
-					velocity.x = jumpSpeed;
-				}
-				acceleration.y = 800;
-				
-				play("jump");
-				
-				if (y > FlxG.height)
-				{
-					exists = false;
-				}
+				update_jumping();
+			}
+		}
+		
+		private function update_walking():void
+		{
+			play("walk");
+			
+			if ((facing == LEFT) && (x < Globals.CAGE_RIGHT))
+			{
+				state = STATE_CLIMBING;
+				x = Globals.CAGE_RIGHT;
+			}
+			
+			if ((facing == RIGHT) && (x > Globals.CAGE_LEFT - WIDTH))
+			{
+				state = STATE_CLIMBING;
+				x = Globals.CAGE_LEFT - WIDTH;
+			}
+		}
+		
+		private function update_climbing():void
+		{
+			play("climb");
+			velocity.x = 0;
+			velocity.y = -climbSpeed;
+			
+			if (y < Globals.CAGE_TOP - HEIGHT)
+			{
+				state = STATE_JUMPING;
+				velocity.y = jumpHeight;
+			}
+		}
+		
+		private function update_jumping():void
+		{
+			if (facing == LEFT) 
+			{
+				velocity.x = -jumpSpeed;
+			}
+			else
+			{
+				velocity.x = jumpSpeed;
+			}
+			acceleration.y = 800;
+			
+			play("jump");
+			
+			if (y > FlxG.height)
+			{
+				exists = false;
 			}
 		}
 	}
