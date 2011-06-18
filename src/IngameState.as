@@ -69,6 +69,10 @@ package
 			
 			super.update();
 			
+			if (llama.lama.y > 350) {
+				llama.lama.velocity.y = llama.jumpUpVelocity;
+			}
+			
 			// Visitors
 			var spawnInterval:uint = 100.0 / (difficulty + 40.0);
 			
