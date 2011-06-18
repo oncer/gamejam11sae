@@ -22,9 +22,10 @@ package
 		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
+		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		
 		private var difficulty:Number;
-		private var elapsedTime:Number; // total in seconds
+		public var elapsedTime:Number; // total in seconds
 		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
@@ -80,6 +81,10 @@ package
 			}
 			add(spits);
 			
+			// Flying visitors group
+			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
+			
+			// sounds
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
@@ -119,8 +124,13 @@ package
 				lastSpawnTime += spawnInterval;
 			}
 			
-			// Collision visitors vs. spit
+			// Collision visitors vs. spit, visitors vs flying
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitHit);
+			FlxG.overlap(visitors, flyingVisitors, visitorsVsFlying, canFlyingHit);
+			
+			// Continually remove some from flying array if possible
+			var trash:FlxBasic = flyingVisitors.getFirstAvailable();
+			if (trash) flyingVisitors.remove(trash);
 			
 			//FlxG.log(llama.y);
 			//trace("test");
@@ -167,7 +177,8 @@ package
 		
 		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
-			return (spit as Spit).canHit(visitor as Visitor);
+			var v:Visitor = visitor as Visitor;
+			return v.canBeHit() && (spit as Spit).canHit(v);
 		}
 		
 		private function visitorsVsSpits(visitor:FlxObject,spit:FlxObject):void
@@ -176,6 +187,17 @@ package
 			var s:Spit = spit as Spit;
 			s.hitSomething();
 			v.getSpitOn(s);
+			flyingVisitors.add(v);
+		}
+		
+		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
+		{ 
+			return (flying as Visitor).canHitSomeone() && (victim as Visitor).canBeHit();
+		}
+		
+		private function visitorsVsFlying(victim:FlxObject,flying:FlxObject):void
+		{
+			(victim as Visitor).getHitByPerson(flying as Visitor);
 		}
 	} // end of class IngameState
 } // end of package

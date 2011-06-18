@@ -26,6 +26,7 @@ package
 		private var jumpHeight:Number; // not really height, just accel.y
 		private var hitPoints:uint;
 		private var state:uint;
+		private var flyStartTime:Number; // timestamp of last start flying
 		
 		public function Visitor()
 		{
@@ -43,7 +44,7 @@ package
 			var visitorType:Number = Math.random()*4;
 			if (visitorType < 1) // Child
 			{
-				walkSpeed = 50;
+				walkSpeed = 75;
 				climbSpeed = 50;
 				jumpSpeed = 100;
 				jumpHeight = -200;
@@ -55,7 +56,7 @@ package
 			} else 
 			if (visitorType < 2) // man with glasses & hat
 			{
-				walkSpeed = 35;
+				walkSpeed = 53;
 				climbSpeed = 35;
 				jumpSpeed = 130;
 				jumpHeight = -250;
@@ -67,7 +68,7 @@ package
 			} else
 			if (visitorType < 3) // woman
 			{
-				walkSpeed = 25;
+				walkSpeed = 38;
 				climbSpeed = 70;
 				jumpSpeed = 130;
 				jumpHeight = -250;
@@ -78,7 +79,7 @@ package
 				offset.y = 23;
 			} else // fat tourist
 			{
-				walkSpeed = 17;
+				walkSpeed = 25;
 				climbSpeed = 28;
 				jumpSpeed = 80;
 				jumpHeight = -130;
@@ -234,7 +235,8 @@ package
 				y = Globals.GROUND_LEVEL - height;
 				velocity.y = -velocity.y * .4;
 				
-				if (Math.abs(velocity.x) < 10)
+				var flyTime:Number = (FlxG.state as IngameState).elapsedTime - flyStartTime;
+				if ((flyTime >= Globals.FLY_TIMEOUT) && (Math.abs(velocity.x) < 10))
 				{
 					if (hitPoints <= 0)
 					{
@@ -270,13 +272,41 @@ package
 			}
 		}
 		
+		public function canHitSomeone ():Boolean
+		{
+			return exists && (state == STATE_FLYING) && (Math.abs(velocity.x) >= 30);
+		}
+		
+		// visitors can be hit by spit as long
+		// as they are not already being hit
+		public function canBeHit ():Boolean
+		{
+			return (state != STATE_FLYING) && (state != STATE_DYING);
+		}
+		
 		public function getSpitOn (spit:Spit):void
 		{
 			if (hitPoints > 0) hitPoints--;
 			state = STATE_FLYING;
+			flyStartTime = (FlxG.state as IngameState).elapsedTime;
 			play("fly");
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
+			
+			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
+			{
+				velocity.x /= 2;
+			}
+		}
+		
+		public function getHitByPerson (flying:Visitor):void
+		{
+			if (hitPoints > 0) hitPoints--;
+			state = STATE_FLYING;
+			flyStartTime = (FlxG.state as IngameState).elapsedTime;
+			play("fly");
+			velocity.x = flying.velocity.x * .7;
+			velocity.y = flying.velocity.y * .7;
 			
 			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
 			{
