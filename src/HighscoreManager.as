@@ -26,11 +26,15 @@ package
 			s.close();
 		}
 		
-		public static function submitCurrentHighscore() {
-			var scores = FlxG.scores;
+		public static function submitCurrentHighscore():void {
+			var scores:Array = FlxG.scores;
 			FlxG.scores.push(FlxG.score);
 			FlxG.scores.sort(Array.NUMERIC);
-			FlxG.scores.reverse();			
+			FlxG.scores.reverse();		
+			
+			while (scores.length > 5) {
+				scores.pop();
+			}
 			save();
 		}
 	}

@@ -44,7 +44,7 @@ package
 			y += 10;
 			// TODO the non-copy does not work, does not take the real values!?!
 			//for each (var score:int in FlxG.scores)
-			var scores = FlxG.scores;
+			var scores:Array = FlxG.scores;
 			for each (var score:int in scores)			
 			{
 				y += 20;
