@@ -17,11 +17,13 @@ package
 		
 		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
+		[Embed(source="../gfx/trampolin.png")] private var TrampolinImage:Class;
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		//private var _editor:Editor;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
+		public var trampolin:FlxSprite;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
@@ -67,9 +69,14 @@ package
 			var i:uint = 0;
 			
 			// Initialize llama
-			llama = new Llama();
+			llama = new Llama(this);
 			//_editor.registerObject(llama);
 			add(llama);
+			
+			// Initialize trampolin
+			trampolin = new FlxSprite (Globals.CAGE_LEFT, Globals.TRAMPOLIN_TOP);
+			trampolin.loadGraphic(TrampolinImage);
+			add(trampolin);
 			
 			// Initialize cage
 			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
@@ -131,8 +138,9 @@ package
 			
 			super.update();
 			
-			if (llama.lama.y > 350) {
-				llama.lama.velocity.y = llama.jumpUpVelocity;
+			if (trampolin.y < Globals.TRAMPOLIN_TOP) {
+				trampolin.y = Globals.TRAMPOLIN_TOP;
+				trampolin.velocity.y = 0;
 			}
 			
 			if (llama.lama.x < cage.x + 10) {
