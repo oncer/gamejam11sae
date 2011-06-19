@@ -75,13 +75,13 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 4, 1);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 1, 1);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
-		private var upgradeDuration:Array = new Array(0, 5, 5, 5);
+		private var upgradeDuration:Array = new Array(0, 10, 10, 10);
 		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
-		private static const SPIT_ANIMATION_DURATION:Number = 0.6;
+		private static const SPIT_ANIMATION_DURATION:Number = 0.1;
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
@@ -135,8 +135,8 @@ package
 			currentLamaJumpFrame = 0;			
 			
 			// change to this in the end, for testing now use the rapid fire upgrade from beginning
-			//setUpgradeType(UPGRADE_NONE);
-			setUpgradeType(UPGRADE_RAPIDFIRE);
+			setUpgradeType(UPGRADE_NONE);
+			//setUpgradeType(UPGRADE_RAPIDFIRE);
 			
 			// this doesnt work, because th first frame always changes randomly !
 			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);			
@@ -340,11 +340,12 @@ package
 				}			
 			}
 
-		}// end of update
+		} // end of update
 		
 		public function setUpgradeType(UpgradeType:uint):void {
+			trace("upgrade type set: " + UpgradeType);
 			upgradeType = UpgradeType;
-			spitCooldownCounter = 0;
+			spitCooldownCounter = spitCooldown; // can shoot instantly
 			spitCooldown = spitCooldownArray[upgradeType];
 			upgrade.frame = upgradeType;
 			upgradeDurationCounter = 0;

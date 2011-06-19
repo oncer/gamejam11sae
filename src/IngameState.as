@@ -24,6 +24,7 @@ package
 		public var cage:FlxSprite;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
+		private var helicopter:Helicopter;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
 		private var scoreText:FlxText; // can hit normal visitors for combos
@@ -36,6 +37,10 @@ package
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		private var lastScoreText:uint; // most recent array index
+		
+		private var lastHelicopterSpawnedCounter:Number;
+		/** after this time (in seconds), the helicopter is started either from left or right */
+		private var DURATION_RESPAWN_HELICOPTER:Number = 25;
 		
 		private var ambientPlayer:AmbientPlayer;
 		
@@ -63,6 +68,7 @@ package
 			lastVisitor = 0;
 			lastSpit = 0;
 			lastScoreText = 0;
+			lastHelicopterSpawnedCounter = 0;
 			
 			var i:uint = 0;
 			
@@ -70,6 +76,11 @@ package
 			llama = new Llama();
 			//_editor.registerObject(llama);
 			add(llama);
+			
+			helicopter = new Helicopter();
+			add(helicopter);
+			// start helicopter immediately, only for testing!
+			helicopter.startHelicopter();
 			
 			// Initialize cage
 			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
@@ -125,11 +136,19 @@ package
 		
 		override public function update():void
 		{
+			super.update();
+			
 			// update time & difficulty
+			// elapsedTime = SECONDS
+			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
 			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
-			
-			super.update();
+						
+			lastHelicopterSpawnedCounter += FlxG.elapsed;			
+			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
+				helicopter.startHelicopter();
+				lastHelicopterSpawnedCounter = 0;
+			}
 			
 			if (llama.lama.y > 350) {
 				llama.lama.velocity.y = llama.jumpUpVelocity;
@@ -146,20 +165,21 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:Number = 100.0 / (difficulty + 40.0);
+			var spawnInterval:Number = 200.0 / (difficulty + 40.0);
 			if (spawnInterval < 0.1) {
 				spawnInterval = 0.1;
 			}
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
-				spawnVisitor ();
+				spawnVisitors ();
 				lastSpawnTime += spawnInterval;
 			}
 			
 			// Collision visitors vs. spit, visitors vs flying
-			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitHit);
+			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
 			FlxG.overlap(visitors, flyingVisitors, visitorsVsFlying, canFlyingHit);
+			FlxG.overlap(helicopter.getUpgradeSprite(), spits, upgradeVsSpits, canSpitAndUpgradeHit);
 			
 			// Continually remove some from flying array if possible
 			var trash:FlxBasic = flyingVisitors.getFirstAvailable();
@@ -188,28 +208,33 @@ package
 		} // end of update
 		
 		
-		private function spawnVisitor():void
+		private function spawnVisitors ():void
 		{
-			var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+			trace("spawn");
 			
-			if (v.exists) return; // keep on screen until dead
+			var amount:uint = Math.max(5, Math.min(10, Math.round(difficulty/10 + 5)));
 			
-			lastVisitor++;
-			
-			// distribute left/right somewhat randomly, but avoid long streaks
-			if (visitors.length % 6 == 0) 
+			for (var i:uint = 0; i < amount; i++)
 			{
-				v.init(difficulty, FlxObject.LEFT);
-			} else
-			if (visitors.length % 6 == 3) 
-			{
-				v.init(difficulty, FlxObject.RIGHT);
-			} else
-			{
-				v.init(difficulty);
+				var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+				
+				if (v.exists) return; // keep on screen until dead
+				
+				lastVisitor++;
+				
+				// distribute left/right somewhat randomly, but avoid long streaks
+				if (visitors.length % 6 == 0) 
+				{
+					v.init(difficulty, i, FlxObject.LEFT);
+				} else
+				if (visitors.length % 6 == 3) 
+				{
+					v.init(difficulty, i, FlxObject.RIGHT);
+				} else
+				{
+					v.init(difficulty, i);
+				}
 			}
-			
-			v.revive();
 		}
 		
 		public function spawnSpit(X:Number, Y:Number):Spit
@@ -227,10 +252,26 @@ package
 			return s;
 		}
 		
-		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
+		private function canSpitAndUpgradeHit(visitor:FlxObject,spit:FlxObject):Boolean
+		{
+			return (spit as Spit).canHit() && helicopter.canUpgradeHit();
+		}
+			
+		private function canSpitAndVisitorHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
 			var v:Visitor = visitor as Visitor;
-			return v.canBeHit() && (spit as Spit).canHit(v);
+			return v.canBeHit() && (spit as Spit).canHit();
+		}
+		
+		private function upgradeVsSpits(upgrade:FlxObject,spit:FlxObject):void
+		{			
+			// there is only 1 upgrade, so the 1st argument is never needed - this is only called if a collision with the upgrade occured			
+			var s:Spit = spit as Spit;
+			s.hitSomething();
+			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
+			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
+			
+			helicopter.upgradeHit();
 		}
 		
 		private function visitorsVsSpits(victim:FlxObject,spit:FlxObject):void
@@ -240,12 +281,11 @@ package
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
-			addScore(v.scorePoints);
-			spawnScoreText(v.x + v.width / 2, v.y, 1, v.scorePoints);
 			
 			Globals.sfxPlayer.Splotsh();
 			
-			if (s.isType(Spit.TYPE_MULTI_SPAWN)) {
+			if (s.isType(Spit.TYPE_MULTI_SPAWN))
+			{
 				spawnMultipleNewSpitsAtSpitPosition(s);				
 			}
 		}
@@ -263,25 +303,27 @@ package
 			Globals.sfxPlayer.Splotsh();
 			
 			v.getHitByPerson(f);
-			addScore(v.scorePoints * v.comboCounter);
-			doCombo(v.comboCounter);
-			spawnScoreText(v.x + v.width/2, v.y, v.comboCounter, v.scorePoints);
 		}
 		
-		private function addScore (score:int):void
+		public function causeScore (killed:Visitor, score:int, combo:int):void
 		{
-			FlxG.score += score;
+			FlxG.score += score * combo;
+			
+			// total score display (top right)
 			scoreText.text = FlxG.score.toString();
-		}
-		
-		private function doCombo (counter:uint):void
-		{
+			
+			// temporary points display everywhere
+			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
 		}
 		
 		public function loseLife ():void
 		{
-			lives--;
-			livesDisplay.length = lives;
+			if (lives > 0)
+			{
+				lives--;
+				livesDisplay.length = lives;
+			}
+			
 			if (lives <= 0)
 			{
 				FlxG.switchState(new GameoverState());
