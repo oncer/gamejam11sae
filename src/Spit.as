@@ -17,7 +17,8 @@ package
 		
 		[Embed(source="../gfx/spit.png")] private var SpitClass:Class;
 		[Embed(source="../gfx/spitfloor.png")] private var SpitFloorClass:Class;
-		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
+		[Embed(source = "../gfx/spitparticle.png")] private var SpitParticleClass:Class;
+		[Embed(source="../gfx/spitbig.png")] private var SpitBigClass:Class;
 		
 		private var _canHit:Boolean;
 		

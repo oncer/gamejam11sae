@@ -16,8 +16,9 @@ package
 		/** has the same value like one of Llama. */
 		private var upgradeType:uint;
 		/** x velocity. */
-		private var VELOCITY:uint = 200;		
-		private var HELICOPTER_Y:uint = 30;
+		private var HELICOPTER_VELOCITY:uint = 200;		
+		private var UPGRADEBOX_VELOCITY_AFTER_HIT:uint = 100;		
+		private var HELICOPTER_Y:uint = 40;
 		// this is the center where the upgrade box should spawn
 		// +2 is necessary, because the upgrade frame has 1 pixel border (left and right)
 		private var UPGRADE_CENTER_OFFSET_X = 46+2;
@@ -26,6 +27,7 @@ package
 		private var upgradeSprite:FlxSprite;
 		
 		private var isUpgradeHit:Boolean;
+		private var isFacingRight:Boolean;
 		
 		public function Helicopter() 
 		{			
@@ -58,14 +60,16 @@ package
 			// start right
 			if (randomDirection == 0) {
 				// start from the left side of the screen
-				helicopterSprite.x = 0;
+				helicopterSprite.x = 0-helicopterSprite.frameWidth;
 				
-				helicopterSprite.velocity.x = VELOCITY;
+				helicopterSprite.velocity.x = HELICOPTER_VELOCITY;
 				helicopterSprite.facing = FlxObject.RIGHT;
+				isFacingRight = true;
 			} else {
 				helicopterSprite.x = FlxG.width;
-				helicopterSprite.velocity.x = -VELOCITY;
+				helicopterSprite.velocity.x = -HELICOPTER_VELOCITY;
 				helicopterSprite.facing = FlxObject.LEFT;
+				isFacingRight = false;
 			}
 			
 			// the box has 1 transparent pixel at the border
@@ -84,7 +88,8 @@ package
 			if (helicopterSprite.x < -100 || helicopterSprite.x > FlxG.width+100) {
 				helicopterSprite.velocity.x = 0;
 			} else {
-				upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
+				if(!isUpgradeHit)
+					upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			}
 		}
 		
@@ -102,6 +107,11 @@ package
 		{
 			isUpgradeHit = true;
 			upgradeSprite.acceleration.y = 200;
+			if(isFacingRight)
+				upgradeSprite.velocity.x = UPGRADEBOX_VELOCITY_AFTER_HIT;
+			else
+				upgradeSprite.velocity.x = -UPGRADEBOX_VELOCITY_AFTER_HIT;
+			
 		}
 		
 		public function canUpgradeHit():Boolean
