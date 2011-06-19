@@ -243,6 +243,8 @@ package
 			addScore(v.scorePoints);
 			spawnScoreText(v.x + v.width / 2, v.y, 1, v.scorePoints);
 			
+			Globals.sfxPlayer.Splotsh();
+			
 			if (s.isType(Spit.TYPE_MULTI_SPAWN)) {
 				spawnMultipleNewSpitsAtSpitPosition(s);				
 			}
@@ -257,6 +259,8 @@ package
 		{
 			var v:Visitor = victim as Visitor;
 			var f:Visitor = flying as Visitor;
+			
+			Globals.sfxPlayer.Splotsh();
 			
 			v.getHitByPerson(f);
 			addScore(v.scorePoints * v.comboCounter);

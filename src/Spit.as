@@ -155,8 +155,6 @@ package
 			velocity.y = 0;
 			_canHit = false;
 			particles.on = false;
-			
-			Globals.sfxPlayer.Splotsh();
 		}
 		
 		public function hitGround ():void
