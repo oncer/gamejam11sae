@@ -26,6 +26,7 @@ package
 		public var trampolin:FlxSprite;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
+		private var helicopter:Helicopter;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
 		private var scoreText:FlxText; // can hit normal visitors for combos
@@ -38,6 +39,10 @@ package
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		private var lastScoreText:uint; // most recent array index
+		
+		private var lastHelicopterSpawnedCounter:Number;
+		/** after this time (in seconds), the helicopter is started either from left or right */
+		private var DURATION_RESPAWN_HELICOPTER:Number = 5;
 		
 		private var ambientPlayer:AmbientPlayer;
 		
@@ -65,6 +70,7 @@ package
 			lastVisitor = 0;
 			lastSpit = 0;
 			lastScoreText = 0;
+			lastHelicopterSpawnedCounter = 0;
 			
 			var i:uint = 0;
 			
@@ -77,6 +83,12 @@ package
 			trampolin = new FlxSprite (Globals.CAGE_LEFT, Globals.TRAMPOLIN_TOP);
 			trampolin.loadGraphic(TrampolinImage);
 			add(trampolin);
+
+			helicopter = new Helicopter();
+			add(helicopter);
+			// start helicopter immediately, only for testing!
+			helicopter.startHelicopter();
+
 			
 			// Initialize cage
 			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
@@ -132,13 +144,19 @@ package
 		
 		override public function update():void
 		{
+			super.update();
+			
 			// update time & difficulty
 			// elapsedTime = SECONDS
 			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
 			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
-			
-			super.update();
+						
+			lastHelicopterSpawnedCounter += FlxG.elapsed;			
+			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
+				helicopter.startHelicopter();
+				lastHelicopterSpawnedCounter = 0;
+			}
 			
 			if (trampolin.y < Globals.TRAMPOLIN_TOP) {
 				trampolin.y = Globals.TRAMPOLIN_TOP;
@@ -168,8 +186,9 @@ package
 			}
 			
 			// Collision visitors vs. spit, visitors vs flying
-			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitHit);
+			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
 			FlxG.overlap(visitors, flyingVisitors, visitorsVsFlying, canFlyingHit);
+			FlxG.overlap(helicopter.getUpgradeSprite(), spits, upgradeVsSpits, canSpitAndUpgradeHit);
 			
 			// Continually remove some from flying array if possible
 			var trash:FlxBasic = flyingVisitors.getFirstAvailable();
@@ -242,10 +261,26 @@ package
 			return s;
 		}
 		
-		private function canSpitHit(visitor:FlxObject,spit:FlxObject):Boolean
+		private function canSpitAndUpgradeHit(visitor:FlxObject,spit:FlxObject):Boolean
+		{
+			return (spit as Spit).canHit() && helicopter.canUpgradeHit();
+		}
+			
+		private function canSpitAndVisitorHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
 			var v:Visitor = visitor as Visitor;
-			return v.canBeHit() && (spit as Spit).canHit(v);
+			return v.canBeHit() && (spit as Spit).canHit();
+		}
+		
+		private function upgradeVsSpits(upgrade:FlxObject,spit:FlxObject):void
+		{			
+			// there is only 1 upgrade, so the 1st argument is never needed - this is only called if a collision with the upgrade occured			
+			var s:Spit = spit as Spit;
+			s.hitSomething();
+			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
+			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
+			
+			helicopter.upgradeHit();
 		}
 		
 		private function visitorsVsSpits(victim:FlxObject,spit:FlxObject):void
