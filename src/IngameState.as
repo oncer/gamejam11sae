@@ -224,7 +224,7 @@ package
 		
 		private function spawnVisitors (amount:uint):void
 		{
-			trace("spawn");
+			//trace("spawn");
 			
 			for (var i:uint = 0; i < amount; i++)
 			{
