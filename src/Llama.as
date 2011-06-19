@@ -77,7 +77,7 @@ package
 		
 		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 1, 1);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
-		private var upgradeDuration:Array = new Array(0, 5, 5, 5);
+		private var upgradeDuration:Array = new Array(0, 10, 10, 10);
 		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
@@ -340,12 +340,12 @@ package
 				}			
 			}
 
-		}// end of update
+		} // end of update
 		
 		public function setUpgradeType(UpgradeType:uint):void {
 			trace("upgrade type set: " + UpgradeType);
 			upgradeType = UpgradeType;
-			spitCooldownCounter = 0;
+			spitCooldownCounter = spitCooldown; // can shoot instantly
 			spitCooldown = spitCooldownArray[upgradeType];
 			upgrade.frame = upgradeType;
 			upgradeDurationCounter = 0;
