@@ -4,7 +4,7 @@ package
 	
 	public class LevelManager extends FlxBasic
 	{
-		private const SECONDS_PER_LEVEL:Number = 60;
+		private const SECONDS_PER_LEVEL:Number = 40;
 		
 		private var elapsedTime:Number; // total in seconds
 		private var _isNewLevel:Boolean;
