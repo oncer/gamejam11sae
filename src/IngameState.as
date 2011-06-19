@@ -283,18 +283,26 @@ package
 			}
 		}
 		
-		private function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
+		/**
+		 * Needs to be public, because also gets called from Spit when a MULTI_SPAWN spit hits the ground.
+		 * @param	collidingSpit
+		 */		
+		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
 			var speed:Number = 200;
 			var y_threshold:Number = 10;
 			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
+			// angle 0 is to the right, 180 to the left, 270 up
 			Llama.moveWithAngle(newSpit, 0, speed);
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
 			Llama.moveWithAngle(newSpit, 180, speed);
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 270, speed);
+			Llama.moveWithAngle(newSpit, 270-30, speed);
+			
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			Llama.moveWithAngle(newSpit, 270+30, speed);
 		}
 	} // end of class IngameState
 } // end of package

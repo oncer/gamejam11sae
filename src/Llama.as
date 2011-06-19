@@ -76,6 +76,9 @@ package
 		private var spitCooldownCounter:Number;
 		
 		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 4, 1);
+		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
+		private var upgradeDuration:Array = new Array(0, 5, 5, 5);
+		private var upgradeDurationCounter;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
 		private static const SPIT_ANIMATION_DURATION:Number = 0.6;
@@ -129,7 +132,7 @@ package
 			
 			spitCooldownCounter = 0;
 			spitAnimationCounter = 0;
-			currentLamaJumpFrame = 0;
+			currentLamaJumpFrame = 0;			
 			
 			// change to this in the end, for testing now use the rapid fire upgrade from beginning
 			//setUpgradeType(UPGRADE_NONE);
@@ -160,6 +163,14 @@ package
 				if (spitAnimationCounter >= SPIT_ANIMATION_DURATION) {
 					spitAnimationCounter = 0;
 					lama.frame = currentLamaJumpFrame;
+				}
+			}
+			
+			if (upgradeType != UPGRADE_NONE) {
+				upgradeDurationCounter += FlxG.elapsed;
+				if (upgradeDurationCounter > upgradeDuration[upgradeType]) {
+					// upgrade is over 
+					setUpgradeType(UPGRADE_NONE);
 				}
 			}
 			
@@ -336,6 +347,7 @@ package
 			spitCooldownCounter = 0;
 			spitCooldown = spitCooldownArray[upgradeType];
 			upgrade.frame = upgradeType;
+			upgradeDurationCounter = 0;
 		}
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {
