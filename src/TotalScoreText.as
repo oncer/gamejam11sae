@@ -33,8 +33,8 @@ package
 		override public function update():void
 		{
 			currentSize = (currentSize - BASE_SIZE) / Math.pow(2.0, FlxG.elapsed) + BASE_SIZE;
-			//size = currentSize;
-			//y = baseY - height/2;
+			size = BASE_SIZE;
+			y = baseY - height/2;
 			//x = baseX + (currentSize - BASE_SIZE) / 4;
 			
 			var overSize:Number = Math.floor((currentSize - BASE_SIZE) * 25);

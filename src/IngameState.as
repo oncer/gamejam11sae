@@ -224,7 +224,7 @@ package
 		
 		private function spawnVisitors (amount:uint):void
 		{
-			trace("spawn");
+			//trace("spawn");
 			
 			for (var i:uint = 0; i < amount; i++)
 			{
@@ -342,11 +342,15 @@ package
 			if (lives <= 0)
 			{
 				Globals.sfxPlayer.Gameover();
-				// create a new gameoverState every time... better would be to initialize it, and only create it once
-				FlxG.switchState(new GameoverState());
+				FlxG.fade(0xff000000, 3, gameOverFunction);
 			}
 		}
 		
+		private function gameOverFunction():void
+		{
+			FlxG.switchState(new GameoverState());
+		}
+	
 		/**
 		 * Needs to be public, because also gets called from Spit when a MULTI_SPAWN spit hits the ground.
 		 * @param	collidingSpit
