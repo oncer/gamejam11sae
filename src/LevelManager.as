@@ -51,7 +51,7 @@ package
 				spawnInterval = 0.1;
 			}
 			
-			var amountPerInterval:uint = Math.max(5, Math.min(10, Math.round(difficulty/10 + 5)));
+			var amountPerInterval:uint = Math.max(2, Math.min(10, Math.round(difficulty/10 + 5)));
 			var amount:uint = 0;
 			
 			while (lastSpawnTime < elapsedTime) 
@@ -77,8 +77,8 @@ package
 		
 		public function getDifficulty():Number
 		{
-			var minLevelDifficulty:Number = currentLevel * 3;
-			var maxLevelDifficulty:Number = currentLevel * 30;
+			var minLevelDifficulty:Number = currentLevel * 1;
+			var maxLevelDifficulty:Number = currentLevel * 10;
 			var range:Number = maxLevelDifficulty - minLevelDifficulty;
 			
 			return minLevelDifficulty + range * levelCompletion();
