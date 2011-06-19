@@ -170,6 +170,8 @@ package
 			floorTimer = 0.5;
 			floorDead = false;
 			
+			Globals.sfxPlayer.Splotsh();
+			
 			if (isType(TYPE_MULTI_SPAWN)) {
 				var currentState:IngameState = FlxG.state as IngameState;
 				currentState.spawnMultipleNewSpitsAtSpitPosition(this);
