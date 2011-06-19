@@ -312,7 +312,7 @@ package
 				
 					var currentState:IngameState = FlxG.state as IngameState;
 					
-					
+					Globals.sfxPlayer.Spit();
 					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					if (upgradeType == UPGRADE_MULTISPAWN)
 						spit.setType(Spit.TYPE_MULTI_SPAWN);

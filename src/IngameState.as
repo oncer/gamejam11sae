@@ -250,7 +250,6 @@ package
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			s.reset(X,Y);
-			Globals.sfxPlayer.Spit();
 			return s;
 		}
 		
@@ -280,7 +279,7 @@ package
 			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
 			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
 			
-			helicopter.upgradeHit();
+			helicopter.upgradeHit(spit);
 		}
 		
 		private function visitorsVsSpits(victim:FlxObject,spit:FlxObject):void
