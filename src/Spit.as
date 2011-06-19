@@ -7,7 +7,7 @@ package
 	 * ...
 	 * @author Chris
 	 */
-	public class Spit extends FlxSprite 
+	public class Spit extends FlxSprite
 	{
 		public static const TYPE_DEFAULT:uint = 0;
 		public static const TYPE_BIGSPIT:uint = 1;
@@ -36,7 +36,7 @@ package
 			//loadGraphic(SpitClass);
 			loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			setCenterPosition(center.x, center.y);
-						
+			
 			exists = false;
 			_canHit = true;
 			
@@ -72,7 +72,7 @@ package
 			
 			setCenterPosition(X, Y);
 			
-			spitType = TYPE_DEFAULT;
+			setType(TYPE_DEFAULT);
 		}
 		
 		override public function preUpdate():void
@@ -116,12 +116,16 @@ package
 				}
 			}
 			
-			if (floorDead && !gfxFloor.flickering)
+			if (floorDead && !gfxFloor.flickering && !isType(TYPE_BIGSPIT))
 			{
 				trace("[spit] kill");
 				kill();
 			}
 			
+			if (x > FlxG.width || x < -width) {
+				trace("[spit] kill after getting out of screen");
+				kill();
+			}
 			
 			/*if (y > FlxG.height) {
 				kill();
@@ -151,36 +155,54 @@ package
 		}
 		
 		public function hitSomething ():void
-		{
-			velocity.x /= 1.5;
+		{			
 			velocity.y = 0;
-			_canHit = false;
-			particles.on = false;
+			if(!isType(TYPE_BIGSPIT)) {			
+				velocity.x /= 1.5;
+				_canHit = false;
+				particles.on = false;
+			} else {				
+			}
 		}
 		
 		public function hitGround ():void
 		{
-			_canHit = false;
-			particles.on = false;
-			gfxFloor.x = x;
-			gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
-			gfxFloor.visible = true;
-			drag.x = Math.abs(velocity.x) * 10;
-			velocity.y = 0;
-			acceleration.y = 0;
-			floorTimer = 0.5;
-			floorDead = false;
 			
-			Globals.sfxPlayer.Splotsh();
-			
-			if (isType(TYPE_MULTI_SPAWN)) {
-				var currentState:IngameState = FlxG.state as IngameState;
-				currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+			if(!isType(TYPE_BIGSPIT)) {			
+				_canHit = false;
+				particles.on = false;
+				gfxFloor.x = x;
+				gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
+				gfxFloor.visible = true;
+				drag.x = Math.abs(velocity.x) * 10;
+				velocity.y = 0;
+				acceleration.y = 0;
+				floorTimer = 0.5;
+				floorDead = false;
+				
+				Globals.sfxPlayer.Splotsh();
+				
+				if (isType(TYPE_MULTI_SPAWN)) {
+					var currentState:IngameState = FlxG.state as IngameState;
+					currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+				}
+			} else {
+				velocity.y = 0;
+				acceleration.y = 0;
+				
 			}
 		}
 		
 		public function setType(SpitType:uint):void {
 			spitType = SpitType;
+			
+			// this gets only called at reset, for the default type, or if type is bigspit or MULTI_SPAWN - because these spit types are not generated that often, performance drain is still ok
+			trace("[Spit] setSpitType: " + SpitType);
+			if (isType(TYPE_BIGSPIT)) {
+				loadRotatedGraphic(SpitBigClass, 16, -1, true, true);
+			} else {
+				loadRotatedGraphic(SpitClass, 16, -1, true, true);
+			}
 		}
 		
 		public function isType(SpitType:uint):Boolean {
