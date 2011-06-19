@@ -50,6 +50,7 @@ package
 			helicopterSprite.addAnimation("fly", [0, 1, 2, 3], 30, true);
 			helicopterSprite.play("fly");			
 			add(helicopterSprite);
+			helicopterSprite.x = -100;
 						
 			upgradeSprite = new FlxSprite(0, 0);
 			upgradeSprite.loadGraphic(UpgradesClass, false, false, 32, 32);
