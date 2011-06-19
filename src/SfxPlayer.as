@@ -2,7 +2,7 @@ package
 {
 	import org.flixel.*;
 	
-	public class SfxPlayer extends FlxObject
+	public class SfxPlayer extends FlxGroup
 	{
 		[Embed(source="../audio/splotsh/splotsh1.mp3")] private static var SndSplotsh1:Class;
 		[Embed(source="../audio/splotsh/splotsh2.mp3")] private static var SndSplotsh2:Class;
@@ -51,6 +51,8 @@ package
 		
 		[Embed(source="../audio/upgrade.mp3")] private static var SndUpgrade:Class;
 		
+		[Embed(source="../audio/chopper.mp3")] private static var SndChopper:Class;
+		
 		private var SndSplotshPool:Array = new Array(
 			SndSplotsh1, SndSplotsh2, SndSplotsh3, SndSplotsh4, SndSplotsh5,
 			SndSplotsh6, SndSplotsh7, SndSplotsh8, SndSplotsh9, SndSplotsh10,
@@ -96,8 +98,25 @@ package
 		public function ScreamWoman():void { playSfxRandomPool(SndScreamWomanPool); }
 		public function Upgrade():void { playSfxRandomPool(SndUpgradePool); }
 		
+		private var sfxChopper:FlxSound;
+		
+		public function ChopperIn():void
+		{
+			sfxChopper.fadeIn(2);
+			sfxChopper.update();
+		}
+		
+		public function ChopperOut():void
+		{
+			sfxChopper.fadeOut(1);
+		}
+		
 		public function SfxPlayer():void
 		{
+			sfxChopper = new FlxSound();
+			sfxChopper.loadEmbedded(SndChopper);
+			sfxChopper.volume = 0.5;
+			add(sfxChopper);
 		}
 		
 		// Pool is an array of sound classes

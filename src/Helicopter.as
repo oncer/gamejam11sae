@@ -32,6 +32,7 @@ package
 		
 		private var isUpgradeHit:Boolean;
 		private var isUpgradeDead:Boolean;
+		private var isChopperOut:Boolean;
 		
 		private var explosion:FlxEmitter;
 		private var isFacingRight:Boolean;
@@ -62,6 +63,7 @@ package
 			
 			isUpgradeHit = false;
 			isUpgradeDead = false;
+			isChopperOut = false;
 		}
 		
 		public function startHelicopter():void {
@@ -100,14 +102,19 @@ package
 			
 			isUpgradeHit = false;
 			isUpgradeDead = false;
+			isChopperOut = false;
+			
+			Globals.sfxPlayer.ChopperIn();
 		}
 		
 		override public function update():void
 		{
 			super.update();
 			// stop if outside of screen
-			if (helicopterSprite.x < -100 || helicopterSprite.x > FlxG.width+100) {
+			if (!isChopperOut && (helicopterSprite.x < -100 || helicopterSprite.x > FlxG.width+100)) {
 				helicopterSprite.velocity.x = 0;
+				Globals.sfxPlayer.ChopperOut();
+				isChopperOut = true;
 			} else if (!isUpgradeHit) {
 				upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			}

@@ -140,6 +140,7 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			add(Globals.sfxPlayer);
 			
 			// level manager determines current level, difficulty etc.
 			levelManager = new LevelManager();
