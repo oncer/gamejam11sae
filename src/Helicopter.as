@@ -13,23 +13,28 @@ package
 		[Embed(source = "../gfx/helicopter.png")]  private var HelicopterClass:Class;
 		[Embed(source = "../gfx/upgrades.png")]  private var UpgradesClass:Class;
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
+		[Embed(source="../gfx/kiste.png")] private var CrateClass:Class;
 		
 		/** has the same value like one of Llama. */
 		private var upgradeType:uint;
 		/** x velocity. */
-		private var VELOCITY:uint = 200;		
-		private var HELICOPTER_Y:uint = 30;
+		private var HELICOPTER_VELOCITY:uint = 200;		
+		private var UPGRADEBOX_VELOCITY_AFTER_HIT:uint = 100;		
+		private var HELICOPTER_Y:uint = 40;
 		// this is the center where the upgrade box should spawn
 		// +2 is necessary, because the upgrade frame has 1 pixel border (left and right)
-		private var UPGRADE_CENTER_OFFSET_X:uint = 46+2;
+
+		private var UPGRADE_CENTER_OFFSET_X:int = 46+2;
 		
 		private var helicopterSprite:FlxSprite;
 		private var upgradeSprite:FlxSprite;
+		private var crateDestroySprite:FlxSprite;
 		
 		private var isUpgradeHit:Boolean;
 		private var isUpgradeDead:Boolean;
 		
 		private var explosion:FlxEmitter;
+		private var isFacingRight:Boolean;
 		
 		public function Helicopter() 
 		{			
@@ -45,6 +50,12 @@ package
 			upgradeSprite = new FlxSprite(0, 0);
 			upgradeSprite.loadGraphic(UpgradesClass, false, false, 32, 32);
 			add(upgradeSprite);
+			
+			crateDestroySprite = new FlxSprite(0, 0);
+			crateDestroySprite.loadGraphic(CrateClass, true, false, 32, 32);
+			crateDestroySprite.addAnimation("destroy", [0,1,2], 10, true);
+			crateDestroySprite.exists = false;
+			add(crateDestroySprite);
 			
 			isUpgradeHit = false;
 			isUpgradeDead = false;
@@ -63,14 +74,16 @@ package
 			// start right
 			if (randomDirection == 0) {
 				// start from the left side of the screen
-				helicopterSprite.x = 0;
+				helicopterSprite.x = 0-helicopterSprite.frameWidth;
 				
-				helicopterSprite.velocity.x = VELOCITY;
+				helicopterSprite.velocity.x = HELICOPTER_VELOCITY;
 				helicopterSprite.facing = FlxObject.RIGHT;
+				isFacingRight = true;
 			} else {
 				helicopterSprite.x = FlxG.width;
-				helicopterSprite.velocity.x = -VELOCITY;
+				helicopterSprite.velocity.x = -HELICOPTER_VELOCITY;
 				helicopterSprite.facing = FlxObject.LEFT;
+				isFacingRight = false;
 			}
 			
 			// the box has 1 transparent pixel at the border
@@ -78,6 +91,9 @@ package
 			upgradeSprite.acceleration.y = 0;
 			upgradeSprite.velocity.x = 0;
 			upgradeSprite.velocity.y = 0;
+			upgradeSprite.exists = true;
+			crateDestroySprite.exists = false;
+			
 			isUpgradeHit = false;
 			
 		}
@@ -92,16 +108,21 @@ package
 				upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			}
 			if (upgradeSprite.y + upgradeSprite.height > Globals.GROUND_LEVEL) {
-				upgradeSprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
-				upgradeSprite.acceleration.y = 0;
-				upgradeSprite.drag.x = 600;
-				upgradeSprite.flicker(1);
+				crateDestroySprite.x = upgradeSprite.x;
+				crateDestroySprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
+				crateDestroySprite.acceleration.x = upgradeSprite.acceleration.x;
+				crateDestroySprite.acceleration.y = 0;
+				crateDestroySprite.drag.x = 600;
+				upgradeSprite.exists = false;
+				crateDestroySprite.exists = true;
+				crateDestroySprite.play("destroy");
+
 				isUpgradeDead = true;
 			}
-			/*if (isUpgradeDead && !upgradeSprite.flickering)
+			if (isUpgradeDead && !crateDestroySprite.finished)
 			{
-				kill();
-			}*/
+				crateDestroySprite.exists = false;
+			}
 		}
 		
 		public function getUpgradeSprite():FlxSprite 
@@ -129,6 +150,12 @@ package
 			explosion.setYSpeed(-50, 50);
 			explosion.gravity = upgradeSprite.acceleration.y;
 			explosion.start(true);
+			if(isFacingRight) {
+				upgradeSprite.velocity.x = UPGRADEBOX_VELOCITY_AFTER_HIT;
+			} else {
+				upgradeSprite.velocity.x = -UPGRADEBOX_VELOCITY_AFTER_HIT;
+			}
+			
 		}
 		
 		public function canUpgradeHit():Boolean

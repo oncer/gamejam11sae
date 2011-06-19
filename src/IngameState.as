@@ -42,7 +42,7 @@ package
 		
 		private var lastHelicopterSpawnedCounter:Number;
 		/** after this time (in seconds), the helicopter is started either from left or right */
-		private var DURATION_RESPAWN_HELICOPTER:Number = 5;
+		private var DURATION_RESPAWN_HELICOPTER:Number = 25;
 		
 		private var ambientPlayer:AmbientPlayer;
 		

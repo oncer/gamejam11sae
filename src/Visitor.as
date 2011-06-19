@@ -44,6 +44,7 @@ package
 		private var flyStartTime:Number; // timestamp of last start flying
 		private var floatTime:Number; // timestamp of last start flying
 		private var hasReachedGoal:Boolean; // then player loses a life
+		private var visitorType:int;
 		
 		private var explosion:FlxEmitter;
 		
@@ -71,7 +72,7 @@ package
 			hasReachedGoal = false;
 			floatTime = 0;
 			
-			var visitorType:uint = Math.floor(Math.random()*5);
+			visitorType = Math.floor(Math.random()*5);
 			if (Math.random()*5 < 1) visitorType += 5; // rare variations
 			
 			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
@@ -447,8 +448,23 @@ package
 			explosion.start(true,0.5);
 		}
 		
+		private function scream():void
+		{
+			if (visitorType == 0 || visitorType == 5) {
+				Globals.sfxPlayer.ScreamKid();
+			} else if (visitorType == 1 || visitorType == 3 ||
+					   visitorType == 6 || visitorType == 8) {
+				Globals.sfxPlayer.ScreamMan();
+			} else if (visitorType == 4 || visitorType == 9) {
+				Globals.sfxPlayer.ScreamOldWoman();
+			} else if (visitorType == 2 || visitorType == 7) {
+				Globals.sfxPlayer.ScreamWoman();
+			}
+		}
+		
 		public function getSpitOn (spit:Spit):void
 		{
+			scream();
 			if (health > 0)
 			{
 				health -= 1;
@@ -475,6 +491,7 @@ package
 		
 		public function getHitByPerson (flying:Visitor):void
 		{
+			scream();
 			if (health > 0)
 			{
 				health -= 1;

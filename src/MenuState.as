@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.*;
+	import flash.system.fscommand;
 	
 	public class MenuState extends FlxState
 	{
@@ -15,6 +16,7 @@ package
 		private var _howto:FlxButton;
 		
 		private var _scores:Array;
+		private var timeout:Number;
 	
 		override public function create():void
 		{
@@ -56,8 +58,32 @@ package
 				add(text);
 			}
 			_scores[0].color = 0x333333;
+			
+			timeout = 1.5; // do not allow to leave screen while this is > 0
 		}
+		
+		public override function update():void
+		{
+			super.update();
 				
+			if (timeout > 0)
+			{
+				timeout -= FlxG.elapsed;
+			}
+			else
+			{
+				if (FlxG.keys.ESCAPE)
+				{
+					fscommand("quit");
+					FlxG.switchState(null);
+				} else
+				if (FlxG.keys.any())
+				{
+					onPlay();
+				}
+			}
+		}
+		
 		public function onPlay():void
 		{
 			FlxG.switchState(new IngameState());
