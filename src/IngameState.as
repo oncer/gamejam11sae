@@ -85,8 +85,6 @@ package
 
 			helicopter = new Helicopter(this);
 			add(helicopter);
-			// start helicopter immediately, only for testing!
-			helicopter.startHelicopter();
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
