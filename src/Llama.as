@@ -87,6 +87,8 @@ package
 		
 		private var ingameState:IngameState;
 		
+		private var upgradeDisplayManager:UpgradeDisplayManager;
+		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama(INGAMESTATE:IngameState)
 		{
@@ -126,17 +128,23 @@ package
 			spitStrengthBar.createImageBar(null, Bar2Class, 0x00000000);
 			add(spitStrengthBar);						
 			spitStrength = 0;
-			spitIncreasePerSecond = 200;
+			spitIncreasePerSecond = 200;			
 			
-			upgrade = new FlxSprite(FlxG.width / 2, FlxG.height - 40);
-			upgrade.loadGraphic(UpgradesClass, false, false, 32, 32);
-			add(upgrade);
 			
 			lama.maxVelocity.x = 150;
 			
 			spitCooldownCounter = 0;
 			spitAnimationCounter = 0;
-			currentLamaJumpFrame = 0;			
+			currentLamaJumpFrame = 0;					
+			
+			// TODO this can be removed in the end! is not used any more
+			upgrade = new FlxSprite(FlxG.width / 2, FlxG.height - 40);
+			upgrade.loadGraphic(UpgradesClass, false, false, 32, 32);
+			// do not display the upgrade like that, use the displayManager below
+			//add(upgrade);
+			
+			upgradeDisplayManager = new UpgradeDisplayManager(barBorder.x, barBorder.y+barBorder.height);			
+			add(upgradeDisplayManager);
 			
 			// change to this in the end, for testing now use the rapid fire upgrade from beginning
 			setUpgradeType(UPGRADE_NONE);
@@ -155,7 +163,14 @@ package
 			// updating the bar - old, which was the spitStrength
 			//spitStrengthBar.percent = spitStrength;
 			spitStrengthBar.percent = (spitCooldownCounter / spitCooldown) * 100;
-
+			
+			// upgrade with type 0 has 0 duration, so otherwise division by 0 below
+			if (upgradeType == UPGRADE_NONE)
+				upgradeDisplayManager.updateUpgradeDisplay(upgradeType, 100);
+			else {
+				var percent:Number = upgradeDurationCounter / upgradeDuration[upgradeType] * 100;
+				upgradeDisplayManager.updateUpgradeDisplay(upgradeType, percent);
+			}
 			
 			spitCooldownCounter += FlxG.elapsed;
 			

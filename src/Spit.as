@@ -189,7 +189,8 @@ package
 			} else {
 				velocity.y = 0;
 				acceleration.y = 0;
-				
+				// 3 px, because 3px are transparent border
+				y = Globals.GROUND_LEVEL - height +3 ;
 			}
 		}
 		
