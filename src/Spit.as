@@ -92,7 +92,15 @@ package
 			particles.at(this);
 			particles.update();
 			
-			angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
+			if (spitType == TYPE_BIGSPIT) {
+				angle += FlxG.elapsed * 360;
+				if (angle >= 360) {
+					angle -= 360;
+				}
+			} else {
+				angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
+			}
+			
 			
 			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
 			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
@@ -200,7 +208,7 @@ package
 			// this gets only called at reset, for the default type, or if type is bigspit or MULTI_SPAWN - because these spit types are not generated that often, performance drain is still ok
 			trace("[Spit] setSpitType: " + SpitType);
 			if (isType(TYPE_BIGSPIT)) {
-				loadRotatedGraphic(SpitBigClass, 16, -1, true, true);
+				loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
 			} else {
 				loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			}
