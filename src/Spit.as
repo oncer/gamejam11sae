@@ -169,6 +169,13 @@ package
 			acceleration.y = 0;
 			floorTimer = 0.5;
 			floorDead = false;
+			
+			Globals.sfxPlayer.Splotsh();
+			
+			if (isType(TYPE_MULTI_SPAWN)) {
+				var currentState:IngameState = FlxG.state as IngameState;
+				currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+			}
 		}
 		
 		public function setType(SpitType:uint):void {

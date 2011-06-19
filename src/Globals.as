@@ -20,5 +20,7 @@ package
 		public static const VISITOR_GOAL_Y:int = 320; // px value
 		
 		public static const FLY_TIMEOUT:Number = 1.3; // min fly time in seconds
+		
+		public static var sfxPlayer:SfxPlayer;
 	}
 }
