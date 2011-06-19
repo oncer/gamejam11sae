@@ -20,7 +20,7 @@ package
 		private var HELICOPTER_Y:uint = 30;
 		// this is the center where the upgrade box should spawn
 		// +2 is necessary, because the upgrade frame has 1 pixel border (left and right)
-		private var UPGRADE_CENTER_OFFSET_X = 46+2;
+		private var UPGRADE_CENTER_OFFSET_X:int = 46+2;
 		
 		private var helicopterSprite:FlxSprite;
 		private var upgradeSprite:FlxSprite;
