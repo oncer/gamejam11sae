@@ -32,11 +32,10 @@ package
 		{			
 			// the spit is 16x16
 			super();			
-			loadGraphic(SpitClass);
+			//loadGraphic(SpitClass);
 			loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			setCenterPosition(center.x, center.y);
-			
-			acceleration.y = 200;
+						
 			exists = false;
 			_canHit = true;
 			
@@ -69,6 +68,10 @@ package
 			acceleration.x = 0;
 			acceleration.y = 200;
 			drag.x = drag.y = 0;
+			
+			setCenterPosition(X, Y);
+			
+			spitType = TYPE_DEFAULT;
 		}
 		
 		override public function preUpdate():void
@@ -78,8 +81,8 @@ package
 		}
 		
 		public function setCenterPosition(X:Number, Y:Number):void {
-			x = X - 8;// width / 2;
-			y = Y - 8;// height / 2;
+			x = X - width / 2;
+			y = Y - height / 2;
 		}
 		
 		override public function update():void
@@ -166,6 +169,14 @@ package
 			acceleration.y = 0;
 			floorTimer = 0.5;
 			floorDead = false;
+		}
+		
+		public function setType(SpitType:uint):void {
+			spitType = SpitType;
+		}
+		
+		public function isType(SpitType:uint):Boolean {
+			return spitType == SpitType;
 		}
 	}
 

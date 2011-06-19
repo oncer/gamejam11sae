@@ -240,7 +240,11 @@ package
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
 			addScore(v.scorePoints);
-			spawnScoreText(v.x + v.width/2, v.y, 1, v.scorePoints);
+			spawnScoreText(v.x + v.width / 2, v.y, 1, v.scorePoints);
+			
+			if (s.isType(Spit.TYPE_MULTI_SPAWN)) {
+				spawnMultipleNewSpitsAtSpitPosition(s);				
+			}
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
@@ -277,6 +281,20 @@ package
 			{
 				FlxG.switchState(new GameoverState());
 			}
+		}
+		
+		private function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
+			var speed:Number = 200;
+			var y_threshold:Number = 10;
+			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			// 3rd parameter is the same like in Llama.spitStrengthModifier
+			Llama.moveWithAngle(newSpit, 0, speed);
+			
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			Llama.moveWithAngle(newSpit, 180, speed);
+			
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			Llama.moveWithAngle(newSpit, 270, speed);
 		}
 	} // end of class IngameState
 } // end of package

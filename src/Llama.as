@@ -11,7 +11,7 @@ package
 		[Embed(source = "../gfx/bar1.png")] private var Bar1Class:Class;
 		[Embed(source = "../gfx/bar2.png")] private var Bar2Class:Class;
 		
-		[Embed(source = "../gfx/bar2.png")] private var UpgradesClass:Class;
+		[Embed(source = "../gfx/boost02.png")] private var UpgradesClass:Class;
 		
 		
 		public static const UPGRADE_NONE:uint = 0;
@@ -19,6 +19,7 @@ package
 		public static const UPGRADE_BIGSPIT:uint = 2;
 		public static const UPGRADE_MULTISPAWN:uint = 3;
 		public var upgradeType:uint;
+		private var upgrade:FlxSprite;
 		
 		
 		
@@ -74,7 +75,7 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray = new Array(spitCooldown, 0.2, 4, 1);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 4, 1);
 		
 		// the spit animation in seconds, until the original random jump frame is set again
 		private static const SPIT_ANIMATION_DURATION:Number = 0.6;
@@ -90,6 +91,8 @@ package
 			// set 3rd parameter to true because it must be flippable (by facing property)
 			lama.loadGraphic(LamaClass, false, true, FRAME_WIDTH, FRAME_HEIGHT);			
 			_thrust = 0;
+			
+			
 			
 			jumpUpVelocity = -560;
 			
@@ -114,9 +117,13 @@ package
 			add(barBorder);
 			spitStrengthBar = new FlxBar(barBorder.x, barBorder.y, FlxBar.FILL_BOTTOM_TO_TOP, 32, 96);
 			spitStrengthBar.createImageBar(null, Bar2Class, 0x00000000);
-			add(spitStrengthBar);			
+			add(spitStrengthBar);						
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;
+			
+			upgrade = new FlxSprite(FlxG.width / 2, FlxG.height - 40);
+			upgrade.loadGraphic(UpgradesClass, false, false, 32, 32);
+			add(upgrade);
 			
 			lama.maxVelocity.x = 150;
 			
@@ -124,7 +131,9 @@ package
 			spitAnimationCounter = 0;
 			currentLamaJumpFrame = 0;
 			
-			upgradeType = UPGRADE_NONE;
+			// change to this in the end, for testing now use the rapid fire upgrade from beginning
+			//setUpgradeType(UPGRADE_NONE);
+			setUpgradeType(UPGRADE_RAPIDFIRE);
 			
 			// this doesnt work, because th first frame always changes randomly !
 			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);			
@@ -167,10 +176,7 @@ package
 				}
 				lama.frame = randomFrame;
 				currentLamaJumpFrame = randomFrame;
-			}
-			
-			target.x = lama.x + spitOrigin.x + targetOffset.x - target.width/2;
-			target.y = lama.y + spitOrigin.y + targetOffset.y - target.height/2;			
+			}						
 			
 			if(FlxG.keys.LEFT) {
 				lama.acceleration.x = -max_acceleration_x;				
@@ -178,7 +184,6 @@ package
 				lama.acceleration.x = max_acceleration_x;
 			} else {
 				lama.acceleration.x = 0;
-				//lama.velocity.x = 0;
 			}
 			if (FlxG.keys.justPressed("LEFT")) {					
 				if(lama.facing!=FlxObject.LEFT) {
@@ -201,7 +206,7 @@ package
 				
 				var angleBefore:Number = FlxU.getAngle(targetOffset, new FlxPoint(0,0));
 				//var angle:Number = FlxU.getAngle(new FlxPoint(target.x, target.y), new FlxPoint(lama.x, lama.y));
-				trace("angle before: " + angleBefore);
+				//trace("angle before: " + angleBefore);
 				
 				// ATTENTION maybe change that in accordance to the range borders!
 				var rotationDifferenceInDegrees:Number = rotationDifferenceInDegreesPerFrame;
@@ -259,6 +264,9 @@ package
 				//trace("angle after: " + angleAfter + ", angle diff: " + (angleAfter-angleBefore));
 			}			
 			
+			target.x = lama.x + spitOrigin.x + targetOffset.x - target.width/2;
+			target.y = lama.y + spitOrigin.y + targetOffset.y - target.height/2;
+			
 			//FlxU.rotatePoint(90,0,0,0,angle,acceleration);
 			//FlxU.getAngle()
 
@@ -285,15 +293,30 @@ package
 					var currentState:IngameState = FlxG.state as IngameState;
 					
 					
-					var spit:Spit = currentState.spawnSpit(0, 0);
+					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+					if (upgradeType == UPGRADE_MULTISPAWN)
+						spit.setType(Spit.TYPE_MULTI_SPAWN);
+					else if (upgradeType == UPGRADE_BIGSPIT)					
+						spit.setType(Spit.TYPE_BIGSPIT);
+						
+					
 					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
-					spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+					//spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					//var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					// 3rd parameter specifies how fast (the speed) the spit will reach the target, in pixels/second
 					//FlxVelocity.moveTowardsObject(spit, target, spitStrength*spitStrengthModifier);
 
-					trace("diff x: " + (target.x - spit.x) + ", y: " + (target.y - spit.y));
-					FlxVelocity.moveTowardsObject(spit, target, spitStrengthModifier);
+					//trace("diff x: " + (target.x - spit.x) + ", y: " + (target.y - spit.y));
+					//trace("targetOffset.x: " + targetOffset.x + ", target.x: " + target.x + ", spit.x" + spit.x + ", spitOrigin.x: " + spitOrigin.x + ", lama.x: " + lama.x);
+					//trace("targetOffset.y: " + targetOffset.y + ", target.y: " + target.y + ", spit.y" + spit.y + ", spitOrigin.y: " + spitOrigin.y + ", lama.y: " + lama.y);
+					// ATTENTION: this method is BULLSHIT! takes into account the origin of source - wtf!? i never set that..
+					//FlxVelocity.moveTowardsPoint(spit, new FlxPoint(spit.x + targetOffset.x, spit.y + targetOffset.y) , spitStrengthModifier);
+										
+					
+					var angle:Number = FlxMath.asDegrees(Math.atan2(targetOffset.y, targetOffset.x));
+					moveWithAngle(spit, angle, spitStrengthModifier);
+					
+					//trace("vx: " + spit.velocity.x + ", vy: " + spit.velocity.y);
 					
 					spitCooldownCounter = 0;
 					spitAnimationCounter = 0;
@@ -312,6 +335,7 @@ package
 			upgradeType = UpgradeType;
 			spitCooldownCounter = 0;
 			spitCooldown = spitCooldownArray[upgradeType];
+			upgrade.frame = upgradeType;
 		}
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {
@@ -327,6 +351,37 @@ package
 			flxp.y += PivotY;
 			return flxp;
 		}
+		
+		/**
+		 * Find the angle (in radians) between an FlxSprite and an FlxPoint. The source sprite takes its x/y and origin into account.
+		 * The angle is calculated in clockwise positive direction (down = 90 degrees positive, right = 0 degrees positive, up = 90 degrees negative)
+		 * 
+		 * @param	a			The FlxSprite to test from
+		 * @param	target		The FlxPoint to angle the FlxSprite towards
+		 * @param	asDegrees	If you need the value in degrees instead of radians, set to true
+		 * 
+		 * @return	Number The angle (in radians unless asDegrees is true)
+		 */
+		public static function angleBetweenPoint(source:FlxPoint, target:FlxPoint, asDegrees:Boolean = false):Number
+        {
+			var dx:Number = (target.x) - (source.x);
+			var dy:Number = (target.y) - (source.y);
+			
+			if (asDegrees)
+			{
+				return FlxMath.asDegrees(Math.atan2(dy, dx));
+			}
+			else
+			{
+				return Math.atan2(dy, dx);
+			}
+        }
+		
+		public static function moveWithAngle(source:FlxSprite, angle:Number, speed:int):void
+        {			
+			var newV:FlxPoint = FlxVelocity.velocityFromAngle(angle, speed);
+			source.velocity = newV;			
+        }
 		
 	} // end of class llama
 	
