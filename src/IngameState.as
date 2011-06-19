@@ -37,7 +37,6 @@ package
 		private var lives:uint; // 0 == game over
 		private var difficulty:Number;
 		public var elapsedTime:Number; // total in seconds
-		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		private var lastScoreText:uint; // most recent array index
@@ -67,7 +66,6 @@ package
 			
 			lives = 10;
 			elapsedTime = 0.0;
-			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
 			lastSpit = 0;
 			lastScoreText = 0;
@@ -90,7 +88,6 @@ package
 			// start helicopter immediately, only for testing!
 			helicopter.startHelicopter();
 
-			
 			// Initialize cage
 			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
 			cage.loadGraphic(CageImage);
@@ -154,8 +151,9 @@ package
 		{
 			super.update();
 			
-			if (levelManager.isNewLevel())
+			if (levelManager.isLevelElapsed() && (visitors.countLiving() <= 0))
 			{
+				levelManager.gotoNextLevel ();
 				newLevelText.displayText(levelManager.currentLevel);
 			}
 			
@@ -187,16 +185,7 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:Number = 200.0 / (difficulty + 40.0);
-			if (spawnInterval < 0.1) {
-				spawnInterval = 0.1;
-			}
-			
-			while (lastSpawnTime < elapsedTime) 
-			{
-				spawnVisitors ();
-				lastSpawnTime += spawnInterval;
-			}
+			spawnVisitors (levelManager.amountSpawns());
 			
 			// Collision visitors vs. spit, visitors vs flying
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
@@ -230,11 +219,9 @@ package
 		} // end of update
 		
 		
-		private function spawnVisitors ():void
+		private function spawnVisitors (amount:uint):void
 		{
 			trace("spawn");
-			
-			var amount:uint = Math.max(5, Math.min(10, Math.round(difficulty/10 + 5)));
 			
 			for (var i:uint = 0; i < amount; i++)
 			{
@@ -245,16 +232,16 @@ package
 				lastVisitor++;
 				
 				// distribute left/right somewhat randomly, but avoid long streaks
-				if (visitors.length % 6 == 0) 
+				if (lastVisitor % 6 == 0) 
 				{
-					v.init(difficulty, i, FlxObject.LEFT);
+					v.init(levelManager.currentLevel, i, FlxObject.LEFT);
 				} else
-				if (visitors.length % 6 == 3) 
+				if (lastVisitor % 6 == 3) 
 				{
-					v.init(difficulty, i, FlxObject.RIGHT);
+					v.init(levelManager.currentLevel, i, FlxObject.RIGHT);
 				} else
 				{
-					v.init(difficulty, i);
+					v.init(levelManager.currentLevel, i);
 				}
 			}
 		}
