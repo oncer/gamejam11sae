@@ -52,9 +52,11 @@ package
 				text.alignment = "center";
 				text.size = 16;
 				text.color = 0x000000;
+				text.shadow = 0xffffcc;
 				add(text);
 			}
 			_scores[0].color = 0x333333;
+			_scores[0].shadow = 0xffffcc;
 			
 			timeout = 1.5; // do not allow to leave screen while this is > 0
 		}
