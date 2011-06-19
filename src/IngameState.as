@@ -121,6 +121,9 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			
+			sfxPlayer = new SfxPlayer();
+			add(sfxPlayer);
 		}
 		
 		override public function update():void
@@ -216,6 +219,7 @@ package
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			s.reset(X,Y);
+			Globals.sfxPlayer.Spit();
 			return s;
 		}
 		
