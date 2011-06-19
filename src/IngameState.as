@@ -29,6 +29,7 @@ package
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
+		private var levelManager:LevelManager;
 		
 		private var lives:uint; // 0 == game over
 		private var difficulty:Number;
@@ -62,7 +63,6 @@ package
 			FlxG.score = 0;
 			
 			lives = 10;
-			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
 			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
@@ -131,6 +131,10 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			
+			// level manager determines current level, difficulty etc.
+			levelManager = new LevelManager();
+			add(levelManager);
 		}
 		
 		override public function update():void
@@ -141,7 +145,7 @@ package
 			// elapsedTime = SECONDS
 			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
-			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
+			difficulty = levelManager.getDifficulty ();
 						
 			lastHelicopterSpawnedCounter += FlxG.elapsed;			
 			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
