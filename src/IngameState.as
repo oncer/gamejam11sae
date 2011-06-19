@@ -83,7 +83,7 @@ package
 			trampolin.loadGraphic(TrampolinImage);
 			add(trampolin);
 
-			helicopter = new Helicopter();
+			helicopter = new Helicopter(this);
 			add(helicopter);
 			// start helicopter immediately, only for testing!
 			helicopter.startHelicopter();
@@ -137,6 +137,7 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			add(Globals.sfxPlayer);
 			
 			// level manager determines current level, difficulty etc.
 			levelManager = new LevelManager();
@@ -276,7 +277,6 @@ package
 			var s:Spit = spit as Spit;
 			s.hitSomething();
 			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
-			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
 			
 			helicopter.upgradeHit(spit);
 		}
@@ -321,6 +321,11 @@ package
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
+		}
+		
+		public function setUpgrade():void
+		{
+			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
 		}
 		
 		public function loseLife ():void
