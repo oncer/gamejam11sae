@@ -27,7 +27,7 @@ package
 		private var helicopter:Helicopter;
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
-		private var scoreText:FlxText; // can hit normal visitors for combos
+		private var totalScoreText:TotalScoreText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		
 		private var lives:uint; // 0 == game over
@@ -111,10 +111,9 @@ package
 			}
 			add(scoretexts);
 
-			// score display
-			scoreText = new FlxText (FlxG.width-200, 15, 180, "SCORE", true);
-			scoreText.alignment = "right";
-			add(scoreText);
+			// total score display
+			totalScoreText = new TotalScoreText ();
+			add(totalScoreText);
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
@@ -310,7 +309,7 @@ package
 			FlxG.score += score * combo;
 			
 			// total score display (top right)
-			scoreText.text = FlxG.score.toString();
+			totalScoreText.setText(FlxG.score, combo * 2.1);
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
