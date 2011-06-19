@@ -9,7 +9,6 @@ package
         public function main():void
         {
             super(800,500,MenuState,1); // super(800,500,StartState,1);
-            Globals.sfxPlayer = new SfxPlayer();
             forceDebugger = true;
         }
     }

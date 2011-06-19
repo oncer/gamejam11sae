@@ -93,9 +93,16 @@ package
 			particles.update();
 			
 			if (spitType == TYPE_BIGSPIT) {
-				angle += FlxG.elapsed * 360;
-				if (angle >= 360) {
-					angle -= 360;
+				if (velocity.x > 0) {
+					angle += FlxG.elapsed * 360;
+					if (angle >= 360) {
+						angle -= 360;
+					}
+				} else {
+					angle -= FlxG.elapsed * 360;
+					if (angle <= -360) {
+						angle += 360;
+					}
 				}
 			} else {
 				angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;

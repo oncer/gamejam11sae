@@ -93,10 +93,10 @@ package
 			}
 			
 			// the box has 1 transparent pixel at the border
+			upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			upgradeSprite.y = helicopterSprite.y + helicopterSprite.height - 1;
-			upgradeSprite.acceleration.y = 0;
-			upgradeSprite.velocity.x = 0;
-			upgradeSprite.velocity.y = 0;
+			upgradeSprite.acceleration = new FlxPoint(0, 0);
+			upgradeSprite.velocity = new FlxPoint(0, 0);
 			upgradeSprite.drag = new FlxPoint(0, 0);
 			upgradeSprite.exists = true;
 			crateDestroySprite.exists = false;

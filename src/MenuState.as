@@ -94,12 +94,14 @@ package
 		
 		public function onPlay():void
 		{
-			FlxG.switchState(new IngameState());
+			var ingameState:IngameState = new IngameState();
+			FlxG.switchState(ingameState);
 		}
 		
 		public function onCredits():void
 		{
-			FlxG.switchState(new CreditsState());
+			var creditsState:CreditsState = new CreditsState();
+			FlxG.switchState(creditsState);
 		}
 	}
 }

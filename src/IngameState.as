@@ -135,6 +135,7 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			Globals.sfxPlayer = new SfxPlayer();
 			add(Globals.sfxPlayer);
 			
 			// level manager determines current level, difficulty etc.
@@ -213,7 +214,7 @@ package
 			if (FlxG.keys.ESCAPE) {
 				
 				// create a new gameoverState every time... better would be to initialize it, and only create it once
-				FlxG.switchState(new GameoverState());
+				FlxG.fade(0xff000000, 1, gameOverFunction);
 				
 				// do not quit here
 				//trace("quit");
@@ -342,12 +343,13 @@ package
 			if (lives <= 0)
 			{
 				Globals.sfxPlayer.Gameover();
-				FlxG.fade(0xff000000, 3, gameOverFunction);
+				FlxG.fade(0xff000000, 2, gameOverFunction);
 			}
 		}
 		
 		private function gameOverFunction():void
 		{
+			ambientPlayer.stop();
 			FlxG.switchState(new GameoverState());
 		}
 	
@@ -356,7 +358,7 @@ package
 		 * @param	collidingSpit
 		 */		
 		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
-			var speed:Number = 200;
+			var speed:Number = 100;
 			var y_threshold:Number = 10;
 			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier

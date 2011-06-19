@@ -46,6 +46,12 @@ package
 			elapsedTime = 0;
 		}
 		
+		public function stop():void
+		{
+			city.stop();
+			music.stop();
+		}
+		
 		override public function update():void
 		{
 			if (!started) return;
