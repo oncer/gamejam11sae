@@ -11,6 +11,12 @@ package
 	
 		override public function create():void
 		{
+			trace("GameoverState.create()");
+			
+			trace("reached score: " + FlxG.score);
+			HighscoreManager.submitCurrentHighscore();
+			
+			
 			add(new FlxSprite(0, 0, BackgroundImage));
 			
 			FlxG.mouse.show();
@@ -24,9 +30,13 @@ package
 			var y:int = 150;
 			_scores.push(new FlxText(x, y, 400, "HIGHSCORES"));
 			y += 10;
-			for each (var score:int in FlxG.scores)
+			// TODO the non-copy does not work, does not take the real values!?!
+			//for each (var score:int in FlxG.scores)
+			var scores:Array = FlxG.scores;
+			for each (var score:int in scores)
 			{
 				y += 20;
+				trace("to add highscore: " + score);
 				_scores.push(new FlxText(x, y, 400, "" + score));
 			}
 			for each (var text:FlxText in _scores)

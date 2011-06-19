@@ -211,8 +211,13 @@ package
 						
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
-				trace("quit");
-				fscommand("quit");
+				
+				// create a new gameoverState every time... better would be to initialize it, and only create it once
+				FlxG.switchState(new GameoverState());
+				
+				// do not quit here
+				//trace("quit");
+				//fscommand("quit");
 			}
 		} // end of update
 		
