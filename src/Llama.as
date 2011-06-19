@@ -78,7 +78,7 @@ package
 		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 4, 1);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
 		private var upgradeDuration:Array = new Array(0, 5, 5, 5);
-		private var upgradeDurationCounter;
+		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
 		private static const SPIT_ANIMATION_DURATION:Number = 0.6;
