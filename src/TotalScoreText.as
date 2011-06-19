@@ -6,7 +6,7 @@ package
 	{
 		private var timer:Number;
 		
-		private const BASE_SIZE:Number = 20;
+		private const BASE_SIZE:Number = 24;
 		private var currentSize:Number;
 		private var baseX:Number;
 		private var baseY:Number;
@@ -33,9 +33,9 @@ package
 		override public function update():void
 		{
 			currentSize = (currentSize - BASE_SIZE) / Math.pow(2.0, FlxG.elapsed) + BASE_SIZE;
-			size = currentSize;
-			y = baseY - height/2;
-			x = baseX + (currentSize - BASE_SIZE) / 4;
+			//size = currentSize;
+			//y = baseY - height/2;
+			//x = baseX + (currentSize - BASE_SIZE) / 4;
 			
 			var overSize:Number = Math.floor((currentSize - BASE_SIZE) * 25);
 			color = 0x10000 * (0xFF - overSize) + 0xFF00 + (0xFF - overSize);
