@@ -336,10 +336,15 @@ package
 			
 			if (lives <= 0)
 			{
-				FlxG.switchState(new GameoverState());
+				FlxG.fade(0xff000000, 3, gameOverFunction);
 			}
 		}
 		
+		private function gameOverFunction():void
+		{
+			FlxG.switchState(new GameoverState());
+		}
+	
 		/**
 		 * Needs to be public, because also gets called from Spit when a MULTI_SPAWN spit hits the ground.
 		 * @param	collidingSpit
