@@ -36,8 +36,11 @@ package
 		private var explosion:FlxEmitter;
 		private var isFacingRight:Boolean;
 		
-		public function Helicopter() 
+		private var ingameState:IngameState;
+		
+		public function Helicopter(INGAMESTATE:IngameState) 
 		{			
+			ingameState = INGAMESTATE;
 			// x doesnt matter, gets set in startHelicopter
 			//super(0, HELICOPTER_Y);
 			helicopterSprite = new FlxSprite(0, HELICOPTER_Y);
@@ -91,6 +94,7 @@ package
 			upgradeSprite.acceleration.y = 0;
 			upgradeSprite.velocity.x = 0;
 			upgradeSprite.velocity.y = 0;
+			upgradeSprite.drag = new FlxPoint(0, 0);
 			upgradeSprite.exists = true;
 			crateDestroySprite.exists = false;
 			
@@ -116,12 +120,14 @@ package
 				crateDestroySprite.exists = true;
 				crateDestroySprite.x = upgradeSprite.x;
 				crateDestroySprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
-				crateDestroySprite.acceleration.x = upgradeSprite.acceleration.x;
+				crateDestroySprite.velocity.x = upgradeSprite.velocity.x;
 				crateDestroySprite.acceleration.y = 0;
+				crateDestroySprite.velocity.y = 0;
 				crateDestroySprite.drag.x = 600;
 				upgradeSprite.exists = false;
 				crateDestroySprite.play("destroy");
 				Globals.sfxPlayer.Upgrade();
+				ingameState.setUpgrade();
 
 				isUpgradeDead = true;
 			}
@@ -144,6 +150,8 @@ package
 			upgradeSprite.velocity.x = helicopterSprite.velocity.x;
 			upgradeSprite.drag.x = 20;
 			
+			Globals.sfxPlayer.Splotsh();
+			
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			explosion.at(spit);
@@ -157,7 +165,6 @@ package
 			} else {
 				upgradeSprite.velocity.x = -UPGRADEBOX_VELOCITY_AFTER_HIT;
 			}
-			
 		}
 		
 		public function canUpgradeHit():Boolean
