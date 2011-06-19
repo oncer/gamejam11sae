@@ -15,6 +15,7 @@ package
 		public static const CAGE_LEFT:int = 320;  // px boundary
 		public static const CAGE_RIGHT:int = 479; // px boundary
 		public static const CAGE_TOP:int = 256; // px boundary
+		public static const TRAMPOLIN_TOP:int = 368;
 		public static const VISITOR_GOAL_Y:int = 320; // px value
 		
 		public static const FLY_TIMEOUT:Number = 1.3; // min fly time in seconds

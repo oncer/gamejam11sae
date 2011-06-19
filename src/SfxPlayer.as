@@ -35,6 +35,21 @@ package
 		[Embed(source="../audio/spit/spit11.mp3")] private static var SndSpit11:Class;
 		[Embed(source="../audio/spit/spit12.mp3")] private static var SndSpit12:Class;
 		
+		[Embed(source="../audio/trampolin/trampolin1.mp3")] private static var SndTrampolin1:Class;
+		[Embed(source="../audio/trampolin/trampolin2.mp3")] private static var SndTrampolin2:Class;
+		[Embed(source="../audio/trampolin/trampolin3.mp3")] private static var SndTrampolin3:Class;
+		
+		[Embed(source="../audio/scream/kid1.mp3")] private static var SndKid1:Class;
+		[Embed(source="../audio/scream/kid2.mp3")] private static var SndKid2:Class;
+		[Embed(source="../audio/scream/man1.mp3")] private static var SndMan1:Class;
+		[Embed(source="../audio/scream/man2.mp3")] private static var SndMan2:Class;
+		[Embed(source="../audio/scream/man3.mp3")] private static var SndMan3:Class;
+		[Embed(source="../audio/scream/man4.mp3")] private static var SndMan4:Class;
+		[Embed(source="../audio/scream/oldwoman1.mp3")] private static var SndOldWoman1:Class;
+		[Embed(source="../audio/scream/woman1.mp3")] private static var SndWoman1:Class;
+		[Embed(source="../audio/scream/woman2.mp3")] private static var SndWoman2:Class;
+		
+		[Embed(source="../audio/upgrade.mp3")] private static var SndUpgrade:Class;
 		
 		private var SndSplotshPool:Array = new Array(
 			SndSplotsh1, SndSplotsh2, SndSplotsh3, SndSplotsh4, SndSplotsh5,
@@ -48,8 +63,38 @@ package
 			SndSpit7, SndSpit8, SndSpit9, SndSpit10, SndSpit11, SndSpit12
 		);
 		
+		private var SndTrampolinPool:Array = new Array(
+			SndTrampolin1, SndTrampolin2, SndTrampolin3
+		);
+		
+		private var SndScreamKidPool:Array = new Array(
+			SndKid1, SndKid2
+		);
+		
+		private var SndScreamManPool:Array = new Array(
+			SndMan1, SndMan2, SndMan3, SndMan4
+		);
+		
+		private var SndScreamOldWomanPool:Array = new Array(
+			SndOldWoman1
+		);
+		
+		private var SndScreamWomanPool:Array = new Array(
+			SndWoman1, SndWoman2
+		);
+		
+		private var SndUpgradePool:Array = new Array(
+			SndUpgrade
+		);
+		
 		public function Splotsh():void {  playSfxRandomPool(SndSplotshPool); }
 		public function Spit():void { playSfxRandomPool(SndSpitPool); }
+		public function Trampolin():void { playSfxRandomPool(SndTrampolinPool); }
+		public function ScreamKid():void { playSfxRandomPool(SndScreamKidPool); }
+		public function ScreamMan():void { playSfxRandomPool(SndScreamManPool); }
+		public function ScreamOldWoman():void { playSfxRandomPool(SndScreamOldWomanPool); }
+		public function ScreamWoman():void { playSfxRandomPool(SndScreamWomanPool); }
+		public function Upgrade():void { playSfxRandomPool(SndUpgradePool); }
 		
 		public function SfxPlayer():void
 		{

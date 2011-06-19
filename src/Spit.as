@@ -49,7 +49,7 @@ package
 		private function initParticles():void
 		{
 			particles = new FlxEmitter();
-			particles.makeParticles (SpitParticleClass, 50, 0, true, 0);
+			particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
 			particles.setRotation(0, 0);
 			particles.setYSpeed(-50, 100);
 			particles.setXSpeed(-20, 20);

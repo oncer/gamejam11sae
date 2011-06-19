@@ -75,9 +75,9 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray:Array = new Array(spitCooldown, 0.2, 1, 1);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.1, 1, 1);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
-		private var upgradeDuration:Array = new Array(0, 10, 10, 10);
+		private var upgradeDuration:Array = new Array(0, 15, 10, 25);
 		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
@@ -85,9 +85,13 @@ package
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
+		private var ingameState:IngameState;
+		
 		//This function creates the ship, taking the list of bullets as a parameter
-		public function Llama()
+		public function Llama(INGAMESTATE:IngameState)
 		{
+			ingameState = INGAMESTATE;
+			
 			//super(FlxG.width/2-8, FlxG.height/2-8);
 			//loadRotatedGraphic(LamaClass, 32, -1, false, true);
 			lama = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
@@ -174,8 +178,13 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.GROUND_LEVEL - lama.height) {
-				lama.y = Globals.GROUND_LEVEL - lama.height;
+			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height) {
+				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
+				ingameState.trampolin.velocity.y = -60;
+				
+				Globals.sfxPlayer.Trampolin();
+				
+				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 5;
 				lama.velocity.y = jumpUpVelocity;		
 				
 				//var currentFrame:Number = lama.frame;
@@ -186,8 +195,8 @@ package
 					randomFrame = Math.ceil(rand) % 3;				
 				}
 				lama.frame = randomFrame;
-				currentLamaJumpFrame = randomFrame;
-			}						
+				currentLamaJumpFrame = randomFrame;	
+			}				
 			
 			if(FlxG.keys.LEFT) {
 				lama.acceleration.x = -max_acceleration_x;				
@@ -303,7 +312,7 @@ package
 				
 					var currentState:IngameState = FlxG.state as IngameState;
 					
-					
+					Globals.sfxPlayer.Spit();
 					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 					if (upgradeType == UPGRADE_MULTISPAWN)
 						spit.setType(Spit.TYPE_MULTI_SPAWN);
