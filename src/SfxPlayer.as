@@ -53,6 +53,8 @@ package
 		
 		[Embed(source="../audio/chopper.mp3")] private static var SndChopper:Class;
 		
+		[Embed(source="../audio/game_over.mp3")] private static var SndGameover:Class;
+		
 		private var SndSplotshPool:Array = new Array(
 			SndSplotsh1, SndSplotsh2, SndSplotsh3, SndSplotsh4, SndSplotsh5,
 			SndSplotsh6, SndSplotsh7, SndSplotsh8, SndSplotsh9, SndSplotsh10,
@@ -97,6 +99,7 @@ package
 		public function ScreamOldWoman():void { playSfxRandomPool(SndScreamOldWomanPool); }
 		public function ScreamWoman():void { playSfxRandomPool(SndScreamWomanPool); }
 		public function Upgrade():void { playSfxRandomPool(SndUpgradePool); }
+		public function Gameover():void { FlxG.play(SndGameover); }
 		
 		private var sfxChopper:FlxSound;
 		
