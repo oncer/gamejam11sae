@@ -126,6 +126,8 @@ package
 		override public function update():void
 		{
 			// update time & difficulty
+			// elapsedTime = SECONDS
+			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
 			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
 			
@@ -146,14 +148,14 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:Number = 100.0 / (difficulty + 40.0);
+			var spawnInterval:Number = 200.0 / (difficulty + 40.0);
 			if (spawnInterval < 0.1) {
 				spawnInterval = 0.1;
 			}
 			
 			while (lastSpawnTime < elapsedTime) 
 			{
-				spawnVisitor ();
+				spawnVisitors ();
 				lastSpawnTime += spawnInterval;
 			}
 			
@@ -188,28 +190,33 @@ package
 		} // end of update
 		
 		
-		private function spawnVisitor():void
+		private function spawnVisitors ():void
 		{
-			var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+			trace("spawn");
 			
-			if (v.exists) return; // keep on screen until dead
+			var amount:uint = Math.max(5, Math.min(10, Math.round(difficulty/10 + 5)));
 			
-			lastVisitor++;
-			
-			// distribute left/right somewhat randomly, but avoid long streaks
-			if (visitors.length % 6 == 0) 
+			for (var i:uint = 0; i < amount; i++)
 			{
-				v.init(difficulty, FlxObject.LEFT);
-			} else
-			if (visitors.length % 6 == 3) 
-			{
-				v.init(difficulty, FlxObject.RIGHT);
-			} else
-			{
-				v.init(difficulty);
+				var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
+				
+				if (v.exists) return; // keep on screen until dead
+				
+				lastVisitor++;
+				
+				// distribute left/right somewhat randomly, but avoid long streaks
+				if (visitors.length % 6 == 0) 
+				{
+					v.init(difficulty, i, FlxObject.LEFT);
+				} else
+				if (visitors.length % 6 == 3) 
+				{
+					v.init(difficulty, i, FlxObject.RIGHT);
+				} else
+				{
+					v.init(difficulty, i);
+				}
 			}
-			
-			v.revive();
 		}
 		
 		public function spawnSpit(X:Number, Y:Number):Spit
@@ -239,10 +246,9 @@ package
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
-			addScore(v.scorePoints);
-			spawnScoreText(v.x + v.width / 2, v.y, 1, v.scorePoints);
 			
-			if (s.isType(Spit.TYPE_MULTI_SPAWN)) {
+			if (s.isType(Spit.TYPE_MULTI_SPAWN))
+			{
 				spawnMultipleNewSpitsAtSpitPosition(s);				
 			}
 		}
@@ -258,25 +264,27 @@ package
 			var f:Visitor = flying as Visitor;
 			
 			v.getHitByPerson(f);
-			addScore(v.scorePoints * v.comboCounter);
-			doCombo(v.comboCounter);
-			spawnScoreText(v.x + v.width/2, v.y, v.comboCounter, v.scorePoints);
 		}
 		
-		private function addScore (score:int):void
+		public function causeScore (killed:Visitor, score:int, combo:int):void
 		{
-			FlxG.score += score;
+			FlxG.score += score * combo;
+			
+			// total score display (top right)
 			scoreText.text = FlxG.score.toString();
-		}
-		
-		private function doCombo (counter:uint):void
-		{
+			
+			// temporary points display everywhere
+			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
 		}
 		
 		public function loseLife ():void
 		{
-			lives--;
-			livesDisplay.length = lives;
+			if (lives > 0)
+			{
+				lives--;
+				livesDisplay.length = lives;
+			}
+			
 			if (lives <= 0)
 			{
 				FlxG.switchState(new GameoverState());

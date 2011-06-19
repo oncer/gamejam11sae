@@ -38,9 +38,8 @@ package
 		private var climbSpeed:Number;
 		private var jumpSpeed:Number;
 		private var jumpHeight:Number; // not really height, just velocity.y
-		private var hitPoints:uint;
-		public var scorePoints:uint; // killing this visitor is worth this much
-		public var comboCounter:uint; // visitors colliding drive this up
+		public var scorePoints:int; // killing this visitor is worth this much
+		public var comboCounter:int; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
 		private var floatTime:Number; // timestamp of last start flying
@@ -52,14 +51,22 @@ package
 		{
 			super(0,0);
 			exists = false;
+			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
+			addAnimation("float", [7], Globals.ANIM_SPEED);
+			addAnimation("climb", [7], Globals.ANIM_SPEED);
+			addAnimation("jump", [0], Globals.ANIM_SPEED);
+			addAnimation("fly", [4,5], 1.2, false);
+			addAnimation("die", [6], Globals.ANIM_SPEED, false);
 		}
 		
 		// This function resets all values to represent a NEW visitor.
 		// Type, position, speed, everything
 		// is inferred from the current game difficulty.
-		public function init (difficulty:Number, facing:uint = 0):void
+		// spacing: adds additional distance from the screen border to make
+		//     the visitor appear on stage later.
+		public function init (difficulty:Number, spacing:uint, facing:uint = 0):void
 		{
-			hitPoints = 1;
+			health = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
 			floatTime = 0;
@@ -121,7 +128,7 @@ package
 					height = 25;
 					offset.x = 7;
 					offset.y = 23;
-					hitPoints = 2;
+					health = 2;
 					scorePoints = 30;
 					break;
 					
@@ -146,10 +153,36 @@ package
 					height = 24;
 					offset.x = 9;
 					offset.y = 24;
-					hitPoints = 3;
+					health = 3;
 					scorePoints = 100;
 					break;
 					
+			}
+			
+			play("walk");
+			
+			var distanceFromScreenBorder:Number = (width+1) * spacing * 2.2;
+			
+			// set direction-dependent values
+			if (facing == 0)
+			{
+				if (Math.random()*2 < 1) // enter from left side
+				{
+					x = -distanceFromScreenBorder;
+					facing = RIGHT;
+				}
+				else // enter from right side
+				{
+					x = FlxG.width + distanceFromScreenBorder;
+					facing = LEFT;
+				}
+			}
+			else if (facing == RIGHT) // enter from left side
+			{
+				x = -distanceFromScreenBorder;
+			} else // enter from right side
+			{
+				x = FlxG.width + distanceFromScreenBorder;
 			}
 			
 			super.facing = facing;
@@ -167,41 +200,14 @@ package
 			{
 				state = STATE_WALKING;
 			}
+			
+			revive();
 		}
 		
-		public override function revive():void
+		override public function revive():void
 		{
 			super.revive();
-			
-			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
-			addAnimation("float", [7], Globals.ANIM_SPEED);
-			addAnimation("climb", [7], Globals.ANIM_SPEED);
-			addAnimation("jump", [0], Globals.ANIM_SPEED);
-			addAnimation("fly", [4,5], 1.2, false);
-			addAnimation("die", [6], Globals.ANIM_SPEED, false);
 			play("walk");
-			
-			// set direction-dependent values
-			if (facing == 0)
-			{
-				if (Math.random()*2 < 1) // enter from left side
-				{
-					x = -width;
-					facing = RIGHT;
-				}
-				else // enter from right side
-				{
-					x = FlxG.width + width;
-					facing = LEFT;
-				}
-			}
-			else if (facing == RIGHT) // enter from left side
-			{
-				x = -width;
-			} else // enter from right side
-			{
-				x = FlxG.width + width;
-			}
 		}
 		
 		override public function update():void
@@ -319,7 +325,7 @@ package
 			}
 			else
 			{
-				y = Globals.FLOAT_LEVEL + Math.sin(floatTime*2) * 70;
+				y = Globals.FLOAT_LEVEL + Math.sin(floatTime*2) * 30;
 			}
 		}
 		
@@ -380,7 +386,9 @@ package
 				var flyTime:Number = (FlxG.state as IngameState).elapsedTime - flyStartTime;
 				if ((flyTime >= Globals.FLY_TIMEOUT) && (Math.abs(velocity.x) < 10))
 				{
-					if (hitPoints <= 0)
+					comboCounter = 1; // reset; next time we fly, combo is back to 1
+					
+					if (health <= 0)
 					{
 						state = STATE_DYING;
 						flicker(1);
@@ -441,7 +449,11 @@ package
 		
 		public function getSpitOn (spit:Spit):void
 		{
-			if (hitPoints > 0) hitPoints--;
+			if (health > 0)
+			{
+				health -= 1;
+			}
+			
 			state = STATE_FLYING;
 			flyStartTime = (FlxG.state as IngameState).elapsedTime;
 			play("fly");
@@ -453,12 +465,21 @@ package
 				velocity.x /= 2;
 			}
 			
-			startSpitExplosion();
+			if (health <= 0)
+			{
+				(FlxG.state as IngameState).causeScore(this, scorePoints, 1);
+			}
+			
+			startSpitExplosion(); // particle effects
 		}
 		
 		public function getHitByPerson (flying:Visitor):void
 		{
-			if (hitPoints > 0) hitPoints--;
+			if (health > 0)
+			{
+				health -= 1;
+			}
+			
 			state = STATE_FLYING;
 			flyStartTime = (FlxG.state as IngameState).elapsedTime;
 			play("fly");
@@ -470,8 +491,19 @@ package
 				velocity.x /= 2;
 			}
 			
-			startSpitExplosion();
-			comboCounter = flying.comboCounter * 2;
+			startSpitExplosion(); // particle effects
+			
+			comboCounter = flying.comboCounter + 1;
+			
+			if (flying.health <= 0)
+			{
+				flying.comboCounter++;
+			}
+			
+			if (health <= 0)
+			{
+				(FlxG.state as IngameState).causeScore(this, scorePoints, comboCounter);
+			}
 		}
 	}
 }
