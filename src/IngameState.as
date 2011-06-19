@@ -341,7 +341,7 @@ package
 			
 			if (lives <= 0)
 			{
-				Global.sfxPlayer.Gameover();
+				Globals.sfxPlayer.Gameover();
 				// create a new gameoverState every time... better would be to initialize it, and only create it once
 				FlxG.switchState(new GameoverState());
 			}
