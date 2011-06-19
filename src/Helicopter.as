@@ -53,7 +53,7 @@ package
 			
 			crateDestroySprite = new FlxSprite(0, 0);
 			crateDestroySprite.loadGraphic(CrateClass, true, false, 32, 32);
-			crateDestroySprite.addAnimation("destroy", [0,1,2], 10, true);
+			crateDestroySprite.addAnimation("destroy", [0, 1, 2], 5, false);
 			crateDestroySprite.exists = false;
 			add(crateDestroySprite);
 			
@@ -95,7 +95,7 @@ package
 			crateDestroySprite.exists = false;
 			
 			isUpgradeHit = false;
-			
+			isUpgradeDead = false;
 		}
 		
 		override public function update():void
@@ -107,21 +107,23 @@ package
 			} else if (!isUpgradeHit) {
 				upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			}
-			if (upgradeSprite.y + upgradeSprite.height > Globals.GROUND_LEVEL) {
+			
+			if (isUpgradeDead && crateDestroySprite.finished)
+			{
+				crateDestroySprite.exists = false;
+			}
+			if (!isUpgradeDead && upgradeSprite.y + upgradeSprite.height > Globals.GROUND_LEVEL) {
+				crateDestroySprite.exists = true;
 				crateDestroySprite.x = upgradeSprite.x;
 				crateDestroySprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
 				crateDestroySprite.acceleration.x = upgradeSprite.acceleration.x;
 				crateDestroySprite.acceleration.y = 0;
 				crateDestroySprite.drag.x = 600;
 				upgradeSprite.exists = false;
-				crateDestroySprite.exists = true;
 				crateDestroySprite.play("destroy");
+				Globals.sfxPlayer.Upgrade();
 
 				isUpgradeDead = true;
-			}
-			if (isUpgradeDead && !crateDestroySprite.finished)
-			{
-				crateDestroySprite.exists = false;
 			}
 		}
 		
