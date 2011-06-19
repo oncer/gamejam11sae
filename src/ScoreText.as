@@ -12,6 +12,7 @@ package
 			super(0,0,100);
 			this.size = 16;
 			this.alignment = "center";
+			this.shadow = 0x333333;
 			this.exists = false;
 		}
 		
@@ -31,14 +32,19 @@ package
 			{
 				case 1:
 					this.color = 0xffffff; break;
+					this.shadow = 0x333333; break;
 				case 2:
 					this.color = 0xffff00; break;
+					this.shadow = 0x333300; break;
 				case 3:
 					this.color = 0xffcc00; break;
+					this.shadow = 0x333300; break;
 				case 4:
 					this.color = 0xff5500; break;
+					this.shadow = 0x331100; break;
 				default:
 					this.color = 0xff0000; break;
+					this.shadow = 0x330000; break;
 			}
 			
 			this.alpha = 0;
@@ -52,6 +58,7 @@ package
 			} else if (timer > 0) {
 				this.alpha = 1;
 			} else {
+				this.shadow = 0;
 				this.y -= FlxG.elapsed * 50;
 				this.alpha -= FlxG.elapsed * 1;
 			}

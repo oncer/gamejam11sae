@@ -1,9 +1,9 @@
 package
 {
 	import org.flixel.*;
-	public class AmbientPlayer extends FlxObject
+	public class AmbientPlayer extends FlxGroup
 	{
-		[Embed(source="../audio/city_ambient_low.mp3")] private static var SndCity:Class;
+		[Embed(source="../audio/ambient.mp3")] private static var SndCity:Class;
 		[Embed(source="../audio/main_theme.mp3")] private static var SndMusic:Class;
 		/*[Embed(source="../audio/kinder1_low.mp3")] private static var SndKids1:Class;
 		[Embed(source="../audio/kinder2_low.mp3")] private static var SndKids2:Class;

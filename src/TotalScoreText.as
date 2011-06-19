@@ -19,6 +19,7 @@ package
 			alignment = "right";
 			text = "SCORE: 0";
 			color = 0xffffff;
+			shadow = 0x333333;
 			size = BASE_SIZE;
 			currentSize = BASE_SIZE;
 		}
@@ -35,6 +36,9 @@ package
 			size = currentSize;
 			y = baseY - height/2;
 			x = baseX + (currentSize - BASE_SIZE) / 4;
+			
+			var overSize:Number = Math.floor((currentSize - BASE_SIZE) * 25);
+			color = 0x10000 * (0xFF - overSize) + 0xFF00 + (0xFF - overSize);
 		}
 	}
 }

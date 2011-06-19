@@ -28,11 +28,8 @@ package
 			add(_bg);
 			
 			_play = new FlxButton(200 - 75, 200, null, onPlay);
-			_play.loadGraphic(ImgButtonPlay, false, true, 150, 50);
-			_howto = new FlxButton(200 - 75, 260, null, onHowto);
-			_howto.loadGraphic(ImgButtonHowto, false, true, 150, 50);
+			_play.loadGraphic(ImgButtonPlay, false, true, 144, 64);
 			add(_play);
-			add(_howto);
 			
 			FlxG.mouse.show();
 			
@@ -58,9 +55,11 @@ package
 				text.alignment = "center";
 				text.size = 16;
 				text.color = 0x000000;
+				text.shadow = 0xffffcc;
 				add(text);
 			}
 			_scores[0].color = 0x333333;
+			_scores[0].shadow = 0xffffcc;
 			
 			timeout = 1.5; // do not allow to leave screen while this is > 0
 		}
@@ -90,10 +89,6 @@ package
 		public function onPlay():void
 		{
 			FlxG.switchState(new IngameState());
-		}
-		
-		public function onHowto():void
-		{
 		}
 	}
 }

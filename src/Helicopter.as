@@ -32,12 +32,16 @@ package
 		
 		private var isUpgradeHit:Boolean;
 		private var isUpgradeDead:Boolean;
+		private var isChopperOut:Boolean;
 		
 		private var explosion:FlxEmitter;
 		private var isFacingRight:Boolean;
 		
-		public function Helicopter() 
+		private var ingameState:IngameState;
+		
+		public function Helicopter(INGAMESTATE:IngameState) 
 		{			
+			ingameState = INGAMESTATE;
 			// x doesnt matter, gets set in startHelicopter
 			//super(0, HELICOPTER_Y);
 			helicopterSprite = new FlxSprite(0, HELICOPTER_Y);
@@ -53,12 +57,13 @@ package
 			
 			crateDestroySprite = new FlxSprite(0, 0);
 			crateDestroySprite.loadGraphic(CrateClass, true, false, 32, 32);
-			crateDestroySprite.addAnimation("destroy", [0,1,2], 10, true);
+			crateDestroySprite.addAnimation("destroy", [0, 1, 2], 5, false);
 			crateDestroySprite.exists = false;
 			add(crateDestroySprite);
 			
 			isUpgradeHit = false;
 			isUpgradeDead = false;
+			isChopperOut = false;
 		}
 		
 		public function startHelicopter():void {
@@ -91,37 +96,47 @@ package
 			upgradeSprite.acceleration.y = 0;
 			upgradeSprite.velocity.x = 0;
 			upgradeSprite.velocity.y = 0;
+			upgradeSprite.drag = new FlxPoint(0, 0);
 			upgradeSprite.exists = true;
 			crateDestroySprite.exists = false;
 			
 			isUpgradeHit = false;
+			isUpgradeDead = false;
+			isChopperOut = false;
 			
+			Globals.sfxPlayer.ChopperIn();
 		}
 		
 		override public function update():void
 		{
 			super.update();
 			// stop if outside of screen
-			if (helicopterSprite.x < -100 || helicopterSprite.x > FlxG.width+100) {
+			if (!isChopperOut && (helicopterSprite.x < -100 || helicopterSprite.x > FlxG.width+100)) {
 				helicopterSprite.velocity.x = 0;
+				Globals.sfxPlayer.ChopperOut();
+				isChopperOut = true;
 			} else if (!isUpgradeHit) {
 				upgradeSprite.x = helicopterSprite.x+UPGRADE_CENTER_OFFSET_X-upgradeSprite.width/2;
 			}
-			if (upgradeSprite.y + upgradeSprite.height > Globals.GROUND_LEVEL) {
-				crateDestroySprite.x = upgradeSprite.x;
-				crateDestroySprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
-				crateDestroySprite.acceleration.x = upgradeSprite.acceleration.x;
-				crateDestroySprite.acceleration.y = 0;
-				crateDestroySprite.drag.x = 600;
-				upgradeSprite.exists = false;
-				crateDestroySprite.exists = true;
-				crateDestroySprite.play("destroy");
-
-				isUpgradeDead = true;
-			}
-			if (isUpgradeDead && !crateDestroySprite.finished)
+			
+			if (isUpgradeDead && crateDestroySprite.finished)
 			{
 				crateDestroySprite.exists = false;
+			}
+			if (!isUpgradeDead && upgradeSprite.y + upgradeSprite.height > Globals.GROUND_LEVEL) {
+				crateDestroySprite.exists = true;
+				crateDestroySprite.x = upgradeSprite.x;
+				crateDestroySprite.y = Globals.GROUND_LEVEL - upgradeSprite.height;
+				crateDestroySprite.velocity.x = upgradeSprite.velocity.x;
+				crateDestroySprite.acceleration.y = 0;
+				crateDestroySprite.velocity.y = 0;
+				crateDestroySprite.drag.x = 600;
+				upgradeSprite.exists = false;
+				crateDestroySprite.play("destroy");
+				Globals.sfxPlayer.Upgrade();
+				ingameState.setUpgrade();
+
+				isUpgradeDead = true;
 			}
 		}
 		
@@ -142,6 +157,8 @@ package
 			upgradeSprite.velocity.x = helicopterSprite.velocity.x;
 			upgradeSprite.drag.x = 20;
 			
+			Globals.sfxPlayer.Splotsh();
+			
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			explosion.at(spit);
@@ -155,7 +172,6 @@ package
 			} else {
 				upgradeSprite.velocity.x = -UPGRADEBOX_VELOCITY_AFTER_HIT;
 			}
-			
 		}
 		
 		public function canUpgradeHit():Boolean

@@ -31,11 +31,12 @@ package
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
+		private var levelManager:LevelManager;
+		private var newLevelText:NewLevelText;
 		
 		private var lives:uint; // 0 == game over
 		private var difficulty:Number;
 		public var elapsedTime:Number; // total in seconds
-		private var lastSpawnTime:Number;
 		private var lastVisitor:uint; // most recent array index
 		private var lastSpit:uint; // most recent array index
 		private var lastScoreText:uint; // most recent array index
@@ -64,9 +65,7 @@ package
 			FlxG.score = 0;
 			
 			lives = 10;
-			difficulty = Globals.INIT_DIFFICULTY;
 			elapsedTime = 0.0;
-			lastSpawnTime = elapsedTime;
 			lastVisitor = 0;
 			lastSpit = 0;
 			lastScoreText = 0;
@@ -84,16 +83,10 @@ package
 			trampolin.loadGraphic(TrampolinImage);
 			add(trampolin);
 
-			helicopter = new Helicopter();
+			helicopter = new Helicopter(this);
 			add(helicopter);
 			// start helicopter immediately, only for testing!
 			helicopter.startHelicopter();
-
-			
-			// Initialize cage
-			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
-			cage.loadGraphic(CageImage);
-			add(cage);
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
@@ -102,6 +95,11 @@ package
 				visitors.add(new Visitor());
 			}
 			add(visitors);
+			
+			// Initialize cage
+			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
+			cage.loadGraphic(CageImage);
+			add(cage);
 
 			// Initialize spits
 			spits = new FlxGroup (Globals.MAX_SPITS);
@@ -139,18 +137,32 @@ package
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
 			add(ambientPlayer);
+			add(Globals.sfxPlayer);
+			
+			// level manager determines current level, difficulty etc.
+			levelManager = new LevelManager();
+			add(levelManager);
+			
+			newLevelText = new NewLevelText();
+			add(newLevelText);
 		}
 		
 		override public function update():void
 		{
 			super.update();
 			
+			if (levelManager.isLevelElapsed() && (visitors.countLiving() <= 0))
+			{
+				levelManager.gotoNextLevel ();
+				newLevelText.displayText(levelManager.currentLevel);
+			}
+			
 			// update time & difficulty
 			// elapsedTime = SECONDS
 			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
-			difficulty = Globals.INIT_DIFFICULTY + elapsedTime * Globals.DIFFICULTY_PER_SECOND;
-						
+			difficulty = levelManager.getDifficulty ();
+			
 			lastHelicopterSpawnedCounter += FlxG.elapsed;			
 			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
 				helicopter.startHelicopter();
@@ -173,16 +185,7 @@ package
 			}
 			
 			// Visitors
-			var spawnInterval:Number = 200.0 / (difficulty + 40.0);
-			if (spawnInterval < 0.1) {
-				spawnInterval = 0.1;
-			}
-			
-			while (lastSpawnTime < elapsedTime) 
-			{
-				spawnVisitors ();
-				lastSpawnTime += spawnInterval;
-			}
+			spawnVisitors (levelManager.amountSpawns());
 			
 			// Collision visitors vs. spit, visitors vs flying
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
@@ -198,7 +201,7 @@ package
 			//trace("lama y: " + llama.lama.y);
 			
 			// for testing the different upgrades
-			if (FlxG.keys.ONE) {				
+			/*if (FlxG.keys.ONE) {				
 				llama.setUpgradeType(Llama.UPGRADE_NONE);
 			} else if (FlxG.keys.TWO) {
 				llama.setUpgradeType(Llama.UPGRADE_RAPIDFIRE);
@@ -206,7 +209,7 @@ package
 				llama.setUpgradeType(Llama.UPGRADE_BIGSPIT);
 			} else if (FlxG.keys.FOUR) {
 				llama.setUpgradeType(Llama.UPGRADE_MULTISPAWN);
-			} 
+			}*/
 						
 			// for faster debugging
 			if (FlxG.keys.ESCAPE) {
@@ -221,11 +224,9 @@ package
 		} // end of update
 		
 		
-		private function spawnVisitors ():void
+		private function spawnVisitors (amount:uint):void
 		{
 			trace("spawn");
-			
-			var amount:uint = Math.max(5, Math.min(10, Math.round(difficulty/10 + 5)));
 			
 			for (var i:uint = 0; i < amount; i++)
 			{
@@ -236,16 +237,16 @@ package
 				lastVisitor++;
 				
 				// distribute left/right somewhat randomly, but avoid long streaks
-				if (visitors.length % 6 == 0) 
+				if (lastVisitor % 6 == 0) 
 				{
-					v.init(difficulty, i, FlxObject.LEFT);
+					v.init(levelManager.currentLevel, i, FlxObject.LEFT);
 				} else
-				if (visitors.length % 6 == 3) 
+				if (lastVisitor % 6 == 3) 
 				{
-					v.init(difficulty, i, FlxObject.RIGHT);
+					v.init(levelManager.currentLevel, i, FlxObject.RIGHT);
 				} else
 				{
-					v.init(difficulty, i);
+					v.init(levelManager.currentLevel, i);
 				}
 			}
 		}
@@ -281,7 +282,6 @@ package
 			var s:Spit = spit as Spit;
 			s.hitSomething();
 			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
-			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
 			
 			helicopter.upgradeHit(spit);
 		}
@@ -326,6 +326,11 @@ package
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
+		}
+		
+		public function setUpgrade():void
+		{
+			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
 		}
 		
 		public function loseLife ():void

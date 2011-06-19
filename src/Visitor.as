@@ -65,7 +65,7 @@ package
 		// is inferred from the current game difficulty.
 		// spacing: adds additional distance from the screen border to make
 		//     the visitor appear on stage later.
-		public function init (difficulty:Number, spacing:uint, facing:uint = 0):void
+		public function init (level:Number, spacing:uint, facing:uint = 0):void
 		{
 			health = 1;
 			comboCounter = 1;
@@ -191,8 +191,8 @@ package
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			
-			// more difficulty = floaters more likely, up to 40%
-			var floatChance:Number = 0.4 - Math.exp(-difficulty/3) * 0.2;
+			// more level = floaters more likely, up to 40%
+			var floatChance:Number = 0.4 - Math.exp(-level/3) * 0.2;
 			if (Math.random() < floatChance)
 			{
 				state = STATE_FLOATING;
