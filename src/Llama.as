@@ -182,6 +182,8 @@ package
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
+				Globals.sfxPlayer.Trampolin();
+				
 				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 5;
 				lama.velocity.y = jumpUpVelocity;		
 				

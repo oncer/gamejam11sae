@@ -35,6 +35,9 @@ package
 		[Embed(source="../audio/spit/spit11.mp3")] private static var SndSpit11:Class;
 		[Embed(source="../audio/spit/spit12.mp3")] private static var SndSpit12:Class;
 		
+		[Embed(source="../audio/trampolin/trampolin1.mp3")] private static var SndTrampolin1:Class;
+		[Embed(source="../audio/trampolin/trampolin2.mp3")] private static var SndTrampolin2:Class;
+		[Embed(source="../audio/trampolin/trampolin3.mp3")] private static var SndTrampolin3:Class;
 		
 		private var SndSplotshPool:Array = new Array(
 			SndSplotsh1, SndSplotsh2, SndSplotsh3, SndSplotsh4, SndSplotsh5,
@@ -48,8 +51,13 @@ package
 			SndSpit7, SndSpit8, SndSpit9, SndSpit10, SndSpit11, SndSpit12
 		);
 		
+		private var SndTrampolinPool:Array = new Array(
+			SndTrampolin1, SndTrampolin2, SndTrampolin3
+		);
+		
 		public function Splotsh():void {  playSfxRandomPool(SndSplotshPool); }
 		public function Spit():void { playSfxRandomPool(SndSpitPool); }
+		public function Trampolin():void { playSfxRandomPool(SndTrampolinPool); }
 		
 		public function SfxPlayer():void
 		{
