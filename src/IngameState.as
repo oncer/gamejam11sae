@@ -85,16 +85,6 @@ package
 
 			helicopter = new Helicopter(this);
 			add(helicopter);
-<<<<<<< HEAD
-
-			// Initialize cage
-			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);
-			cage.loadGraphic(CageImage);
-			add(cage);
-=======
-			// start helicopter immediately, only for testing!
-			helicopter.startHelicopter();
->>>>>>> e6050294e3a7d0f8f3d30d97e87f51120e08a599
 			
 			// Initialize visitors
 			visitors = new FlxGroup (Globals.MAX_VISITORS);
