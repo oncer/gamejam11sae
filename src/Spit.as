@@ -144,7 +144,7 @@ package
 			super.revive();
 		}
 		
-		public function canHit (visitor:Visitor):Boolean
+		public function canHit ():Boolean
 		{
 			return _canHit;
 		}
