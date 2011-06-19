@@ -85,8 +85,6 @@ package
 
 			helicopter = new Helicopter(this);
 			add(helicopter);
-			// start helicopter immediately, only for testing!
-			helicopter.startHelicopter();
 
 			// Initialize cage
 			cage = new FlxSprite (Globals.CAGE_LEFT, Globals.CAGE_TOP);

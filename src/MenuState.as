@@ -7,12 +7,14 @@ package
 	{
 		[Embed(source="../gfx/menu.png")] private var ImgMenu:Class;
 		[Embed(source="../gfx/button_play.png")] private var ImgButtonPlay:Class;
+		[Embed(source="../gfx/button_credits.png")] private var ImgButtonCredits:Class;
 		[Embed(source="../gfx/button_howto.png")] private var ImgButtonHowto:Class;
 		
 		private var _title:FlxText;
 		private var _bg:FlxSprite;
 		
 		private var _play:FlxButton;
+		private var _credits:FlxButton;
 		private var _howto:FlxButton;
 		
 		private var _scores:Array;
@@ -30,6 +32,10 @@ package
 			_play = new FlxButton(200 - 75, 200, null, onPlay);
 			_play.loadGraphic(ImgButtonPlay, false, true, 144, 64);
 			add(_play);
+			
+			_credits = new FlxButton(200 - 75, 290, null, onCredits);
+			_credits.loadGraphic(ImgButtonCredits, false, true, 144, 64);
+			add(_credits);
 			
 			FlxG.mouse.show();
 			
@@ -56,7 +62,7 @@ package
 			}
 			_scores[0].color = 0x333333;
 			
-			timeout = 1.5; // do not allow to leave screen while this is > 0
+			timeout = 0.5; // do not allow to leave screen while this is > 0
 		}
 		
 		public override function update():void
@@ -84,6 +90,11 @@ package
 		public function onPlay():void
 		{
 			FlxG.switchState(new IngameState());
+		}
+		
+		public function onCredits():void
+		{
+			FlxG.switchState(new CreditsState());
 		}
 	}
 }
