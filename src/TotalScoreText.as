@@ -19,6 +19,7 @@ package
 			alignment = "right";
 			text = "SCORE: 0";
 			color = 0xffffff;
+			shadow = 0x333333;
 			size = BASE_SIZE;
 			currentSize = BASE_SIZE;
 		}

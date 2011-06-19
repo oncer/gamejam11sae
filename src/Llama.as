@@ -193,7 +193,7 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height) {
+			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 16) {
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
