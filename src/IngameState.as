@@ -49,6 +49,8 @@ package
 		
 		override public function create():void
 		{
+			super.create();
+			
 			/*trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
 			_editor.registerClass(FlxObject);

@@ -7,7 +7,6 @@ package
 		[Embed(source="../gfx/gameover.png")] private var BackgroundImage:Class;
 		
 		private var _bg:FlxSprite;
-		private var timeout:Number;
 	
 		override public function create():void
 		{
@@ -49,24 +48,15 @@ package
 			}
 			_scores[0].color = 0x333333;
 			_scores[0].shadow = 0xccccff;
-			
-			timeout = 1.5; // do not allow to leave screen while this is > 0
 		}
 
 		override public function update():void
 		{
 			super.update();
 				
-			if (timeout > 0)
+			if (FlxG.keys.any())
 			{
-				timeout -= FlxG.elapsed;
-			}
-			else
-			{
-				if (FlxG.keys.any())
-				{
-					anyKeyPressed();
-				}
+				anyKeyPressed();
 			}
 		}
 
