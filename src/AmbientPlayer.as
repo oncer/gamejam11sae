@@ -22,7 +22,7 @@ package
 		private var elapsedTime:Number;
 		private var started:Boolean;
 		
-		private static const CITY_VOLUME:Number = 0.7;
+		private static const AMBIENT_VOLUME:Number = 0.33;
 		private static const MUSIC_VOLUME:Number = 1.0;
 		
 		public function AmbientPlayer():void
@@ -55,11 +55,11 @@ package
 		override public function update():void
 		{
 			if (!started) return;
-			if (city.volume < CITY_VOLUME) {
-				city.volume += (FlxG.elapsed / 2) * CITY_VOLUME;
+			if (city.volume < AMBIENT_VOLUME) {
+				city.volume += (FlxG.elapsed / 2) * AMBIENT_VOLUME;
 				music.volume += (FlxG.elapsed / 2) * MUSIC_VOLUME;
-				if (city.volume > CITY_VOLUME) {
-					city.volume = CITY_VOLUME;
+				if (city.volume > AMBIENT_VOLUME) {
+					city.volume = AMBIENT_VOLUME;
 				}
 				if (music.volume > MUSIC_VOLUME) {
 					music.volume = MUSIC_VOLUME;

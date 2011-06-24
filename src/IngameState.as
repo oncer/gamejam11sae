@@ -46,10 +46,13 @@ package
 		private var DURATION_RESPAWN_HELICOPTER:Number = 25;
 		
 		private var ambientPlayer:AmbientPlayer;
+		private var gameover:Boolean;
 		
 		override public function create():void
 		{
 			super.create();
+						
+			gameover = false;
 			
 			/*trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
@@ -66,7 +69,7 @@ package
 			
 			FlxG.score = 0;
 			
-			lives = 10;
+			lives = 3;
 			elapsedTime = 0.0;
 			lastVisitor = 0;
 			lastSpit = 0;
@@ -342,10 +345,11 @@ package
 				livesDisplay.length = lives;
 			}
 			
-			if (lives <= 0)
+			if (lives <= 0 && !gameover)
 			{
 				Globals.sfxPlayer.Gameover();
 				FlxG.fade(0xff000000, 2, gameOverFunction);
+				gameover = true;
 			}
 		}
 		
