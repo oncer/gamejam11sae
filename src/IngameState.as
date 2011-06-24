@@ -364,7 +364,7 @@ package
 		 * @param	collidingSpit
 		 */		
 		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
-			var speed:Number = 100;
+			var speed:Number = 200;
 			var y_threshold:Number = 10;
 			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
