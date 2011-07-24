@@ -73,7 +73,7 @@ package
 			floatTime = 0;
 			
 			visitorType = Math.floor(Math.random()*5);
-			if (Math.random()*5 < 1) visitorType += 5; // rare variations
+			if (Math.random()*5 < 1) visitorType += 5; // rare variations like zombies
 			
 			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
 			floatSpeed = 30;
@@ -521,6 +521,11 @@ package
 			{
 				(FlxG.state as IngameState).causeScore(this, scorePoints, comboCounter);
 			}
+		}
+		
+		public function getType():int
+		{
+			return visitorType;
 		}
 	}
 }

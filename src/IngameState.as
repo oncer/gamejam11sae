@@ -7,6 +7,7 @@
 package
 {
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.*;
 	import flash.system.fscommand;
 	//import com.divillysausages.gameobjeditor.Editor;
 	import flash.utils.getTimer;
@@ -34,11 +35,12 @@ package
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
 		
-		private var lives:uint; // 0 == game over
+		private var stats:Statistics;
+		private var lives:uint;         // 0 == game over
 		private var difficulty:Number;
-		public var elapsedTime:Number; // total in seconds
-		private var lastVisitor:uint; // most recent array index
-		private var lastSpit:uint; // most recent array index
+		public var elapsedTime:Number;  // total in seconds
+		private var lastVisitor:uint;   // most recent array index
+		private var lastSpit:uint;      // most recent array index
 		private var lastScoreText:uint; // most recent array index
 		
 		private var lastHelicopterSpawnedCounter:Number;
@@ -66,8 +68,6 @@ package
 			var bg:FlxSprite = new FlxSprite(0,0);
 			bg.loadGraphic(BackgroundImage);
 			add(bg);
-			
-			FlxG.score = 0;
 			
 			lives = 3;
 			elapsedTime = 0.0;
@@ -119,6 +119,9 @@ package
 				scoretexts.add(new ScoreText());
 			}
 			add(scoretexts);
+			
+			// Initialize stats
+			stats = new Statistics ();
 
 			// total score display
 			totalScoreText = new TotalScoreText ();
@@ -149,15 +152,19 @@ package
 			
 			newLevelText = new NewLevelText();
 			add(newLevelText);
+			newLevelText.displayText(levelManager.currentLevel); // Level 1
 		}
 		
 		override public function update():void
 		{
 			super.update();
 			
+			stats.update();
+			
 			if (levelManager.isLevelElapsed() && (visitors.countLiving() <= 0))
 			{
 				levelManager.gotoNextLevel ();
+				stats.countLevel ();
 				newLevelText.displayText(levelManager.currentLevel);
 			}
 			
@@ -167,7 +174,7 @@ package
 			elapsedTime += FlxG.elapsed;
 			difficulty = levelManager.getDifficulty ();
 			
-			lastHelicopterSpawnedCounter += FlxG.elapsed;			
+			lastHelicopterSpawnedCounter += FlxG.elapsed;
 			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
 				helicopter.startHelicopter();
 				lastHelicopterSpawnedCounter = 0;
@@ -255,10 +262,24 @@ package
 			}
 		}
 		
-		public function spawnSpit(X:Number, Y:Number):Spit
+		/**
+		 * parent: shares a hit counter with the spawned spit such that
+		 *         hits are counted only once.
+		 */
+		public function spawnSpit(X:Number, Y:Number, parent:Spit = null):Spit
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
-			s.reset(X,Y);
+			
+			if (parent)
+			{
+				stats.countSpit();
+				s.resetAsChild (X, Y, parent);
+			}
+			else
+			{
+				s.resetCreate (X, Y, stats.countHit);
+			}
+			
 			return s;
 		}
 		
@@ -323,10 +344,10 @@ package
 		
 		public function causeScore (killed:Visitor, score:int, combo:int):void
 		{
-			FlxG.score += score * combo;
+			stats.countKill(killed, score, combo);
 			
 			// total score display (top right)
-			totalScoreText.setText(FlxG.score, combo * 2.1);
+			totalScoreText.setText(stats.getTotalScore(), combo * 2.1);
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
@@ -356,6 +377,7 @@ package
 		private function gameOverFunction():void
 		{
 			ambientPlayer.stop();
+			FlxG.score = stats.getTotalScore(); // GameoverState picks score from there
 			FlxG.switchState(new GameoverState());
 		}
 	
@@ -369,16 +391,16 @@ package
 			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
 			// angle 0 is to the right, 180 to the left, 270 up
-			Llama.moveWithAngle(newSpit, 0, speed);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(0, speed);
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 180, speed);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(180, speed);
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 270-30, speed);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(270-30, speed);
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 270+30, speed);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(270+30, speed);
 		}
 	} // end of class IngameState
 } // end of package

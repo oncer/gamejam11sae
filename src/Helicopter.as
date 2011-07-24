@@ -40,7 +40,7 @@ package
 		private var ingameState:IngameState;
 		
 		public function Helicopter(INGAMESTATE:IngameState) 
-		{			
+		{
 			ingameState = INGAMESTATE;
 			// x doesnt matter, gets set in startHelicopter
 			//super(0, HELICOPTER_Y);
@@ -71,7 +71,7 @@ package
 			trace("start a new helicopter");
 			
 			var random:int = Math.ceil(Math.random() * 10);
-			upgradeType = random % 3;
+			upgradeType = random % Globals.N_UPGRADE_TYPES;
 			trace("upgrade type: " + upgradeType);
 			upgradeSprite.frame = upgradeType;
 						

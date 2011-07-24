@@ -29,8 +29,10 @@ package
 		private var floorTimer:Number;
 		private var floorDead:Boolean;
 		
+		private var hitTrigger:OnceTrigger;
+		
 		public function Spit(center:FlxPoint) 
-		{			
+		{
 			// the spit is 16x16
 			super();			
 			//loadGraphic(SpitClass);
@@ -57,7 +59,7 @@ package
 			particles.start (false,0.3,0.05,0);
 		}
 		
-		override public function reset(X:Number, Y:Number):void
+		private function commonReset(X:Number, Y:Number):void
 		{
 			super.reset(X,Y);
 			initParticles();
@@ -73,6 +75,18 @@ package
 			setCenterPosition(X, Y);
 			
 			setType(TYPE_DEFAULT);
+		}
+		
+		public function resetAsChild(X:Number, Y:Number, parent:Spit):void
+		{
+			commonReset (X, Y);
+			hitTrigger = parent.hitTrigger;
+		}
+		
+		public function resetCreate(X:Number, Y:Number, onHitSomething:Function):void
+		{
+			commonReset (X, Y);
+			hitTrigger = new OnceTrigger (onHitSomething);
 		}
 		
 		override public function preUpdate():void
@@ -169,8 +183,13 @@ package
 			return _canHit;
 		}
 		
+		/**
+		 * Called when the spit hits something that
+		 * is a target and NOT the ground. i.e. it counts
+		 * as a hit in statistics.
+		 */
 		public function hitSomething ():void
-		{			
+		{
 			velocity.y = 0;
 			if(!isType(TYPE_BIGSPIT)) {			
 				velocity.x /= 1.5;
@@ -178,6 +197,8 @@ package
 				particles.on = false;
 			} else {				
 			}
+			
+			hitTrigger.trigger();
 		}
 		
 		public function hitGround ():void
