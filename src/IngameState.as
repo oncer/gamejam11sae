@@ -22,6 +22,8 @@ package
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		//private var _editor:Editor;
+		private var _debug_statsText:FlxText;
+		
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		public var trampolin:FlxSprite;
@@ -153,6 +155,12 @@ package
 			newLevelText = new NewLevelText();
 			add(newLevelText);
 			newLevelText.displayText(levelManager.currentLevel); // Level 1
+			
+			// additional debug init
+			_debug_statsText = new FlxText (FlxG.width - 335, 100, 300);
+			_debug_statsText.color = 0xeeee9f;
+			_debug_statsText.size = 18;
+			add(_debug_statsText);
 		}
 		
 		override public function update():void
@@ -232,6 +240,20 @@ package
 				//trace("quit");
 				//fscommand("quit");
 			}
+			
+			var currentLevel:int = stats.getLevelNr();
+			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
+			_debug_statsText.text = "Current Stats:\n" +
+				"score: " + stats.getLevelScore(currentLevel) + "\n" +
+				"spits: " + stats.getLevelSpitCount(currentLevel) + "\n" +
+				"hits: " + stats.getLevelHitCount(currentLevel) + "\n" +
+				"ratio: " + stats.getLevelHitRatio(currentLevel) + "\n" +
+				"kills: " + stats.getLevelKills(currentLevel) + "\n" +
+				"max-combo: " + max_combos + "\n" +
+				"upgrades: " + stats.getLevelUpgrades(currentLevel) + "\n" +
+				"child killed: " + stats.getLevelKillsOfVisitorType(0, currentLevel) + "\n" +
+				"2x combos: " + stats.getLevelComboCount(2, currentLevel) + "\n" +
+				"rapid upgrades: " + stats.getLevelUpgradesOfType(0, currentLevel);
 		} // end of update
 		
 		
@@ -270,14 +292,14 @@ package
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			
-			if (parent)
+			if (parent === null)
 			{
 				stats.countSpit();
-				s.resetAsChild (X, Y, parent);
+				s.resetCreate (X, Y, stats.countHit);
 			}
 			else
 			{
-				s.resetCreate (X, Y, stats.countHit);
+				s.resetAsChild (X, Y, parent);
 			}
 			
 			return s;
@@ -355,7 +377,9 @@ package
 		
 		public function setUpgrade():void
 		{
-			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
+			var upgradeType:uint = helicopter.getUpgradeType();
+			llama.setUpgradeType(upgradeType + 1);
+			stats.countUpgrade (upgradeType);
 		}
 		
 		public function loseLife ():void
@@ -388,18 +412,18 @@ package
 		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
 			var speed:Number = 200;
 			var y_threshold:Number = 10;
-			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
 			// angle 0 is to the right, 180 to the left, 270 up
 			newSpit.velocity = FlxVelocity.velocityFromAngle(0, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(180, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(270-30, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(270+30, speed);
 		}
 	} // end of class IngameState
