@@ -179,17 +179,6 @@ package
 		{
 			return !isUpgradeHit;
 		}
-		
-		/**
-		 * "Everything" refers to the chopper and the upgrade box.
-		 * When those are all invisible, we can change level #
-		 * without statistics glitches (shoot upgrade & get on next
-		 * level)
-		 */
-		public function isEverythingOut():Boolean
-		{
-			return isChopperOut && isUpgradeDead;
-		}
 	}
 
 }

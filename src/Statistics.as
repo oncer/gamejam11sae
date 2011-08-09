@@ -190,28 +190,13 @@ package
 		}
 		
 		
-		private function statsOfLevel(levelNr:int):StatisticsSingle
-		{
-			if ((levelNr >= 0) && (levelNr < levelStats.length))
-			{
-				//return levelStats[levelNr-1];
-				return totalStats;
-			}
-			else
-			{
-				return totalStats;
-			}
-		}
-		
 		/**
 		 * The amount of points collected in this level
 		 * levelStats is a 0-based vector while levelNr is 1-based.
 		 */
 		public function getLevelScore(levelNr:int):uint
 		{
-			var s:StatisticsSingle = statsOfLevel(levelNr);
-			//return statsOfLevel(levelNr).score;
-			return 100;
+			return levelStats[levelNr-1].score;
 		}
 		
 		/**
@@ -220,7 +205,7 @@ package
 		 */
 		public function getLevelSpitCount(levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).spits;
+			return levelStats[levelNr-1].spits;
 		}
 		
 		/**
@@ -230,7 +215,7 @@ package
 		 */
 		public function getLevelHitCount(levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).hits;
+			return levelStats[levelNr-1].hits;
 		}
 		
 		/**
@@ -239,7 +224,7 @@ package
 		 */
 		public function getLevelHitRatio(levelNr:int):Number
 		{
-			return statsOfLevel(levelNr).hits / statsOfLevel(levelNr).spits;
+			return levelStats[levelNr-1].hits / levelStats[levelNr-1].spits;
 		}
 		
 		/**
@@ -249,7 +234,7 @@ package
 		public function getLevelKills(levelNr:int):uint
 		{
 			var sum:int = 0;
-			var killsArray:Vector.<int> = statsOfLevel(levelNr).kills;
+			var killsArray:Vector.<int> = levelStats[levelNr-1].kills;
 			for (var i:int = 0; i < killsArray.length; i++)
 				sum += killsArray[i];
 			return sum;
@@ -261,7 +246,7 @@ package
 		 */
 		public function getLevelKillsOfVisitorType(visitorType:int, levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).kills[visitorType];
+			return levelStats[levelNr-1].kills[visitorType];
 		}
 		
 		/**
@@ -270,7 +255,7 @@ package
 		 */
 		public function getLevelMaxCombo(levelNr:int):int
 		{
-			return statsOfLevel(levelNr).combos.length - 1;
+			return levelStats[levelNr-1].combos.length - 1;
 		}
 		
 		/**
@@ -280,7 +265,7 @@ package
 		 */
 		public function getLevelComboCount(comboMultiplier:int, levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).combos[comboMultiplier];
+			return levelStats[levelNr-1].combos[comboMultiplier];
 		}
 		
 		/**
@@ -291,7 +276,7 @@ package
 		{
 			var sum:uint = 0;
 			for (var i:uint = 0; i < Globals.N_UPGRADE_TYPES; i++)
-				sum += statsOfLevel(levelNr).upgrades[i];
+				sum += levelStats[levelNr-1].upgrades[i];
 			return sum;
 		}
 		
@@ -302,7 +287,7 @@ package
 		 */
 		public function getLevelUpgradesOfType(upgradeType:uint, levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).upgrades[upgradeType];
+			return levelStats[levelNr-1].upgrades[upgradeType];
 		}
 		
 		/**

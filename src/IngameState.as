@@ -22,6 +22,7 @@ package
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		//private var _editor:Editor;
+		private var _debug_statsText:FlxText;
 		
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
@@ -32,7 +33,6 @@ package
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
-		private var statsText:StatsText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
@@ -44,7 +44,6 @@ package
 		private var lastVisitor:uint;   // most recent array index
 		private var lastSpit:uint;      // most recent array index
 		private var lastScoreText:uint; // most recent array index
-		private var statsDisplayCountdown:Number; 
 		
 		private var lastHelicopterSpawnedCounter:Number;
 		/** after this time (in seconds), the helicopter is started either from left or right */
@@ -130,10 +129,6 @@ package
 			totalScoreText = new TotalScoreText ();
 			add(totalScoreText);
 			
-			// stats display (between levels)
-			statsText = new StatsText(stats);
-			add(statsText);
-			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
 			
@@ -160,30 +155,12 @@ package
 			newLevelText = new NewLevelText();
 			add(newLevelText);
 			newLevelText.displayText(levelManager.currentLevel); // Level 1
-		}
-		
-		private function isLevelCompletelyOver():Boolean
-		{
-			return levelManager.isLevelElapsed() &&
-			       (visitors.countLiving() <= 0) &&
-			       helicopter.isEverythingOut();
-		}
-		
-		private function startDisplayingStatistics():void
-		{
-			statsText.playback(stats.getLevelNr()-1);
-			helicopter.active = false;
-			llama.disableSpit();
-		}
-		
-		private function stopDisplayingStatistics():void
-		{
-			levelManager.gotoNextLevel ();
-			stats.countLevel ();
-			newLevelText.displayText(levelManager.currentLevel);
-			statsText.finishPlayback ();
-			helicopter.active = true;
-			llama.enableSpit();
+			
+			// additional debug init
+			_debug_statsText = new FlxText (FlxG.width - 335, 100, 300);
+			_debug_statsText.color = 0xeeee9f;
+			_debug_statsText.size = 18;
+			add(_debug_statsText);
 		}
 		
 		override public function update():void
@@ -192,31 +169,24 @@ package
 			
 			stats.update();
 			
-			if (isLevelCompletelyOver())
+			if (levelManager.isLevelElapsed() && (visitors.countLiving() <= 0))
 			{
-				if (statsText.canStartPlayback())
-				{
-					startDisplayingStatistics();
-				} else
-				if (statsText.canFinishPlayback())
-				{
-					stopDisplayingStatistics();
-				}
+				levelManager.gotoNextLevel ();
+				stats.countLevel ();
+				newLevelText.displayText(levelManager.currentLevel);
 			}
-			else
-			{
-				lastHelicopterSpawnedCounter += FlxG.elapsed;
-				if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
-					helicopter.startHelicopter();
-					lastHelicopterSpawnedCounter = 0;
-				}
-			}
-		
+			
 			// update time & difficulty
 			// elapsedTime = SECONDS
 			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
 			difficulty = levelManager.getDifficulty ();
+			
+			lastHelicopterSpawnedCounter += FlxG.elapsed;
+			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
+				helicopter.startHelicopter();
+				lastHelicopterSpawnedCounter = 0;
+			}
 			
 			if (trampolin.y < Globals.TRAMPOLIN_TOP) {
 				trampolin.y = Globals.TRAMPOLIN_TOP;
@@ -273,6 +243,17 @@ package
 			
 			var currentLevel:int = stats.getLevelNr();
 			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
+			_debug_statsText.text = "Current Stats:\n" +
+				"score: " + stats.getLevelScore(currentLevel) + "\n" +
+				"spits: " + stats.getLevelSpitCount(currentLevel) + "\n" +
+				"hits: " + stats.getLevelHitCount(currentLevel) + "\n" +
+				"ratio: " + stats.getLevelHitRatio(currentLevel) + "\n" +
+				"kills: " + stats.getLevelKills(currentLevel) + "\n" +
+				"max-combo: " + max_combos + "\n" +
+				"upgrades: " + stats.getLevelUpgrades(currentLevel) + "\n" +
+				"child killed: " + stats.getLevelKillsOfVisitorType(0, currentLevel) + "\n" +
+				"2x combos: " + stats.getLevelComboCount(2, currentLevel) + "\n" +
+				"rapid upgrades: " + stats.getLevelUpgradesOfType(0, currentLevel);
 		} // end of update
 		
 		
