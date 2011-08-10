@@ -52,7 +52,7 @@ package
 		private static const FRAME_HEIGHT:Number = 64;
 		
 		private static const UPPER_TARGET_LIMIT_DEGREE:Number = 170;
-		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 60;
+		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 30;
 		// value needed, because the function rotatePoint() generates no exact results for the border values
 		private var degreeThreshold:Number = 0;			
 		// ATTENTION maybe change that in accordance to the range borders!
@@ -193,13 +193,13 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 16) {
+			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
 				Globals.sfxPlayer.Trampolin();
 				
-				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 5;
+				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 24;
 				lama.velocity.y = jumpUpVelocity;		
 				
 				//var currentFrame:Number = lama.frame;
