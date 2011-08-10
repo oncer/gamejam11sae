@@ -67,6 +67,8 @@ package
 		{
 			super.reset(X,Y);
 			initParticles();
+			bigsize = 1.0;
+			scale = new FlxPoint(bigsize, bigsize);
 			gfxFloor.visible = false;
 			floorTimer = 0;
 			floorDead = false;
@@ -226,7 +228,7 @@ package
 			acceleration.y = 0;
 			onGround = true;
 			
-			if(!isType(TYPE_BIGSPIT)) {			
+			if(!isType(TYPE_BIGSPIT)) {
 				_canHit = false;
 				particles.on = false;
 				gfxFloor.x = x;
@@ -255,7 +257,6 @@ package
 			trace("[Spit] setSpitType: " + SpitType);
 			if (isType(TYPE_BIGSPIT)) {
 				loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
-				bigsize = 1.0;
 			} else {
 				loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			}
