@@ -479,6 +479,8 @@ package
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
 			
+			comboCounter = spit.getCombo();
+			
 			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
 			{
 				velocity.x /= 2;
@@ -486,7 +488,7 @@ package
 			
 			if (health <= 0)
 			{
-				(FlxG.state as IngameState).causeScore(this, scorePoints, 1);
+				(FlxG.state as IngameState).causeScore(this, scorePoints, comboCounter);
 			}
 			
 			startSpitExplosion(); // particle effects
