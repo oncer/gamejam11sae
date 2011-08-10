@@ -52,7 +52,7 @@ package
 		private static const FRAME_HEIGHT:Number = 64;
 		
 		private static const UPPER_TARGET_LIMIT_DEGREE:Number = 170;
-		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 60;
+		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 30;
 		// value needed, because the function rotatePoint() generates no exact results for the border values
 		private var degreeThreshold:Number = 0;			
 		// ATTENTION maybe change that in accordance to the range borders!
@@ -76,7 +76,7 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray:Array = new Array(spitCooldown, 0.1, 1, 0.7);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.1, 0.7, 0.7);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
 		private var upgradeDuration:Array = new Array(0, 15, 10, 25);
 		private var upgradeDurationCounter:Number;

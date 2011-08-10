@@ -31,6 +31,9 @@ package
 		
 		private var hitTrigger:OnceTrigger;
 		
+		private var bigsize:Number;
+		private var onGround:Boolean;
+		
 		public function Spit(center:FlxPoint) 
 		{
 			// the spit is 16x16
@@ -41,6 +44,7 @@ package
 			
 			exists = false;
 			_canHit = true;
+			onGround = false;
 			
 			gfxFloor = new FlxSprite(0,0);
 			gfxFloor.loadGraphic(SpitFloorClass);
@@ -175,6 +179,7 @@ package
 		public override function revive():void
 		{
 			_canHit = true;
+			onGround = false;
 			super.revive();
 		}
 		
@@ -189,13 +194,27 @@ package
 		 * as a hit in statistics.
 		 */
 		public function hitSomething ():void
-		{
-			velocity.y = 0;
-			if(!isType(TYPE_BIGSPIT)) {			
+		{	
+			if(!isType(TYPE_BIGSPIT)) {
+				velocity.y = 0;
+				acceleration.y = 0;
+				
 				velocity.x /= 1.5;
 				_canHit = false;
 				particles.on = false;
-			} else {				
+				
+				if (isType(TYPE_MULTI_SPAWN))
+				{
+					var currentState:IngameState = FlxG.state as IngameState;
+					currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+				}
+			} else { // BIGSPIT
+				bigsize -= 0.15;
+				scale = new FlxPoint(bigsize, bigsize);
+				if (bigsize < 0.2) {
+					_canHit = false;
+					particles.on = false;
+				}
 			}
 			
 			hitTrigger.trigger();
@@ -203,6 +222,9 @@ package
 		
 		public function hitGround ():void
 		{
+			velocity.y = 0;
+			acceleration.y = 0;
+			onGround = true;
 			
 			if(!isType(TYPE_BIGSPIT)) {			
 				_canHit = false;
@@ -211,8 +233,6 @@ package
 				gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
 				gfxFloor.visible = true;
 				drag.x = Math.abs(velocity.x) * 10;
-				velocity.y = 0;
-				acceleration.y = 0;
 				floorTimer = 0.5;
 				floorDead = false;
 				
@@ -222,11 +242,9 @@ package
 					var currentState:IngameState = FlxG.state as IngameState;
 					currentState.spawnMultipleNewSpitsAtSpitPosition(this);
 				}
-			} else {
-				velocity.y = 0;
-				acceleration.y = 0;
+			} else { // BIGSPIT
 				// 3 px, because 3px are transparent border
-				y = Globals.GROUND_LEVEL - height +3 ;
+				y = Globals.GROUND_LEVEL - (height + height*bigsize - 3 - 3*bigsize)/2;
 			}
 		}
 		
@@ -237,6 +255,7 @@ package
 			trace("[Spit] setSpitType: " + SpitType);
 			if (isType(TYPE_BIGSPIT)) {
 				loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
+				bigsize = 1.0;
 			} else {
 				loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			}
