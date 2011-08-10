@@ -210,8 +210,7 @@ package
 		public function getLevelScore(levelNr:int):uint
 		{
 			var s:StatisticsSingle = statsOfLevel(levelNr);
-			//return statsOfLevel(levelNr).score;
-			return 100;
+			return statsOfLevel(levelNr).score;
 		}
 		
 		/**

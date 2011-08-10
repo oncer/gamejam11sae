@@ -27,6 +27,7 @@ package
 			size = FONT_SIZE;
 			timeToNextText = 0;
 			visible = false;
+			alive = false;
 			statistics = stats;
 		}
 		
@@ -57,7 +58,7 @@ package
 					{
 						var levelScore:uint = statistics.getLevelScore(levelNr);
 						text += "Score: " + levelScore.toString() + "\n";
-					} else kill(); /*
+					} else
 					if (textStage == 1)
 					{
 						text += "Hit ratio: " + 
@@ -89,8 +90,8 @@ package
 						}
 					} 
 					
-					textStage++; */
-				} else kill(); /*
+					textStage++;
+				} else
 				if (textPage == 1) // display combos & upgrades
 				{
 					if (textStage == 0) // print combos
@@ -136,7 +137,7 @@ package
 							kill(); // nothing more to display
 						}
 					}
-				} */
+				}
 				
 				timeToNextText = TEXTSTAGE_SECONDS;
 			}
