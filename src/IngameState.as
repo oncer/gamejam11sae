@@ -33,6 +33,7 @@ package
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
 		private var statsText:StatsText;
+		private var alwaysVisibleStatsText:StatsText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
@@ -133,6 +134,13 @@ package
 			// stats display (between levels)
 			statsText = new StatsText(stats);
 			add(statsText);
+			
+			// debug stats display
+			alwaysVisibleStatsText = new StatsText(stats, true);
+			add(alwaysVisibleStatsText);
+			
+			alwaysVisibleStatsText.x = FlxG.width/2;
+			alwaysVisibleStatsText.width = FlxG.width/2;
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
