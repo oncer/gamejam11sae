@@ -21,8 +21,6 @@ package
 		public var upgradeType:uint;
 		private var upgrade:FlxSprite;
 		
-		
-		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
 		

@@ -17,7 +17,7 @@ package
 		private const LEFT_X:uint = 300;
 		private const TOP_Y:uint = 100;
 		private const COLOR:uint = 0xeeee9f;
-		private const SHADOW:uint = 0x333333;
+		private const SHADOW:uint = 0xffffff; // 0x333333;
 		
 		public function StatsText(stats:Statistics)
 		{
@@ -104,11 +104,6 @@ package
 				textStage++;
 				
 			}
-		}
-		
-		private function appendMoreText():void
-		{
-			textStage++;
 		}
 		
 		public function canStartPlayback():Boolean
