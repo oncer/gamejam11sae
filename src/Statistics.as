@@ -18,6 +18,18 @@ package
 			return levelStats[levelStats.length-1];
 		}
 		
+		private function statsOfLevel(levelNr:int):StatisticsSingle
+		{
+			if ((levelNr > 0) && (levelNr <= levelStats.length))
+			{
+				return levelStats[levelNr-1];
+			}
+			else
+			{
+				return totalStats;
+			}
+		}
+		
 		public function Statistics()
 		{
 			elapsedTime = 0;
@@ -189,19 +201,6 @@ package
 			return totalStats.upgrades[upgradeType];
 		}
 		
-		
-		private function statsOfLevel(levelNr:int):StatisticsSingle
-		{
-			if ((levelNr >= 0) && (levelNr < levelStats.length))
-			{
-				//return levelStats[levelNr-1];
-				return totalStats;
-			}
-			else
-			{
-				return totalStats;
-			}
-		}
 		
 		/**
 		 * The amount of points collected in this level
