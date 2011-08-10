@@ -58,7 +58,7 @@ package
 			}
 		}
 		
-		public function isLevelElapsed ():Boolean
+		public function isLevelElapsed():Boolean
 		{
 			return _isNewLevel;
 		}
@@ -82,6 +82,38 @@ package
 			var range:Number = maxLevelDifficulty - minLevelDifficulty;
 			
 			return minLevelDifficulty + range * levelCompletion();
+		}
+		
+		/*
+		 * Returns a vector of the nr.s of visitors which are new in
+		 * the currently starting level.
+		 * Currently, only one visitor type is introduced per level.
+		 */
+		public function getLevelIntroductions():Vector.<int>
+		{
+			switch(currentLevel)
+			{
+				case 1:
+					return Vector.<int>([1, 2]); // man
+					
+				case 2:
+					return Vector.<int>([2]); // woman
+					
+				case 4:
+					return Vector.<int>([4]); // granny
+					
+				case 6:
+					return Vector.<int>([0]); // child
+					
+				case 8:
+					return Vector.<int>([3]); // tourist
+					
+				case 10:
+					return Vector.<int>([9]); // zombie lady
+				
+				default:
+					return Vector.<int>([]); // nothing new
+			}
 		}
 		
 		public function doSpawns(getUnusedVisitor:Function):void

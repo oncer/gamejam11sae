@@ -6,25 +6,22 @@ package
 	// When they reach the top and jump down the other side, you lose.
 	public class Visitor extends FlxSprite
 	{
-		[Embed(source="../gfx/visitor1.png")]  private var Visitor1Image:Class;
-		[Embed(source="../gfx/visitor2.png")]  private var Visitor2Image:Class;
-		[Embed(source="../gfx/visitor3.png")]  private var Visitor3Image:Class;
-		[Embed(source="../gfx/visitor4.png")]  private var Visitor4Image:Class;
-		[Embed(source="../gfx/visitor5.png")]  private var Visitor5Image:Class;
-		[Embed(source="../gfx/visitor6.png")]  private var Visitor6Image:Class;
-		[Embed(source="../gfx/visitor7.png")]  private var Visitor7Image:Class;
-		[Embed(source="../gfx/visitor8.png")]  private var Visitor8Image:Class;
-		[Embed(source="../gfx/visitor9.png")]  private var Visitor9Image:Class;
-		[Embed(source="../gfx/visitor10.png")] private var Visitor10Image:Class;
+		[Embed(source="../gfx/visitor1.png")]  private static const Visitor1Image:Class;
+		[Embed(source="../gfx/visitor2.png")]  private static const Visitor2Image:Class;
+		[Embed(source="../gfx/visitor3.png")]  private static const Visitor3Image:Class;
+		[Embed(source="../gfx/visitor4.png")]  private static const Visitor4Image:Class;
+		[Embed(source="../gfx/visitor5.png")]  private static const Visitor5Image:Class;
+		[Embed(source="../gfx/visitor6.png")]  private static const Visitor6Image:Class;
+		[Embed(source="../gfx/visitor7.png")]  private static const Visitor7Image:Class;
+		[Embed(source="../gfx/visitor8.png")]  private static const Visitor8Image:Class;
+		[Embed(source="../gfx/visitor9.png")]  private static const Visitor9Image:Class;
+		[Embed(source="../gfx/visitor10.png")] private static const Visitor10Image:Class;
 		
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
 		
-		private var visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
+		private static const visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
 			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
 			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
-		
-		private static const SPRITE_WIDTH:uint = 32;
-		private static const SPRITE_HEIGHT:uint = 48;
 		
 		private static const STATE_WALKING:uint = 0;
 		private static const STATE_FLOATING:uint = 1;
@@ -74,7 +71,8 @@ package
 			
 			this.visitorType = visitorType;
 			
-			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
+			loadGraphic (visitorClasses[visitorType], true, true,
+				Globals.LLAMA_SPRITE_WIDTH, Globals.LLAMA_SPRITE_HEIGHT);
 			floatSpeed = 30;
 			scorePoints = Globals.VISITOR_POINTS[visitorType];
 			
@@ -531,6 +529,11 @@ package
 		public function getType():int
 		{
 			return visitorType;
+		}
+		
+		public static function getTypeImage(visitorType:int):Class
+		{
+			return visitorClasses[visitorType];
 		}
 	}
 }

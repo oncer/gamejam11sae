@@ -36,6 +36,7 @@ package
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
+		private var visitorIntroText:Vector.<VisitorIntroText>;
 		
 		private var stats:Statistics;
 		private var lives:uint;         // 0 == game over
@@ -127,15 +128,15 @@ package
 			stats = new Statistics ();
 
 			// total score display
-			totalScoreText = new TotalScoreText ();
+			totalScoreText = new TotalScoreText();
 			add(totalScoreText);
 			
 			// stats display (between levels)
 			statsText = new StatsText(stats);
 			add(statsText);
 			
-			//alwaysVisibleStatsText.x = FlxG.width/2;
-			//alwaysVisibleStatsText.width = FlxG.width/2;
+			// introductory texts for visitors
+			visitorIntroText = new Vector.<VisitorIntroText>();
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
@@ -163,6 +164,7 @@ package
 			newLevelText = new NewLevelText();
 			add(newLevelText);
 			newLevelText.displayText(levelManager.currentLevel); // Level 1
+			newLevelText.setDisappearHandler(this.showLevelIntro);
 		}
 		
 		private function isLevelCompletelyOver():Boolean
@@ -170,6 +172,16 @@ package
 			return levelManager.isLevelElapsed() &&
 			       (visitors.countLiving() <= 0) &&
 			       helicopter.isEverythingOut();
+		}
+		
+		private function showLevelIntro():void
+		{
+			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
+			for (var i:int = 0; i < levelIntros.length; i++)
+			{
+				visitorIntroText[i] = new VisitorIntroText(levelIntros[i], i);
+				add(visitorIntroText[i]); // BUG: is never cleaned up. nevermind though; there's only 10 ever
+			}
 		}
 		
 		private function startDisplayingStatistics():void
