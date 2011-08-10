@@ -197,18 +197,11 @@ package
 		
 		private function stopDisplayingStatistics():void
 		{
-<<<<<<< HEAD
 			bg.next();
 			levelManager.gotoNextLevel ();
 			stats.countLevel ();
-			newLevelText.displayText(levelManager.currentLevel);
-			statsText.finishPlayback ();
-=======
-			levelManager.gotoNextLevel();
-			stats.countLevel();
 			newLevelText.displayText(levelManager.getLevelNr());
-			statsText.finishPlayback();
->>>>>>> c5fa9caff578077d9ac8eef770865064f5bfa7af
+			statsText.finishPlayback ();
 			helicopter.active = true;
 			llama.enableSpit();
 		}

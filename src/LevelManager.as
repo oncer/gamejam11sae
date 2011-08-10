@@ -93,7 +93,7 @@ package
 		// between 0 and 1, how much time has passed in the level
 		public function levelCompletion():Number
 		{
-			var completion = levelTime / SECONDS_PER_LEVEL;
+			var completion:Number = levelTime / SECONDS_PER_LEVEL;
 			if (completion > 1.0) completion = 1.0;
 			return completion;
 		}
