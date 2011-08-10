@@ -163,7 +163,7 @@ package
 			
 			newLevelText = new NewLevelText();
 			add(newLevelText);
-			newLevelText.displayText(levelManager.currentLevel); // Level 1
+			newLevelText.displayText(levelManager.getLevelNr()); // Level 1
 			newLevelText.setDisappearHandler(this.showLevelIntro);
 		}
 		
@@ -193,10 +193,10 @@ package
 		
 		private function stopDisplayingStatistics():void
 		{
-			levelManager.gotoNextLevel ();
-			stats.countLevel ();
-			newLevelText.displayText(levelManager.currentLevel);
-			statsText.finishPlayback ();
+			levelManager.gotoNextLevel();
+			stats.countLevel();
+			newLevelText.displayText(levelManager.getLevelNr());
+			statsText.finishPlayback();
 			helicopter.active = true;
 			llama.enableSpit();
 		}
