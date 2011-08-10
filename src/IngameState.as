@@ -16,13 +16,14 @@ package
 	{
 		//internal var llama:FlxSprite;
 		
-		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
+		//[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		[Embed(source="../gfx/trampolin.png")] private var TrampolinImage:Class;
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		//private var _editor:Editor;
 		
+		private var bg:LevelBackground;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		public var trampolin:FlxSprite;
@@ -69,8 +70,11 @@ package
 			FlxG.mouse.show();*/
 			FlxG.mouse.hide();
 			
-			var bg:FlxSprite = new FlxSprite(0,0);
-			bg.loadGraphic(BackgroundImage);
+			//var bg:FlxSprite = new FlxSprite(0,0);
+			//bg.loadGraphic(BackgroundImage);
+			//add(bg);
+			
+			bg = new LevelBackground(LevelBackground.TIME_MORNING);
 			add(bg);
 			
 			lives = 3;
@@ -163,7 +167,7 @@ package
 			
 			newLevelText = new NewLevelText();
 			add(newLevelText);
-			newLevelText.displayText(levelManager.currentLevel); // Level 1
+			newLevelText.displayText(levelManager.getLevelNr()); // Level 1
 			newLevelText.setDisappearHandler(this.showLevelIntro);
 		}
 		
@@ -193,9 +197,10 @@ package
 		
 		private function stopDisplayingStatistics():void
 		{
+			bg.next();
 			levelManager.gotoNextLevel ();
 			stats.countLevel ();
-			newLevelText.displayText(levelManager.currentLevel);
+			newLevelText.displayText(levelManager.getLevelNr());
 			statsText.finishPlayback ();
 			helicopter.active = true;
 			llama.enableSpit();
@@ -204,6 +209,8 @@ package
 		override public function update():void
 		{
 			super.update();
+			
+			bg.shift = levelManager.levelCompletion();
 			
 			stats.update();
 			
