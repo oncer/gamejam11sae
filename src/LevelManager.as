@@ -72,7 +72,11 @@ package
 		// between 0 and 1, how much time has passed in the level
 		public function levelCompletion():Number
 		{
-			return (elapsedTime - (currentLevel-1) * SECONDS_PER_LEVEL) / SECONDS_PER_LEVEL;
+			var completion:Number = 
+				(elapsedTime - (currentLevel-1) * SECONDS_PER_LEVEL) / SECONDS_PER_LEVEL;
+			if (completion < 0.0) completion = 0.0;
+			if (completion > 1.0) completion = 1.0;
+			return completion;
 		}
 		
 		public function getDifficulty():Number
