@@ -33,6 +33,7 @@ package
 		
 		private var bigsize:Number;
 		private var onGround:Boolean;
+		private var combo:int;
 		
 		public function Spit(center:FlxPoint) 
 		{
@@ -50,6 +51,7 @@ package
 			gfxFloor.loadGraphic(SpitFloorClass);
 			
 			spitType = TYPE_DEFAULT;
+			combo = 1;
 		}
 		
 		private function initParticles():void
@@ -77,6 +79,7 @@ package
 			acceleration.x = 0;
 			acceleration.y = 200;
 			drag.x = drag.y = 0;
+			combo = 1;
 			
 			setCenterPosition(X, Y);
 			
@@ -85,14 +88,14 @@ package
 		
 		public function resetAsChild(X:Number, Y:Number, parent:Spit):void
 		{
-			commonReset (X, Y);
+			commonReset(X, Y);
 			hitTrigger = parent.hitTrigger;
 		}
 		
 		public function resetCreate(X:Number, Y:Number, onHitSomething:Function):void
 		{
 			commonReset (X, Y);
-			hitTrigger = new OnceTrigger (onHitSomething);
+			hitTrigger = new OnceTrigger(onHitSomething);
 		}
 		
 		override public function preUpdate():void
@@ -197,7 +200,8 @@ package
 		 */
 		public function hitSomething ():void
 		{	
-			if(!isType(TYPE_BIGSPIT)) {
+			if(!isType(TYPE_BIGSPIT))
+			{
 				velocity.y = 0;
 				acceleration.y = 0;
 				
@@ -208,9 +212,11 @@ package
 				if (isType(TYPE_MULTI_SPAWN))
 				{
 					var currentState:IngameState = FlxG.state as IngameState;
-					currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+					currentState.spawnMultipleNewSpitsAtSpitPosition(this, true);
 				}
-			} else { // BIGSPIT
+			}
+			else 
+			{ // BIGSPIT
 				bigsize -= 0.15;
 				scale = new FlxPoint(bigsize, bigsize);
 				if (bigsize < 0.2) {
@@ -242,7 +248,7 @@ package
 				
 				if (isType(TYPE_MULTI_SPAWN)) {
 					var currentState:IngameState = FlxG.state as IngameState;
-					currentState.spawnMultipleNewSpitsAtSpitPosition(this);
+					currentState.spawnMultipleNewSpitsAtSpitPosition(this, false);
 				}
 			} else { // BIGSPIT
 				// 3 px, because 3px are transparent border
@@ -262,8 +268,19 @@ package
 			}
 		}
 		
-		public function isType(SpitType:uint):Boolean {
+		public function isType(SpitType:uint):Boolean
+		{
 			return spitType == SpitType;
+		}
+		
+		public function getCombo():int
+		{
+			return combo;
+		}
+		
+		public function setCombo(combo:int):void
+		{
+			this.combo = combo;
 		}
 	}
 
