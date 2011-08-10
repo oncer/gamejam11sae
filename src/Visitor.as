@@ -65,15 +65,14 @@ package
 		// is inferred from the current game difficulty.
 		// spacing: adds additional distance from the screen border to make
 		//     the visitor appear on stage later.
-		public function init (level:Number, spacing:uint, facing:uint = 0):void
+		public function init (visitorType:int, spacing:uint, facing:uint = 0, isFloating:Boolean = false):void
 		{
 			health = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
 			floatTime = 0;
 			
-			visitorType = Math.floor(Math.random()*5);
-			if (Math.random()*5 < 1) visitorType += 5; // rare variations like zombies
+			this.visitorType = visitorType;
 			
 			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
 			floatSpeed = 30;
@@ -157,7 +156,7 @@ package
 			
 			play("walk");
 			
-			var distanceFromScreenBorder:Number = (width+1) * spacing * 2.2;
+			var distanceFromScreenBorder:Number = (walkSpeed+1) * spacing * 2.2;
 			
 			// set direction-dependent values
 			if (facing == 0)
@@ -186,6 +185,16 @@ package
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			
+			if (isFloating)
+			{
+				state = STATE_FLOATING;
+			}
+			else
+			{
+				state = STATE_WALKING;
+			}
+			
+			/*
 			// more level = floaters more likely, up to 40%
 			var floatChance:Number = 0.4 - Math.exp(-level/3) * 0.2;
 			if (Math.random() < floatChance)
@@ -196,6 +205,7 @@ package
 			{
 				state = STATE_WALKING;
 			}
+			*/
 			
 			revive();
 		}

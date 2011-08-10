@@ -237,7 +237,7 @@ package
 			}
 			
 			// Visitors
-			spawnVisitors (levelManager.amountSpawns());
+			levelManager.doSpawns(this.getUnusedVisitor);
 			
 			// Collision visitors vs. spit, visitors vs flying
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
@@ -278,32 +278,9 @@ package
 			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
 		} // end of update
 		
-		
-		private function spawnVisitors (amount:uint):void
+		private function getUnusedVisitor():Visitor
 		{
-			//trace("spawn");
-			
-			for (var i:uint = 0; i < amount; i++)
-			{
-				var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
-				
-				if (v.exists) return; // keep on screen until dead
-				
-				lastVisitor++;
-				
-				// distribute left/right somewhat randomly, but avoid long streaks
-				if (lastVisitor % 6 == 0) 
-				{
-					v.init(levelManager.currentLevel, i, FlxObject.LEFT);
-				} else
-				if (lastVisitor % 6 == 3) 
-				{
-					v.init(levelManager.currentLevel, i, FlxObject.RIGHT);
-				} else
-				{
-					v.init(levelManager.currentLevel, i);
-				}
-			}
+			return visitors.members[(lastVisitor++) % Globals.MAX_VISITORS];
 		}
 		
 		/**
