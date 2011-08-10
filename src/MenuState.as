@@ -30,11 +30,11 @@ package
 			add(_bg);
 			
 			_play = new FlxButton(200 - 75, 200, null, onPlay);
-			_play.loadGraphic(ImgButtonPlay, false, true, 144, 64);
+			_play.loadGraphic(ImgButtonPlay, false, true, 160, 48);
 			add(_play);
 			
 			_credits = new FlxButton(200 - 75, 290, null, onCredits);
-			_credits.loadGraphic(ImgButtonCredits, false, true, 144, 64);
+			_credits.loadGraphic(ImgButtonCredits, false, true, 160, 48);
 			add(_credits);
 			
 			FlxG.mouse.show();
