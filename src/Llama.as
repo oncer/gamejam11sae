@@ -194,13 +194,13 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 16) {
+			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
 				Globals.sfxPlayer.Trampolin();
 				
-				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 5;
+				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 24;
 				lama.velocity.y = jumpUpVelocity;		
 				
 				//var currentFrame:Number = lama.frame;

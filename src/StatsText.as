@@ -10,6 +10,7 @@ package
 		private var textPage:int;   // Which group of info is printed atm
 		private var textStage:int;  // How many items of info are printed
 		private var nextItem:int;   // Index of combo, visitor or upgrade
+		private var alwaysVisible:Boolean;
 		
 		private const TITLE_TEXT:String = "Level Statistics\n";
 		private const TEXTSTAGE_SECONDS:Number = 1;
@@ -18,7 +19,7 @@ package
 		private const COLOR:uint = 0xeeee9f;
 		private const SHADOW:uint = 0x333333;
 		
-		public function StatsText(stats:Statistics)
+		public function StatsText(stats:Statistics, alwaysVisible:Boolean = false)
 		{
 			super (0, TOP_Y, FlxG.width);
 			alignment = "center";
@@ -26,9 +27,10 @@ package
 			shadow = SHADOW;
 			size = FONT_SIZE;
 			timeToNextText = 0;
-			visible = false;
+			visible = alwaysVisible;
 			alive = false;
 			statistics = stats;
+			this.alwaysVisible = alwaysVisible;
 		}
 		
 		public function playback(levelNr:int):void
@@ -45,8 +47,50 @@ package
 		
 		override public function update():void
 		{
+			var kills:int = 0;
+			var combos:uint = 0;
+			var maxCombo:int = 0;
+			var upgrades:int = 0;
 			var printed:Boolean = false;
 			var i:int = 0;
+			
+			if (alwaysVisible)
+			{
+				text = "Level Statistics\n" +
+				       "Score: " + levelScore.toString() + "\n" +
+				       "Hit ratio: " + statistics.getLevelSpitCount(levelNr).toString() + "/" + statistics.getLevelHitCount(levelNr).toString() + " (" + (statistics.getLevelHitRatio(levelNr) * 100).toFixed(0) + "%)\n";
+				       
+				for (i = 0; i < Globals.N_VISITOR_TYPES; i++)
+				{
+					kills = statistics.getLevelKillsOfVisitorType(i, levelNr);
+					if (kills > 0)
+					{
+						text += "Visitor " + i.toString() + " killed: " + kills.toString() + "\n";
+					}
+				}
+				
+				maxCombo = statistics.getLevelMaxCombo(levelNr);
+				
+				for (i = 2; i <= maxCombo; i++)
+				{
+					combos = statistics.getLevelComboCount(i, levelNr);
+					if (combos > 0)
+					{
+						text += "x" + i.toString() + " combo: " + combos.toString() + "\n";
+					}
+				}
+				
+				for (i = nextItem; i < Globals.N_UPGRADE_TYPES; i++)
+				{
+					upgrades = statistics.getLevelUpgradesOfType(i, levelNr);
+					if (upgrades > 0)
+					{
+						text += "Upgrade " + i.toString() + ": " + upgrades.toString() + "\n";
+					}
+				}
+				
+				return;
+			}
 			
 			timeToNextText -= FlxG.elapsed;
 			
@@ -69,7 +113,7 @@ package
 					{
 						for (i = nextItem; i < Globals.N_VISITOR_TYPES; i++)
 						{
-							var kills:int = statistics.getLevelKillsOfVisitorType(i, levelNr);
+							kills = statistics.getLevelKillsOfVisitorType(i, levelNr);
 							if (kills > 0)
 							{
 								text += "Visitor " + i.toString() +
@@ -96,11 +140,11 @@ package
 				{
 					if (textStage == 0) // print combos
 					{
-						var maxCombo:int = statistics.getLevelMaxCombo(levelNr);
+						maxCombo = statistics.getLevelMaxCombo(levelNr);
 						
 						for (i = Math.max(nextItem,2); i <= maxCombo; i++)
 						{
-							var combos:uint = statistics.getLevelComboCount(i, levelNr);
+							combos = statistics.getLevelComboCount(i, levelNr);
 							if (combos > 0)
 							{
 								text += "x" + i.toString() +
@@ -121,7 +165,7 @@ package
 					{
 						for (i = nextItem; i < Globals.N_UPGRADE_TYPES; i++)
 						{
-							var upgrades:int = statistics.getLevelUpgradesOfType(i, levelNr);
+							upgrades = statistics.getLevelUpgradesOfType(i, levelNr);
 							if (upgrades > 0)
 							{
 								text += "Upgrade " + i.toString() +
@@ -160,7 +204,7 @@ package
 		
 		public function finishPlayback():void
 		{
-			visible = false;
+			if (!alwaysVisible) visible = false;
 		}
 		
 		/*
