@@ -154,7 +154,7 @@ package
 			
 			play("walk");
 			
-			var distanceFromScreenBorder:Number = (walkSpeed+1) * spacing * 2.2;
+			var distanceFromScreenBorder:Number = (walkSpeed+1) * spacing;
 			
 			// set direction-dependent values
 			if (facing == 0)
