@@ -11,6 +11,26 @@ package
 		public var currentLevel:int;
 		private var lastSpawnTime:Number;
 		
+		private function amountSpawns():uint
+		{
+			var difficulty:Number = getDifficulty();
+			var spawnInterval:Number = 400.0 / (difficulty + 40.0);
+			if (spawnInterval < 0.1) {
+				spawnInterval = 0.1;
+			}
+			
+			var amountPerInterval:uint = Math.max(2, Math.min(10, Math.round(difficulty/10 + 5)));
+			var amount:uint = 0;
+			
+			while (lastSpawnTime < elapsedTime) 
+			{
+				lastSpawnTime += spawnInterval;
+				amount += amountPerInterval;
+			}
+			
+			return amount;
+		}
+		
 		public function LevelManager():void
 		{
 			super();
@@ -43,26 +63,6 @@ package
 			return _isNewLevel;
 		}
 		
-		public function amountSpawns():uint
-		{
-			var difficulty:Number = getDifficulty();
-			var spawnInterval:Number = 400.0 / (difficulty + 40.0);
-			if (spawnInterval < 0.1) {
-				spawnInterval = 0.1;
-			}
-			
-			var amountPerInterval:uint = Math.max(2, Math.min(10, Math.round(difficulty/10 + 5)));
-			var amount:uint = 0;
-			
-			while (lastSpawnTime < elapsedTime) 
-			{
-				lastSpawnTime += spawnInterval;
-				amount += amountPerInterval;
-			}
-			
-			return amount;
-		}
-		
 		public function gotoNextLevel():void
 		{
 			_isNewLevel = false;
@@ -82,6 +82,21 @@ package
 			var range:Number = maxLevelDifficulty - minLevelDifficulty;
 			
 			return minLevelDifficulty + range * levelCompletion();
+		}
+		
+		public function doSpawns(getUnusedVisitor:Function):void
+		{
+			var amount:uint = amountSpawns();
+			for (var i:uint = 0; i < amount; i++)
+			{
+				var v:Visitor = getUnusedVisitor();
+				if (v.exists) return; // not actually unused?! keep on screen until dead
+				
+				// distribute left/right at random. visitors evenly
+				var visitorType:int = Math.floor(Math.random() * 5);
+				if (Math.random()*5 < 1) visitorType += 5; // rare variations like zombies
+				v.init(visitorType, i, 0, Math.random() < 0.5);
+			}
 		}
 	}
 }
