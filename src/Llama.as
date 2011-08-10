@@ -59,8 +59,9 @@ package
 		private var rotationDifferenceInDegreesPerFrame:Number = 4;
 		
 		
-		/** Gets increased by holding the space key - is in range between 0 and 100*/
+		/* Note: spit strength feature was dropped. */
 		private var spitStrength:Number;
+		private var spitEnabled:Boolean;
 		private var spitStrengthBar:FlxBar;
 		[Editable (type = "slider", min = "100", max = "300")]
 		// factor for balancing that regulates the power multiplication of strength
@@ -129,7 +130,7 @@ package
 			add(spitStrengthBar);						
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;			
-			
+			spitEnabled = true;
 			
 			lama.maxVelocity.x = 150;
 			
@@ -373,6 +374,16 @@ package
 			spitCooldown = spitCooldownArray[upgradeType];
 			upgrade.frame = upgradeType;
 			upgradeDurationCounter = 0;
+		}
+        
+        public function enableSpit():void
+        {
+			spitEnabled = true;
+		}
+		
+        public function disableSpit():void
+        {
+			spitEnabled = false;
 		}
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {
