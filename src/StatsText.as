@@ -7,9 +7,9 @@ package
 		private var timeToNextText:Number; // in seconds
 		private var statistics:Statistics;
 		private var levelNr:int;
-		private var textPage:int;  // Which group of info is printed atm
-		private var textStage:int; // How many items of info are printed
-		private var nextItem:int;  // Index of combo, visitor or upgrade
+		private var textPage:int;   // Which group of info is printed atm
+		private var textStage:int;  // How many items of info are printed
+		private var nextItem:int;   // Index of combo, visitor or upgrade
 		
 		private const TITLE_TEXT:String = "Level Statistics\n";
 		private const TEXTSTAGE_SECONDS:Number = 1;
@@ -119,7 +119,7 @@ package
 						}
 					} else // print upgrades
 					{
-						for (i = nextItem; i <= Globals.N_UPGRADE_TYPES; i++)
+						for (i = nextItem; i < Globals.N_UPGRADE_TYPES; i++)
 						{
 							var upgrades:int = statistics.getLevelUpgradesOfType(i, levelNr);
 							if (upgrades > 0)
