@@ -11,16 +11,18 @@ package
 		private var textStage:int;  // How many items of info are printed
 		private var nextItem:int;   // Index of combo, visitor or upgrade
 		
-		private const TEXTSTAGE_SECONDS:Number = .7;
+		private const TEXTSTAGE_SECONDS:Number = .4;
+		private const WHOLETEXT_SECONDS:Number = 7;
 		private const FONT_SIZE:Number = 18;
+		private const LEFT_X:uint = 300;
 		private const TOP_Y:uint = 100;
 		private const COLOR:uint = 0xeeee9f;
 		private const SHADOW:uint = 0x333333;
 		
 		public function StatsText(stats:Statistics)
 		{
-			super (0, TOP_Y, FlxG.width);
-			alignment = "center";
+			super (LEFT_X, TOP_Y, FlxG.width);
+			alignment = "left";
 			color = COLOR;
 			shadow = SHADOW;
 			size = FONT_SIZE;
@@ -37,113 +39,70 @@ package
 			textPage = 0;
 			textStage = 0;
 			nextItem = 0;
-			text = "Level " + levelNr.toString() + " Statistics\n";
+			text = "Level Statistics\n";
 			revive();
 			visible = true;
 		}
 		
 		override public function update():void
 		{
-			var levelScore:uint = 0;
-			var kills:int = 0;
-			var combos:uint = 0;
-			var maxCombo:int = 0;
-			var upgrades:int = 0;
-			var printed:Boolean = false;
 			var i:int = 0;
+			var visitorsScore:int;
 			
 			timeToNextText -= FlxG.elapsed;
 			
 			if (timeToNextText <= 0)
 			{
-				if (textPage == 0) // display score, hit ratio & kills
+				timeToNextText = TEXTSTAGE_SECONDS;
+				
+				switch (textStage)
 				{
-					if (textStage == 0)
-					{
-						levelScore = statistics.getLevelScore(levelNr);
-						text += "Score: " + levelScore.toString() + "\n";
-					} else
-					if (textStage == 1)
-					{
-						text += "Hit ratio: " + 
-						        statistics.getLevelSpitCount(levelNr).toString() + "/" + 
-						        statistics.getLevelHitCount(levelNr).toString() + " (" +
-						        (statistics.getLevelHitRatio(levelNr) * 100).toFixed(0) + "%)\n";
-					} else // print visitor kills
-					{
-						for (i = nextItem; i < Globals.N_VISITOR_TYPES; i++)
-						{
-							kills = statistics.getLevelKillsOfVisitorType(i, levelNr);
-							if (kills > 0)
-							{
-								text += "Visitor " + i.toString() +
-								        " killed: " + kills.toString() + "\n";
-								printed = true;
-								nextItem = i+1;
-								break;
-							}
-						}
+					case 0:
+						text += "Hit Rate: " + (statistics.getLevelHitRatio(levelNr) * 100).toFixed(0) + "%\n";
+						break;
 						
-						if (!printed)
-						{
-							text = "Level " + levelNr.toString() + " Statistics\n";
-							textPage++;
-							textStage = 0;
-							nextItem = 0;
-							return;
-						}
-					} 
-					
-					textStage++;
-				} else
-				if (textPage == 1) // display combos & upgrades
-				{
-					if (textStage == 0) // print combos
-					{
-						maxCombo = statistics.getLevelMaxCombo(levelNr);
+					case 1:
+						text += "Visitors killed: " + statistics.getLevelKills(levelNr).toString() + "\n";
+						break;
 						
-						for (i = Math.max(nextItem,2); i <= maxCombo; i++)
-						{
-							combos = statistics.getLevelComboCount(i, levelNr);
-							if (combos > 0)
-							{
-								text += "x" + i.toString() +
-								        " combo: " + combos.toString() + "\n";
-								printed = true;
-								nextItem = i+1;
-								break;
-							}
-						}
+					case 2:
+						text += "Upgrades: " + statistics.getLevelUpgrades(levelNr).toString() + "\n";
+						break;
 						
-						if (!printed)
-						{
-							textStage++;
-							nextItem = 0;
-							return;
-						}
-					} else // print upgrades
-					{
-						for (i = nextItem; i < Globals.N_UPGRADE_TYPES; i++)
-						{
-							upgrades = statistics.getLevelUpgradesOfType(i, levelNr);
-							if (upgrades > 0)
-							{
-								text += "Upgrade " + i.toString() +
-								        ": " + upgrades.toString() + "\n";
-								printed = true;
-								nextItem = i+1;
-								break;
-							}
-						}
+					case 3:
+						text += "Highest Combo: x" + statistics.getLevelMaxCombo(levelNr).toString() + "\n";
+						break;
 						
-						if (!printed)
+					case 4:
+						text += "Score: " + statistics.getLevelScore(levelNr).toString() + "             \n";
+						break;
+						
+					case 5:
+						visitorsScore = 0;
+						for (i = 0; i < Globals.N_VISITOR_TYPES; i++)
 						{
-							kill(); // nothing more to display
+							visitorsScore += Globals.VISITOR_POINTS[i] * statistics.getLevelKillsOfVisitorType(i, levelNr);
 						}
-					}
+						text += "   * Basic: " + visitorsScore.toString() + "\n";
+						break;
+						
+					case 6:
+						visitorsScore = 0;
+						for (i = 0; i < Globals.N_VISITOR_TYPES; i++)
+						{
+							visitorsScore += Globals.VISITOR_POINTS[i] * statistics.getLevelKillsOfVisitorType(i, levelNr);
+						}
+						text += "   * Combo: " + (statistics.getLevelScore(levelNr) - visitorsScore).toString() + "\n";
+						timeToNextText = WHOLETEXT_SECONDS;
+						break;
+						
+					default:
+						kill();
+						break;
 				}
 				
-				timeToNextText = TEXTSTAGE_SECONDS;
+				textStage++;
+				
 			}
 		}
 		

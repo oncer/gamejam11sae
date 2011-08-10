@@ -77,6 +77,7 @@ package
 			
 			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
 			floatSpeed = 30;
+			scorePoints = Globals.VISITOR_POINTS[visitorType];
 			
 			switch (visitorType)
 			{
@@ -90,7 +91,6 @@ package
 					height = 21;
 					offset.x = 8;
 					offset.y = 27;
-					scorePoints = 40;
 					break;
 					
 				case 1: // man with glasses & hat
@@ -103,7 +103,6 @@ package
 					height = 28;
 					offset.x = 8;
 					offset.y = 20;
-					scorePoints = 15;
 					break;
 					
 				case 2: // woman
@@ -116,7 +115,6 @@ package
 					height = 25;
 					offset.x = 7;
 					offset.y = 23;
-					scorePoints = 15;
 					break;
 					
 				case 3: // fat tourist
@@ -130,7 +128,6 @@ package
 					offset.x = 7;
 					offset.y = 23;
 					health = 2;
-					scorePoints = 30;
 					break;
 					
 				case 4: // old lady
@@ -142,7 +139,6 @@ package
 					height = 24;
 					offset.x = 9;
 					offset.y = 24;
-					scorePoints = 10;
 					break;
 					
 				case 9: // zombie lady
@@ -155,7 +151,6 @@ package
 					offset.x = 9;
 					offset.y = 24;
 					health = 3;
-					scorePoints = 100;
 					break;
 					
 			}
