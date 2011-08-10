@@ -134,6 +134,9 @@ package
 			statsText = new StatsText(stats);
 			add(statsText);
 			
+			//alwaysVisibleStatsText.x = FlxG.width/2;
+			//alwaysVisibleStatsText.width = FlxG.width/2;
+			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
 			
@@ -171,7 +174,7 @@ package
 		
 		private function startDisplayingStatistics():void
 		{
-			statsText.playback(stats.getLevelNr()-1);
+			statsText.playback(stats.getLevelNr());
 			helicopter.active = false;
 			llama.disableSpit();
 		}
@@ -361,11 +364,6 @@ package
 			flyingVisitors.add(v);
 			
 			Globals.sfxPlayer.Splotsh();
-			
-			if (s.isType(Spit.TYPE_MULTI_SPAWN))
-			{
-				spawnMultipleNewSpitsAtSpitPosition(s);				
-			}
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
