@@ -364,11 +364,6 @@ package
 			flyingVisitors.add(v);
 			
 			Globals.sfxPlayer.Splotsh();
-			
-			if (s.isType(Spit.TYPE_MULTI_SPAWN))
-			{
-				spawnMultipleNewSpitsAtSpitPosition(s);				
-			}
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
