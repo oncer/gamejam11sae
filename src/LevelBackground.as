@@ -28,6 +28,8 @@ package{
 		[Embed(source="../gfx/map/map_front_2.png")] private var map_front_2:Class;
 		[Embed(source="../gfx/map/map_front_3.png")] private var map_front_3:Class;
 		
+		private var y_offset_array:Array = new Array(0, 104, 128, 168, 284);
+		
 		private var bg1_array:Array = new Array(map_bg1_0, map_bg1_1, map_bg1_2, map_bg1_3);
 		private var bg2_array:Array = new Array(map_bg2_0, map_bg2_1, map_bg2_2, map_bg2_3);
 		private var bg3_array:Array = new Array(map_bg3_0, map_bg3_1, map_bg3_2, map_bg3_3);
@@ -62,23 +64,30 @@ package{
 			resetLayers();
 		}
 		
+		private function _fillLayers(LAYERS:Array, time:int):void
+		{
+			var i:int;
+			var a:Array;
+			var s:FlxSprite;
+			for (i=0; i<layer_arrays.length; i++) {
+				a = layer_arrays[i];
+				if (i == 1 || i == 2) {
+					s = new SpriteScrollerH(0, y_offset_array[i], a[time]);
+				} else {
+					s = new FlxSprite(0, y_offset_array[i], a[time]);
+				}
+				LAYERS.push(s);
+			}
+		}
+		
 		private function resetLayers():void
 		{
 			clear();
 			layers = new Array();
 			blend_layers = new Array();
 			
-			var a:Array;
-			var s:SpriteScrollerH;
-			for each (a in layer_arrays) {
-				s = new SpriteScrollerH(a[time]);
-				layers.push(s);
-			}
-			var tNext:int = (time + 1) % NUM_TIME;
-			for each (a in layer_arrays) {
-				s = new SpriteScrollerH(a[tNext]);
-				blend_layers.push(s);
-			}
+			_fillLayers(layers, time);
+			_fillLayers(blend_layers, (time + 1) % NUM_TIME);
 			
 			for (var i:int = 0; i < layers.length; i++) {
 				add(layers[i]);
@@ -95,7 +104,7 @@ package{
 		
 		public override function draw():void
 		{
-			var s:SpriteScrollerH;
+			var s:FlxSprite;
 			for each (s in blend_layers) {
 				s.alpha = 1.0;
 			}
