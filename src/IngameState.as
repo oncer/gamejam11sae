@@ -71,7 +71,7 @@ var __start__:int = flash.utils.getTimer();
 			FlxG.mouse.show();*/
 			FlxG.mouse.hide();
 			
-			bg = new LevelBackground(LevelBackground.TIME_MORNING);
+			bg = new LevelBackground(LevelBackground.TIME_DAY);
 			add(bg);
 			
 			lives = 3;
@@ -196,6 +196,7 @@ var __start__:int = flash.utils.getTimer();
 		private function startDisplayingStatistics():void
 		{
 var __start__:int = flash.utils.getTimer();
+			bg.startShift();
 			statsText.playback(stats.getLevelNr());
 			helicopter.active = false;
 			llama.disableSpit();
@@ -205,7 +206,7 @@ var __start__:int = flash.utils.getTimer();
 		private function stopDisplayingStatistics():void
 		{
 var __start__:int = flash.utils.getTimer();
-			bg.next();
+			bg.startShift();
 			levelManager.gotoNextLevel ();
 			stats.countLevel ();
 			newLevelText.displayText(levelManager.getLevelNr());
@@ -222,8 +223,6 @@ var __start__:int = flash.utils.getTimer();
 			var tm:int = flash.utils.getTimer();
 			super.update();
 			Profiler.profiler.profile('IngameState.update__super.update', flash.utils.getTimer() - tm);
-			
-			bg.shift = levelManager.levelCompletion();
 			
 			tm = flash.utils.getTimer();
 			stats.update();
@@ -411,6 +410,7 @@ var __start__:int = flash.utils.getTimer();
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
+			trace("flyingVisitors count: " + flyingVisitors.length);
 			
 			Globals.sfxPlayer.Splotsh();
 		Profiler.profiler.profile('IngameState.visitorsVsSpits', flash.utils.getTimer() - __start__);

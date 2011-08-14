@@ -42,6 +42,9 @@ package {
 		{
 			sp1.blend = sp2.blend = this.blend;
 			sp1.alpha = sp2.alpha = this.alpha;
+			if (this.x > sp1.width) {
+				this.x -= sp1.width;
+			}
 			sp1.x = this.x;
 			sp2.x = this.x - sp1.width;
 			sp1.update();
