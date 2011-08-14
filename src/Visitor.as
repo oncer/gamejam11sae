@@ -92,7 +92,7 @@ package
 					
 				case 1: // man with glasses & hat
 				case 6:
-					walkSpeed = 53;
+					walkSpeed = 30;
 					climbSpeed = 35;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -104,7 +104,7 @@ package
 					
 				case 2: // woman
 				case 7:
-					walkSpeed = 38;
+					walkSpeed = 32;
 					climbSpeed = 70;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -116,7 +116,7 @@ package
 					
 				case 3: // fat tourist
 				case 8:
-					walkSpeed = 30;
+					walkSpeed = 26;
 					climbSpeed = 28;
 					jumpSpeed = 80;
 					jumpHeight = -130;
@@ -128,7 +128,7 @@ package
 					break;
 					
 				case 4: // old lady
-					walkSpeed = 25;
+					walkSpeed = 21;
 					climbSpeed = 45;
 					jumpSpeed = 90;
 					jumpHeight = -150;
