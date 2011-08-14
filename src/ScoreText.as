@@ -10,7 +10,8 @@ package
 		public function ScoreText():void
 		{
 			super(0,0,100);
-			this.size = 16;
+			this.font = "04b";
+			this.size = 32;
 			this.alignment = "center";
 			this.shadow = 0x333333;
 			this.exists = false;

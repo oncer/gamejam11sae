@@ -157,8 +157,6 @@ package
 					
 			}
 			
-			play("walk");
-			
 			var distanceFromScreenBorder:Number = walkSpeed * spacing;
 			
 			// set direction-dependent values
@@ -192,10 +190,12 @@ package
 			{
 				state = STATE_FLOATING;
 				floatPattern = VisitorFloatPattern.sinusFactory(width, height, spacing, 60, 2, 30, facing);
+				update_floating();
 			}
 			else
 			{
 				state = STATE_WALKING;
+				update_walking();
 			}
 			
 			revive();

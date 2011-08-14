@@ -80,7 +80,7 @@ package
 		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
-		private static const SPIT_ANIMATION_DURATION:Number = 0.1;
+		private static const SPIT_ANIMATION_DURATION:Number = 0.33;
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
@@ -328,11 +328,11 @@ package
 					
 					Globals.sfxPlayer.Spit();
 					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
-					if (upgradeType == UPGRADE_MULTISPAWN)
+					if (upgradeType == UPGRADE_MULTISPAWN) {
 						spit.setType(Spit.TYPE_MULTI_SPAWN);
-					else if (upgradeType == UPGRADE_BIGSPIT)					
+					} else if (upgradeType == UPGRADE_BIGSPIT) {
 						spit.setType(Spit.TYPE_BIGSPIT);
-						
+					}
 					
 					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
 					//spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);

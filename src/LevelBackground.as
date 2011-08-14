@@ -61,6 +61,10 @@ package{
 			time = TIME;
 			doShift = false;
 			layers = new Array();
+			for (var i:int = 0; i < NUM_TIME; i++) {
+				layers[i] = new Array();
+				_fillLayers(layers[i], i);
+			}
 			resetLayers();
 		}
 		
@@ -94,30 +98,23 @@ package{
 		
 		private function resetLayers():void
 		{
-			var x1:Number = 0;
-
-			var x2:Number = 0;
 			clear();
-			if (layers[1] != null) x1 = layers[1].x;
-			if (layers[2] != null) x2 = layers[2].x;
-			layers.splice(0); // clear array
+			var tLast:int = time - 1;
+			if (tLast < 0) tLast = NUM_TIME - 1;
+			layers[time][1].x = layers[tLast][1].x;
+			layers[time][2].x = layers[tLast][2].x;
 			
-			_fillLayers(layers, time);
-			
-			for (var i:int = 0; i < layers.length; i++) {
-				add(layers[i]);
+			for (var i:int = 0; i < layers[time].length; i++) {
+				add(layers[time][i]);
 			}
-			
-			layers[1].x = x1;
-			layers[2].x = x2;
 			
 			shift = 0.0;
 		}
 		
 		public override function update():void
 		{
-			layers[1].x += 21.1 * FlxG.elapsed;
-			layers[2].x += 45.3 * FlxG.elapsed;
+			layers[time][1].x += 21.1 * FlxG.elapsed;
+			layers[time][2].x += 45.3 * FlxG.elapsed;
 			
 			if (doShift) {
 				shift += FlxG.elapsed;
@@ -134,7 +131,7 @@ package{
 		{
 			var s:FlxSprite;
 			if (shift < 1.0) {
-				for each (s in layers) {
+				for each (s in layers[time]) {
 					s.frame = shift * NUM_FRAMES;
 				}
 			}

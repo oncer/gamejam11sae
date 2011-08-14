@@ -13,7 +13,7 @@ package
 		private var started:Boolean;
 		
 		private static const AMBIENT_VOLUME:Number = 0.33;
-		private static const MUSIC_VOLUME:Number = 1.0;
+		private static const MUSIC_VOLUME:Number = 0;//1.0;
 		
 		public function AmbientPlayer():void
 		{

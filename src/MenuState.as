@@ -41,7 +41,7 @@ package
 			
 			//FlxG.scores = new Array(1000, 800, 500, 300, 100);
 			//HighscoreManager.save();
-			HighscoreManager.load();
+			/*HighscoreManager.load();
 			
 			_scores = new Array();
 			var x:int = 400;
@@ -65,7 +65,7 @@ package
 				add(text);
 			}
 			_scores[0].color = 0x333333;
-			_scores[0].shadow = 0xffffcc;
+			_scores[0].shadow = 0xffffcc;*/
 			
 			timeout = 0.5; // do not allow to leave screen while this is > 0
 		}
