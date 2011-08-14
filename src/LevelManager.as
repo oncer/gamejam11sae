@@ -133,7 +133,7 @@ package
 					return Vector.<int>([3]); // tourist
 					
 				case 10:
-					return Vector.<int>([9]); // zombie lady
+					return Vector.<int>([5]); // zombie lady
 				
 				default:
 					return Vector.<int>([]); // nothing new
