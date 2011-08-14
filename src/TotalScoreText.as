@@ -2,7 +2,7 @@ package
 {
 	import org.flixel.*;
 	
-	public class TotalScoreText extends FlxText
+	public class TotalScoreText extends FlxBitmapFont
 	{
 		private var timer:Number;
 		
@@ -11,34 +11,36 @@ package
 		private var baseX:Number;
 		private var baseY:Number;
 		
+		[Embed(source = "../gfx/font.png")] private static var fontClass:Class;
+		private static const CHARS:String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 :.!?-";
+		private static const WIDTHS:Array = new Array(
+			16, 16, 16, 16, 16, 16, 18, 16,
+			 7, 14, 16, 16, 22, 18, 18, 16,
+			19, 16, 16, 17, 17, 17, 22, 17,
+			16, 20, 
+			18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 
+			10,  7,  7,  7, 18, 13
+		); 
+		
 		public function TotalScoreText():void
 		{
-			baseX = FlxG.width - 235;
+			super(fontClass, 32, 32, CHARS, 8, 1, 1, 0, 0, WIDTHS);
+			baseX = FlxG.width - 335;
 			baseY = 30;
-			super (baseX, baseY - height/2, 200);
-			alignment = "right";
+			x = FlxG.width - 335;
+			y = 30 - 16;
 			text = "SCORE: 0";
 			color = 0xffffff;
-			shadow = 0x333333;
-			size = BASE_SIZE;
-			currentSize = BASE_SIZE;
 		}
 		
 		public function setText(score:int, gain:int):void
 		{
 			text = "SCORE: " + score.toString();
-			currentSize = Math.min(26, currentSize + gain);
 		}
 		
 		override public function update():void
 		{
-			currentSize = (currentSize - BASE_SIZE) / Math.pow(2.0, FlxG.elapsed) + BASE_SIZE;
-			size = BASE_SIZE;
-			y = baseY - height/2;
-			//x = baseX + (currentSize - BASE_SIZE) / 4;
-			
-			var overSize:Number = Math.floor((currentSize - BASE_SIZE) * 25);
-			color = 0x10000 * (0xFF - overSize) + 0xFF00 + (0xFF - overSize);
+			super.update();
 		}
 	}
 }

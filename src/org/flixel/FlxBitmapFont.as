@@ -342,6 +342,7 @@ package org.flixel
 						x += characterWidth + customSpacingX;
 					} else {
 						x += characterWidthArray[line.charCodeAt(c)] + customSpacingX;
+					}
 				}
 				else
 				{
