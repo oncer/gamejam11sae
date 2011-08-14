@@ -172,12 +172,12 @@ var __start__:int = flash.utils.getTimer();
 			
 			if (floorDead && !gfxFloor.flickering && !isType(TYPE_BIGSPIT))
 			{
-				trace("[spit] kill");
+				//trace("[spit] kill");
 				kill();
 			}
 			
 			if (x > FlxG.width || x < -width) {
-				trace("[spit] kill after getting out of screen");
+				//trace("[spit] kill after getting out of screen");
 				kill();
 			}
 			
@@ -289,7 +289,7 @@ var __start__:int = flash.utils.getTimer();
 			spitType = SpitType;
 			
 			// this gets only called at reset, for the default type, or if type is bigspit or MULTI_SPAWN - because these spit types are not generated that often, performance drain is still ok
-			trace("[Spit] setSpitType: " + SpitType);
+			//trace("[Spit] setSpitType: " + SpitType);
 			if (isType(TYPE_BIGSPIT)) {
 				loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
 			} else {

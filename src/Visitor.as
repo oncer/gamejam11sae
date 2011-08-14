@@ -154,8 +154,6 @@ package
 					
 			}
 			
-			play("walk");
-			
 			var distanceFromScreenBorder:Number = (walkSpeed+1) * spacing;
 			
 			// set direction-dependent values
@@ -188,10 +186,12 @@ package
 			if (isFloating)
 			{
 				state = STATE_FLOATING;
+				update_floating();
 			}
 			else
 			{
 				state = STATE_WALKING;
+				update_walking();
 			}
 			
 			/*
