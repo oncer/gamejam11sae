@@ -66,6 +66,8 @@ package
 		//     the visitor appear on stage later.
 		public function init (visitorType:int, spacing:uint, facing:uint = 0, isFloating:Boolean = false):void
 		{
+			trace("Visitor.init spacing=" + spacing.toString());
+			
 			var __start__:int = flash.utils.getTimer();
 			health = 1;
 			comboCounter = 1;

@@ -6,6 +6,7 @@ package
 	{
 		private const SECONDS_PER_LEVEL:Number = 40; // minimum time
 		private const SECONDS_BETWEEN_SPAWNS:Number = 5;
+		private const SPAWN_BATCHES_PER_LEVEL:Number = SECONDS_PER_LEVEL / SECONDS_BETWEEN_SPAWNS; // works only if integer divisible
 		
 		private var elapsedTime:Number; // total *time of all levels*, not game time, in seconds
 		private var levelTime:Number;   // elapsed time in this level in seconds
@@ -13,6 +14,7 @@ package
 		private var currentLevel:int;
 		private var lastSpawnTime:Number;
 		private var spawnPool:Vector.<VisitorSpawnDesc>; // Vector of visitor types to spawn in this level
+		private var spawnedVisitors:FlxGroup; // tracking for checking if all dead
 		private var spawnBatch:int;
 		
 		private function amountSpawns():uint
@@ -45,6 +47,7 @@ package
 			currentLevel = 1;
 			
 			spawnPool = new Vector.<VisitorSpawnDesc>([]);
+			spawnedVisitors = new FlxGroup();
 			beginLevel();
 		}
 		
@@ -70,9 +73,15 @@ package
 			}
 		}
 		
+		private function areAllSpawnsDead():Boolean
+		{
+			return (spawnBatch >= SPAWN_BATCHES_PER_LEVEL) &&
+			       (spawnedVisitors.countLiving() == 0);
+		}
+		
 		public function isLevelElapsed():Boolean
 		{
-			return _isNewLevel;
+			return areAllSpawnsDead() || _isNewLevel;
 		}
 		
 		private function beginLevel():void
@@ -82,6 +91,7 @@ package
 			lastSpawnTime = -SECONDS_BETWEEN_SPAWNS; // force initial spawn at level begin
 			
 			fillSpawnPool();
+			spawnedVisitors.clear();
 		}
 		
 		public function gotoNextLevel():void
@@ -146,8 +156,8 @@ package
 		private function doOneSpawn(getUnusedVisitor:Function):void
 		{
 			var l:int = spawnPool.length;
-			var vbegin:int = spawnBatch * l / 8;
-			var vend:int = (spawnBatch+1) * l / 8;
+			var vbegin:int = spawnBatch * l / SPAWN_BATCHES_PER_LEVEL;
+			var vend:int = (spawnBatch+1) * l / SPAWN_BATCHES_PER_LEVEL;
 			
 			trace("doOneSpawn with " + (vend - vbegin).toString() + " visitors.");
 			
@@ -161,6 +171,7 @@ package
 				       i-vbegin,             // spacing
 				       spawnPool[i].facing,  // facing
 				       Math.random() < spawnPool[i].floatingProbability); // isFloating
+				spawnedVisitors.add(v);
 			}
 			
 			spawnBatch++;
