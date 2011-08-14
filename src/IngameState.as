@@ -37,7 +37,7 @@ package
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
-		private var visitorIntroText:Vector.<VisitorIntroText>;
+		private var visitorIntroTexts:FlxGroup;
 		
 		private var stats:Statistics;
 		private var lives:uint;         // 0 == game over
@@ -137,7 +137,8 @@ var __start__:int = flash.utils.getTimer();
 			add(statsText);
 			
 			// introductory texts for visitors
-			visitorIntroText = new Vector.<VisitorIntroText>();
+			visitorIntroTexts = new FlxGroup();
+			add(visitorIntroTexts);
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
@@ -182,12 +183,13 @@ Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTi
 		private function showLevelIntro():void
 		{
 var __start__:int = flash.utils.getTimer();
-/*			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
+			visitorIntroTexts.clear();
+
+			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
 			for (var i:int = 0; i < levelIntros.length; i++)
 			{
-				visitorIntroText[i] = new VisitorIntroText(levelIntros[i], i);
-				add(visitorIntroText[i]); // BUG: is never cleaned up. nevermind though; there's only 10 ever
-			} */
+				visitorIntroTexts.add(new VisitorIntroText(levelIntros[i], i));
+			}
 		Profiler.profiler.profile('IngameState.showLevelIntro', flash.utils.getTimer() - __start__);
 }
 		
