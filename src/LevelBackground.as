@@ -51,12 +51,16 @@ package{
 		
 		private var time:int; // current time, use TIME_* constant
 		
-		public var shift:Number; // number between 0.0 and 1.0
+		private var shift:Number; // number between 0.0 and 1.0
 								 // 1.0 means blend_layers is in foreground
+								 
+		private var doShift:Boolean;
 		
 		public function LevelBackground(TIME:int):void
 		{
 			time = TIME;
+			doShift = false;
+			layers = new Array();
 			resetLayers();
 		}
 		
@@ -64,6 +68,11 @@ package{
 		{
 			time = (time + 1) % NUM_TIME;
 			resetLayers();
+		}
+		
+		public function startShift():void
+		{
+			doShift = true;
 		}
 		
 		private function _fillLayers(LAYERS:Array, time:int):void
@@ -85,8 +94,13 @@ package{
 		
 		private function resetLayers():void
 		{
+			var x1:Number = 0;
+
+			var x2:Number = 0;
 			clear();
-			layers = new Array();
+			if (layers[1] != null) x1 = layers[1].x;
+			if (layers[2] != null) x2 = layers[2].x;
+			layers.splice(0); // clear array
 			
 			_fillLayers(layers, time);
 			
@@ -94,11 +108,25 @@ package{
 				add(layers[i]);
 			}
 			
+			layers[1].x = x1;
+			layers[2].x = x2;
+			
 			shift = 0.0;
 		}
 		
 		public override function update():void
 		{
+			layers[1].x += 21.1 * FlxG.elapsed;
+			layers[2].x += 45.3 * FlxG.elapsed;
+			
+			if (doShift) {
+				shift += FlxG.elapsed;
+				if (shift > 1.0) {
+					next();
+					doShift = false;
+					shift = 0.0;
+				}
+			}
 			super.update();
 		}
 		

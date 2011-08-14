@@ -71,7 +71,7 @@ var __start__:int = flash.utils.getTimer();
 			FlxG.mouse.show();*/
 			FlxG.mouse.hide();
 			
-			bg = new LevelBackground(LevelBackground.TIME_MORNING);
+			bg = new LevelBackground(LevelBackground.TIME_DAY);
 			add(bg);
 			
 			lives = 3;
@@ -182,18 +182,19 @@ Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTi
 		private function showLevelIntro():void
 		{
 var __start__:int = flash.utils.getTimer();
-			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
+/*			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
 			for (var i:int = 0; i < levelIntros.length; i++)
 			{
 				visitorIntroText[i] = new VisitorIntroText(levelIntros[i], i);
 				add(visitorIntroText[i]); // BUG: is never cleaned up. nevermind though; there's only 10 ever
-			}
+			} */
 		Profiler.profiler.profile('IngameState.showLevelIntro', flash.utils.getTimer() - __start__);
 }
 		
 		private function startDisplayingStatistics():void
 		{
 var __start__:int = flash.utils.getTimer();
+			bg.startShift();
 			statsText.playback(stats.getLevelNr());
 			helicopter.active = false;
 			llama.disableSpit();
@@ -203,7 +204,7 @@ var __start__:int = flash.utils.getTimer();
 		private function stopDisplayingStatistics():void
 		{
 var __start__:int = flash.utils.getTimer();
-			bg.next();
+			bg.startShift();
 			levelManager.gotoNextLevel ();
 			stats.countLevel ();
 			newLevelText.displayText(levelManager.getLevelNr());
@@ -220,8 +221,6 @@ var __start__:int = flash.utils.getTimer();
 			var tm:int = flash.utils.getTimer();
 			super.update();
 			Profiler.profiler.profile('IngameState.update__super.update', flash.utils.getTimer() - tm);
-			
-			bg.shift = levelManager.levelCompletion();
 			
 			tm = flash.utils.getTimer();
 			stats.update();
@@ -409,6 +408,7 @@ var __start__:int = flash.utils.getTimer();
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
+			trace("flyingVisitors count: " + flyingVisitors.length);
 			
 			Globals.sfxPlayer.Splotsh();
 		Profiler.profiler.profile('IngameState.visitorsVsSpits', flash.utils.getTimer() - __start__);

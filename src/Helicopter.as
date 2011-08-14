@@ -65,6 +65,9 @@ package
 			isUpgradeHit = false;
 			isUpgradeDead = false;
 			isChopperOut = false;
+			
+			explosion = new FlxEmitter();
+			add(explosion);
 		}
 		
 		public function startHelicopter():void {
@@ -160,10 +163,8 @@ package
 			
 			Globals.sfxPlayer.Splotsh();
 			
-			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			explosion.at(spit);
-			add(explosion);
 			explosion.setXSpeed(-50, 50);
 			explosion.setYSpeed(-50, 50);
 			explosion.gravity = upgradeSprite.acceleration.y;
