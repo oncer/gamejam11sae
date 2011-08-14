@@ -172,17 +172,13 @@ var __start__:int = flash.utils.getTimer();
 		
 		private function isLevelCompletelyOver():Boolean
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret1__:* = levelManager.isLevelElapsed() &&
+			return levelManager.isLevelElapsed() &&
 			       (visitors.countLiving() <= 0) &&
 			       helicopter.isEverythingOut();
-Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTimer() - __start__); return __ret1__; }
-		Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function showLevelIntro():void
 		{
-var __start__:int = flash.utils.getTimer();
 			visitorIntroTexts.clear();
 
 			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
@@ -190,22 +186,18 @@ var __start__:int = flash.utils.getTimer();
 			{
 				visitorIntroTexts.add(new VisitorIntroText(levelIntros[i], i));
 			}
-		Profiler.profiler.profile('IngameState.showLevelIntro', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function startDisplayingStatistics():void
 		{
-var __start__:int = flash.utils.getTimer();
 			bg.startShift();
 			statsText.playback(stats.getLevelNr());
 			helicopter.active = false;
 			llama.disableSpit();
-		Profiler.profiler.profile('IngameState.startDisplayingStatistics', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function stopDisplayingStatistics():void
 		{
-var __start__:int = flash.utils.getTimer();
 			bg.startShift();
 			levelManager.gotoNextLevel ();
 			stats.countLevel ();
@@ -213,13 +205,10 @@ var __start__:int = flash.utils.getTimer();
 			statsText.finishPlayback ();
 			helicopter.active = true;
 			llama.enableSpit();
-		Profiler.profiler.profile('IngameState.stopDisplayingStatistics', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		override public function update():void
 		{
-var __start__:int = flash.utils.getTimer();
-
 			var tm:int = flash.utils.getTimer();
 			super.update();
 			Profiler.profiler.profile('IngameState.update__super.update', flash.utils.getTimer() - tm);
@@ -317,8 +306,7 @@ var __start__:int = flash.utils.getTimer();
 			
 			var currentLevel:int = stats.getLevelNr();
 			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
-		Profiler.profiler.profile('IngameState.update', flash.utils.getTimer() - __start__);
-} // end of update
+		} // end of update
 
 		override public function draw():void
 		{
@@ -329,11 +317,8 @@ var __start__:int = flash.utils.getTimer();
 		
 		private function getUnusedVisitor():Visitor
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret2__:* = visitors.members[(lastVisitor++) % Globals.MAX_VISITORS];
-Profiler.profiler.profile('IngameState.getUnusedVisitor', flash.utils.getTimer() - __start__); return __ret2__; }
-		Profiler.profiler.profile('IngameState.getUnusedVisitor', flash.utils.getTimer() - __start__);
-}
+			return visitors.members[(lastVisitor++) % Globals.MAX_VISITORS];
+		}
 		
 		/**
 		 * parent: shares a hit counter with the spawned spit such that
@@ -341,7 +326,6 @@ Profiler.profiler.profile('IngameState.getUnusedVisitor', flash.utils.getTimer()
 		 */
 		public function spawnSpit(X:Number, Y:Number, parent:Spit = null, isCombo:Boolean = false):Spit
 		{
-var __start__:int = flash.utils.getTimer();
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			
 			if (parent === null)
@@ -358,53 +342,39 @@ var __start__:int = flash.utils.getTimer();
 				}
 			}
 			
-			{ var __ret3__:* = s;
-Profiler.profiler.profile('IngameState.spawnSpit', flash.utils.getTimer() - __start__); return __ret3__; }
-		Profiler.profiler.profile('IngameState.spawnSpit', flash.utils.getTimer() - __start__);
-}
+			return s;
+		}
 		
 		public function spawnScoreText(X:Number, Y:Number, MULTIPLIER:int, SCORE:int):ScoreText
 		{
-var __start__:int = flash.utils.getTimer();
 			var s:ScoreText = scoretexts.members[lastScoreText++ % Globals.MAX_SCORETEXTS];
 			s.init(X,Y,MULTIPLIER,SCORE);
-			{ var __ret4__:* = s;
-Profiler.profiler.profile('IngameState.spawnScoreText', flash.utils.getTimer() - __start__); return __ret4__; }
-		Profiler.profiler.profile('IngameState.spawnScoreText', flash.utils.getTimer() - __start__);
-}
+			return s;
+		}
 		
 		private function canSpitAndUpgradeHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret5__:* = (spit as Spit).canHit() && helicopter.canUpgradeHit();
-Profiler.profiler.profile('IngameState.canSpitAndUpgradeHit', flash.utils.getTimer() - __start__); return __ret5__; }
-		Profiler.profiler.profile('IngameState.canSpitAndUpgradeHit', flash.utils.getTimer() - __start__);
-}
+			return (spit as Spit).canHit() && helicopter.canUpgradeHit();
+		}
 			
 		private function canSpitAndVisitorHit(visitor:FlxObject,spit:FlxObject):Boolean
 		{
-var __start__:int = flash.utils.getTimer();
 			var v:Visitor = visitor as Visitor;
-			{ var __ret6__:* = v.canBeHit() && (spit as Spit).canHit();
-Profiler.profiler.profile('IngameState.canSpitAndVisitorHit', flash.utils.getTimer() - __start__); return __ret6__; }
-		Profiler.profiler.profile('IngameState.canSpitAndVisitorHit', flash.utils.getTimer() - __start__);
-}
+			return v.canBeHit() && (spit as Spit).canHit();
+		}
 		
 		private function upgradeVsSpits(upgrade:FlxObject,spit:FlxObject):void
-		{
-var __start__:int = flash.utils.getTimer();			
+		{	
 			// there is only 1 upgrade, so the 1st argument is never needed - this is only called if a collision with the upgrade occured			
 			var s:Spit = spit as Spit;
 			s.hitSomething();
 			// +1, because 0 is the upgradetype_none - this is dependent on the animations in the picture; be aware of that!
 			
 			helicopter.upgradeHit(spit);
-		Profiler.profiler.profile('IngameState.upgradeVsSpits', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function visitorsVsSpits(victim:FlxObject,spit:FlxObject):void
 		{
-var __start__:int = flash.utils.getTimer();
 			var v:Visitor = victim as Visitor;
 			var s:Spit = spit as Spit;
 			s.hitSomething();
@@ -413,54 +383,43 @@ var __start__:int = flash.utils.getTimer();
 			trace("flyingVisitors count: " + flyingVisitors.length);
 			
 			Globals.sfxPlayer.Splotsh();
-		Profiler.profiler.profile('IngameState.visitorsVsSpits', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
 		{
-var __start__:int = flash.utils.getTimer(); 
-			{ var __ret7__:* = (flying as Visitor).canHitSomeone() && (victim as Visitor).canBeHit();
-Profiler.profiler.profile('IngameState.canFlyingHit', flash.utils.getTimer() - __start__); return __ret7__; }
-		Profiler.profiler.profile('IngameState.canFlyingHit', flash.utils.getTimer() - __start__);
-}
+			return (flying as Visitor).canHitSomeone() && (victim as Visitor).canBeHit();
+		}
 		
 		private function visitorsVsFlying(victim:FlxObject,flying:FlxObject):void
 		{
-var __start__:int = flash.utils.getTimer();
 			var v:Visitor = victim as Visitor;
 			var f:Visitor = flying as Visitor;
 			
 			Globals.sfxPlayer.Splotsh();
 			
 			v.getHitByPerson(f);
-		Profiler.profiler.profile('IngameState.visitorsVsFlying', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function causeScore (killed:Visitor, score:int, combo:int):void
 		{
-var __start__:int = flash.utils.getTimer();
 			stats.countKill(killed, score, combo);
 			
 			// total score display (top right)
-			totalScoreText.setText(stats.getTotalScore(), combo * 2.1);
+			totalScoreText.score = stats.getTotalScore();
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
-		Profiler.profiler.profile('IngameState.causeScore', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function setUpgrade():void
 		{
-var __start__:int = flash.utils.getTimer();
 			var upgradeType:uint = helicopter.getUpgradeType();
 			llama.setUpgradeType(upgradeType + 1);
 			stats.countUpgrade (upgradeType);
-		Profiler.profiler.profile('IngameState.setUpgrade', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function loseLife ():void
 		{
-var __start__:int = flash.utils.getTimer();
 			if (lives > 0)
 			{
 				lives--;
@@ -473,25 +432,21 @@ var __start__:int = flash.utils.getTimer();
 				FlxG.fade(0xff000000, 2, gameOverFunction);
 				gameover = true;
 			}
-		Profiler.profiler.profile('IngameState.loseLife', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function gameOverFunction():void
 		{
-var __start__:int = flash.utils.getTimer();
 			trace(Profiler.profiler.stats);
 			ambientPlayer.stop();
 			FlxG.score = stats.getTotalScore(); // GameoverState picks score from there
 			FlxG.switchState(new GameoverState());
-		Profiler.profiler.profile('IngameState.gameOverFunction', flash.utils.getTimer() - __start__);
-}
+		}
 	
 		/**
 		 * Needs to be public, because also gets called from Spit when a MULTI_SPAWN spit hits the ground.
 		 * @param	collidingSpit
 		 */		
 		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit, isCombo:Boolean):void {
-var __start__:int = flash.utils.getTimer();
 			var speed:Number = 200;
 			var y_threshold:Number = 10;
 			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
@@ -507,7 +462,6 @@ var __start__:int = flash.utils.getTimer();
 			
 			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(270+30, speed);
-		Profiler.profiler.profile('IngameState.spawnMultipleNewSpitsAtSpitPosition', flash.utils.getTimer() - __start__);
-}
+		}
 	} // end of class IngameState
 } // end of package

@@ -26,6 +26,8 @@ package
 		private var particles:FlxEmitter;
 		private var explosion:FlxEmitter;
 		private var gfxFloor:FlxSprite;
+		private var gfxDefault:FlxSprite;
+		private var gfxBig:FlxSprite;
 		
 		private var floorTimer:Number;
 		private var floorDead:Boolean;
@@ -38,12 +40,12 @@ package
 		
 		public function Spit(center:FlxPoint) 
 		{
-var __start__:int = flash.utils.getTimer();
 			// the spit is 16x16
-			super();			
-			//loadGraphic(SpitClass);
-			loadRotatedGraphic(SpitClass, 16, -1, true, true);
-			setCenterPosition(center.x, center.y);
+			super();
+			gfxDefault = new FlxSprite(0,0);
+			gfxDefault.loadRotatedGraphic(SpitClass, 16, -1, true, true);
+			gfxBig = new FlxSprite(0,0);
+			gfxBig.loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
 			
 			exists = false;
 			_canHit = true;
@@ -54,12 +56,10 @@ var __start__:int = flash.utils.getTimer();
 			
 			spitType = TYPE_DEFAULT;
 			combo = 1;
-		Profiler.profiler.profile('Spit.Spit', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function initParticles():void
 		{
-var __start__:int = flash.utils.getTimer();
 			particles = new FlxEmitter();
 			particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
 			particles.setRotation(0, 0);
@@ -67,12 +67,10 @@ var __start__:int = flash.utils.getTimer();
 			particles.setXSpeed(-20, 20);
 			particles.gravity = 100;
 			particles.start (false,0.3,0.05,0);
-		Profiler.profiler.profile('Spit.initParticles', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function commonReset(X:Number, Y:Number):void
 		{
-var __start__:int = flash.utils.getTimer();
 			super.reset(X,Y);
 			initParticles();
 			bigsize = 1.0;
@@ -90,66 +88,68 @@ var __start__:int = flash.utils.getTimer();
 			setCenterPosition(X, Y);
 			
 			setType(TYPE_DEFAULT);
-		Profiler.profiler.profile('Spit.commonReset', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function resetAsChild(X:Number, Y:Number, parent:Spit):void
 		{
-var __start__:int = flash.utils.getTimer();
 			commonReset(X, Y);
 			hitTrigger = parent.hitTrigger;
-		Profiler.profiler.profile('Spit.resetAsChild', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function resetCreate(X:Number, Y:Number, onHitSomething:Function):void
 		{
-var __start__:int = flash.utils.getTimer();
 			commonReset (X, Y);
 			hitTrigger = new OnceTrigger(onHitSomething);
-		Profiler.profiler.profile('Spit.resetCreate', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		override public function preUpdate():void
 		{
-var __start__:int = flash.utils.getTimer();
 			super.preUpdate();
 			gfxFloor.preUpdate();
-		Profiler.profiler.profile('Spit.preUpdate', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function setCenterPosition(X:Number, Y:Number):void {
-var __start__:int = flash.utils.getTimer();
-			x = X - width / 2;
-			y = Y - height / 2;
-		Profiler.profiler.profile('Spit.setCenterPosition', flash.utils.getTimer() - __start__);
-}
+			if (isType(TYPE_BIGSPIT)) {
+				x = X - gfxBig.width / 2;
+				y = Y - gfxBig.height / 2;
+			} else {
+				x = X - gfxDefault.width / 2;
+				y = Y - gfxDefault.height / 2;
+			}
+		}
 		
 		override public function update():void
 		{
-var __start__:int = flash.utils.getTimer();		
 			super.update();
 			particles.at(this);
 			particles.update();
 			
 			if (spitType == TYPE_BIGSPIT) {
 				if (velocity.x > 0) {
-					angle += FlxG.elapsed * 360;
-					if (angle >= 360) {
-						angle -= 360;
+					gfxBig.angle += FlxG.elapsed * 360;
+					if (gfxBig.angle >= 360) {
+						gfxBig.angle -= 360;
 					}
 				} else {
-					angle -= FlxG.elapsed * 360;
-					if (angle <= -360) {
-						angle += 360;
+					gfxBig.angle -= FlxG.elapsed * 360;
+					if (gfxBig.angle <= -360) {
+						gfxBig.angle += 360;
 					}
 				}
+				gfxBig.x = x;
+				gfxBig.y = y;
+				gfxBig.postUpdate(); // set frame according to angle
+				width = gfxBig.width;
+				height = gfxBig.height;
 			} else {
-				angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
+				gfxDefault.angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
+				gfxDefault.x = x;
+				gfxDefault.y = y;
+				gfxDefault.postUpdate();
+				width = gfxDefault.width;
+				height = gfxDefault.height;
 			}
 			
-			
-			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
-			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
 			
 			if (_canHit && y + height >= Globals.GROUND_LEVEL) {
 				hitGround();
@@ -172,50 +172,44 @@ var __start__:int = flash.utils.getTimer();
 			
 			if (floorDead && !gfxFloor.flickering && !isType(TYPE_BIGSPIT))
 			{
-				trace("[spit] kill");
 				kill();
 			}
 			
 			if (x > FlxG.width || x < -width) {
-				trace("[spit] kill after getting out of screen");
 				kill();
 			}
 			
 			/*if (y > FlxG.height) {
 				kill();
 			}*/
-		Profiler.profiler.profile('Spit.update', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		override public function draw():void
 		{
-var __start__:int = flash.utils.getTimer();
 			if (_canHit) {
-				super.draw();
+				if (isType(TYPE_BIGSPIT)) {
+					gfxBig.draw();
+				} else {
+					gfxDefault.draw();
+				}
 			}
 			particles.draw();
 			if (gfxFloor.visible) {
 				gfxFloor.draw();
 			}
-		Profiler.profiler.profile('Spit.draw', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public override function revive():void
 		{
-var __start__:int = flash.utils.getTimer();
 			_canHit = true;
 			onGround = false;
 			super.revive();
-		Profiler.profiler.profile('Spit.revive', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function canHit ():Boolean
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret1__:* = _canHit;
-Profiler.profiler.profile('Spit.canHit', flash.utils.getTimer() - __start__); return __ret1__; }
-		Profiler.profiler.profile('Spit.canHit', flash.utils.getTimer() - __start__);
-}
+			return _canHit;
+		}
 		
 		/**
 		 * Called when the spit hits something that
@@ -224,7 +218,6 @@ Profiler.profiler.profile('Spit.canHit', flash.utils.getTimer() - __start__); re
 		 */
 		public function hitSomething ():void
 		{
-var __start__:int = flash.utils.getTimer();	
 			if(!isType(TYPE_BIGSPIT))
 			{
 				velocity.y = 0;
@@ -251,12 +244,10 @@ var __start__:int = flash.utils.getTimer();
 			}
 			
 			hitTrigger.trigger();
-		Profiler.profiler.profile('Spit.hitSomething', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function hitGround ():void
 		{
-var __start__:int = flash.utils.getTimer();
 			velocity.y = 0;
 			acceleration.y = 0;
 			onGround = true;
@@ -279,47 +270,28 @@ var __start__:int = flash.utils.getTimer();
 				}
 			} else { // BIGSPIT
 				// 3 px, because 3px are transparent border
-				y = Globals.GROUND_LEVEL - (height + height*bigsize - 3 - 3*bigsize)/2;
+				y = Globals.GROUND_LEVEL - (gfxBig.height + gfxBig.height*bigsize - 3 - 3*bigsize)/2;
 			}
-		Profiler.profiler.profile('Spit.hitGround', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function setType(SpitType:uint):void {
-var __start__:int = flash.utils.getTimer();
 			spitType = SpitType;
-			
-			// this gets only called at reset, for the default type, or if type is bigspit or MULTI_SPAWN - because these spit types are not generated that often, performance drain is still ok
-			trace("[Spit] setSpitType: " + SpitType);
-			if (isType(TYPE_BIGSPIT)) {
-				loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
-			} else {
-				loadRotatedGraphic(SpitClass, 16, -1, true, true);
-			}
-		Profiler.profiler.profile('Spit.setType', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		public function isType(SpitType:uint):Boolean
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret2__:* = spitType == SpitType;
-Profiler.profiler.profile('Spit.isType', flash.utils.getTimer() - __start__); return __ret2__; }
-		Profiler.profiler.profile('Spit.isType', flash.utils.getTimer() - __start__);
-}
+			return spitType == SpitType;
+		}
 		
 		public function getCombo():int
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret3__:* = combo;
-Profiler.profiler.profile('Spit.getCombo', flash.utils.getTimer() - __start__); return __ret3__; }
-		Profiler.profiler.profile('Spit.getCombo', flash.utils.getTimer() - __start__);
-}
+			return combo;
+		}
 		
 		public function setCombo(combo:int):void
 		{
-var __start__:int = flash.utils.getTimer();
 			this.combo = combo;
-		Profiler.profiler.profile('Spit.setCombo', flash.utils.getTimer() - __start__);
-}
+		}
 	}
 
 }

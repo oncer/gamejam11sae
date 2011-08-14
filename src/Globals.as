@@ -4,6 +4,12 @@ package
 {
 	public class Globals
 	{
+		[Embed(source = "../font/KHARB___.TTF", fontFamily = "kharb", embedAsCFF="false")] public static var FONT_KHARB:Class;
+		[Embed(source = "../font/04B_25__.TTF", fontFamily = "04b", embedAsCFF="false")] public static var FONT_04B:Class;
+		[Embed(source = "../font/KHARON4A.TTF", fontFamily = "khar", embedAsCFF="false")] public static var FONT_KHAR:Class;
+		[Embed(source = "../font/Vera.ttf", fontFamily = "vera", embedAsCFF="false")] public static var FONT_VERA:Class;
+				[Embed(source = "../font/VeraBd.ttf", fontFamily = "verab", embedAsCFF="false")] public static var FONT_VERAB:Class;
+		
 		public static const MAX_VISITORS:uint = 256; // group capacity
 		public static const MAX_SPITS:uint = 32; // group capacity
 		public static const MAX_FLYERS:uint = 40; // group capacity, max. # of collision checked flying visitors

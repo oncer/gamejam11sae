@@ -73,15 +73,19 @@ package
 			}
 		}
 		
+		private function areAllSpawnsOut():Boolean
+		{
+			return spawnBatch >= SPAWN_BATCHES_PER_LEVEL;
+		}
+		
 		private function areAllSpawnsDead():Boolean
 		{
-			return (spawnBatch >= SPAWN_BATCHES_PER_LEVEL) &&
-			       (spawnedVisitors.countLiving() == 0);
+			return spawnedVisitors.countLiving() == 0;
 		}
 		
 		public function isLevelElapsed():Boolean
 		{
-			return areAllSpawnsDead() || _isNewLevel;
+			return (areAllSpawnsOut() && areAllSpawnsDead()) || _isNewLevel;
 		}
 		
 		private function beginLevel():void
@@ -183,6 +187,11 @@ package
 			{
 				doOneSpawn(getUnusedVisitor);
 				lastSpawnTime += SECONDS_BETWEEN_SPAWNS;
+			} else
+			if (areAllSpawnsDead())
+			{
+				doOneSpawn(getUnusedVisitor);
+				lastSpawnTime = levelTime;
 			}
 		}
 		
@@ -191,9 +200,9 @@ package
 			spawnPool.length = 0;
 			var level:int = getLevelNr();
 			var i:int = 0;
-			
+
 			// usual visitor amount = 4 + level * 4
-			
+
 			switch (level)
 			{
 
@@ -204,21 +213,21 @@ package
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
 				break;
-				
+
 			case 2: // women introduced, 12 total
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
 				break;
-				
+
 			case 3: // nothing new, 16 total
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
 				break;
-				
+
 			case 4: // granny introduced. no alts, 20 total
 				for (i = 0; i < 4; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
@@ -226,7 +235,7 @@ package
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
 				for (i = 0; i < 8; i++) spawnPool.push(new VisitorSpawnDesc(4,0,0)); // granny
 				break;
-				
+
 			case 5: // nothing new, 24 total
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
@@ -234,7 +243,7 @@ package
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
 				break;
-				
+
 			case 6: // children introduced. have a lot of them! 28 total
 				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // 16 man
 				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // 4 man alt.

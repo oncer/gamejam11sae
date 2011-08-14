@@ -26,9 +26,9 @@ package
 		private const X_SPACING:Number = 5; // space between text and img
 		private const Y_SPACING:Number = 80; // y-dist between top borders of two V.I.Texts
 		
-		private const FONT_SIZE:Number = 14;
+		private const FONT_SIZE:Number = 16;
 		private const COLOR:uint = 0xeeee9f;
-		private const SHADOW:uint = 0x333333;
+		private const SHADOW:uint = 0x999999;
 		
 		public function VisitorIntroText(visitorNr:int, y_index:int)
 		{
@@ -37,6 +37,7 @@ package
 			
 			var top_y:int = TOP_Y + Y_SPACING * y_index;
 			var text:FlxText = new FlxText(LEFT_X, top_y, FlxG.width - LEFT_X*2);
+			text.font = "verab";
 			text.alignment = "left";
 			text.color = COLOR;
 			text.shadow = SHADOW;
