@@ -24,12 +24,12 @@ package
 			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
 			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
 		
-		private static const STATE_WALKING:uint = 0;
-		private static const STATE_FLOATING:uint = 1;
-		private static const STATE_CLIMBING:uint = 2;
-		private static const STATE_JUMPING:uint = 3;
-		private static const STATE_FLYING:uint = 4;
-		private static const STATE_DYING:uint = 5;
+		public static const STATE_WALKING:uint = 0;
+		public static const STATE_FLOATING:uint = 1;
+		public static const STATE_CLIMBING:uint = 2;
+		public static const STATE_JUMPING:uint = 3;
+		public static const STATE_FLYING:uint = 4;
+		public static const STATE_DYING:uint = 5;
 		
 		private var walkSpeed:Number;
 		private var floatSpeed:Number;
@@ -43,6 +43,7 @@ package
 		private var floatTime:Number; // timestamp of last start flying
 		private var hasReachedGoal:Boolean; // then player loses a life
 		private var visitorType:int;
+		private var floatPattern:VisitorFloatPattern;
 		
 		private var explosion:FlxEmitter;
 		
@@ -188,24 +189,12 @@ package
 			if (isFloating)
 			{
 				state = STATE_FLOATING;
+				floatPattern = VisitorFloatPattern.sinusFactory(width, height, spacing, 60, 2, 30, facing);
 			}
 			else
 			{
 				state = STATE_WALKING;
 			}
-			
-			/*
-			// more level = floaters more likely, up to 40%
-			var floatChance:Number = 0.4 - Math.exp(-level/3) * 0.2;
-			if (Math.random() < floatChance)
-			{
-				state = STATE_FLOATING;
-			}
-			else
-			{
-				state = STATE_WALKING;
-			}
-			*/
 			
 			revive();
 			Profiler.profiler.profile('Visitor.init', flash.utils.getTimer() - __start__);
@@ -298,44 +287,13 @@ package
 		private function update_floating():void
 		{
 			play("float");
-			floatTime += FlxG.elapsed;
-			velocity.y = 0;
-			var minY:int = y;
+			floatPattern.update();
 			
-			if (facing == LEFT)
-			{
-				velocity.x = -floatSpeed;
-				minY = Globals.CAGE_TOP - height - (x - Globals.CAGE_RIGHT);
-				
-				if (x < Globals.CAGE_RIGHT)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_RIGHT;
-					y = Globals.CAGE_TOP - height;
-				}
-			}
-			
-			if (facing == RIGHT)
-			{
-				velocity.x = floatSpeed;
-				minY = Globals.CAGE_TOP - height - (Globals.CAGE_LEFT - x - width);
-				
-				if (x > Globals.CAGE_LEFT - width)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_LEFT - width;
-					y = Globals.CAGE_TOP - height;
-				}
-			}
-			
-			if (y <= minY)
-			{
-				y = minY;
-			}
-			else
-			{
-				y = Globals.FLOAT_LEVEL + Math.sin(floatTime*2) * 30;
-			}
+			var info:Object = floatPattern.getInfo();
+			x = info.location.x;
+			y = info.location.y;
+			velocity = info.velocity;
+			state = info.state;
 		}
 		
 		private function update_climbing():void
@@ -541,6 +499,10 @@ package
 		public static function getTypeImage(visitorType:int):Class
 		{
 			return visitorClasses[visitorType];
+		}
+		
+		public function jumpIntoCage():void
+		{
 		}
 	}
 }
