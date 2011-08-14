@@ -83,7 +83,7 @@ package
 				if (FlxG.keys.ESCAPE)
 				{
 					fscommand("quit");
-					FlxG.switchState(null);
+					//FlxG.switchState(null);
 				} else
 				if (FlxG.keys.any())
 				{

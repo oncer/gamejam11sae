@@ -6,12 +6,12 @@ package
 	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
 	{
-		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
-		[Embed(source = "../gfx/crosshair.png")] private var TargetClass:Class;
-		[Embed(source = "../gfx/bar1.png")] private var Bar1Class:Class;
-		[Embed(source = "../gfx/bar2.png")] private var Bar2Class:Class;
+		[Embed(source = "../gfx/lama.png")] private static var LamaClass:Class;
+		[Embed(source = "../gfx/crosshair.png")] private static var TargetClass:Class;
+		[Embed(source = "../gfx/bar1.png")] private static var Bar1Class:Class;
+		[Embed(source = "../gfx/bar2.png")] private static var Bar2Class:Class;
 		
-		[Embed(source = "../gfx/boost02.png")] private var UpgradesClass:Class;
+		[Embed(source = "../gfx/boost02.png")] private static var UpgradesClass:Class;
 		
 		
 		public static const UPGRADE_NONE:uint = 0;

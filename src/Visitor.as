@@ -1,5 +1,6 @@
 package
 {
+	import flash.utils.*;
 	import org.flixel.*;
 
 	// Visitors run towards the center and climb up on the cage.
@@ -45,7 +46,7 @@ package
 		
 		private var explosion:FlxEmitter;
 		
-		public function Visitor()
+		public function Visitor():void
 		{
 			super(0,0);
 			exists = false;
@@ -64,6 +65,7 @@ package
 		//     the visitor appear on stage later.
 		public function init (visitorType:int, spacing:uint, facing:uint = 0, isFloating:Boolean = false):void
 		{
+			var __start__:int = flash.utils.getTimer();
 			health = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
@@ -72,7 +74,7 @@ package
 			this.visitorType = visitorType;
 			
 			loadGraphic (visitorClasses[visitorType], true, true,
-				Globals.LLAMA_SPRITE_WIDTH, Globals.LLAMA_SPRITE_HEIGHT);
+				Globals.VISITOR_SPRITE_WIDTH, Globals.VISITOR_SPRITE_HEIGHT);
 			floatSpeed = 30;
 			scorePoints = Globals.VISITOR_POINTS[visitorType];
 			
@@ -92,7 +94,7 @@ package
 					
 				case 1: // man with glasses & hat
 				case 6:
-					walkSpeed = 53;
+					walkSpeed = 30;
 					climbSpeed = 35;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -104,7 +106,7 @@ package
 					
 				case 2: // woman
 				case 7:
-					walkSpeed = 38;
+					walkSpeed = 32;
 					climbSpeed = 70;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -116,7 +118,7 @@ package
 					
 				case 3: // fat tourist
 				case 8:
-					walkSpeed = 30;
+					walkSpeed = 26;
 					climbSpeed = 28;
 					jumpSpeed = 80;
 					jumpHeight = -130;
@@ -128,7 +130,7 @@ package
 					break;
 					
 				case 4: // old lady
-					walkSpeed = 25;
+					walkSpeed = 21;
 					climbSpeed = 45;
 					jumpSpeed = 90;
 					jumpHeight = -150;
@@ -206,6 +208,7 @@ package
 			*/
 			
 			revive();
+			Profiler.profiler.profile('Visitor.init', flash.utils.getTimer() - __start__);
 		}
 		
 		override public function revive():void
@@ -216,6 +219,7 @@ package
 		
 		override public function update():void
 		{
+			var __start__:int = flash.utils.getTimer();
 			acceleration.x = 0;
 			acceleration.y = 0;
 			drag.x = 0;
@@ -253,6 +257,7 @@ package
 			
 			explosion.at(this);
 			explosion.update();
+			Profiler.profiler.profile('Visitor.update', flash.utils.getTimer() - __start__);
 		}
 		
 		override public function draw():void
