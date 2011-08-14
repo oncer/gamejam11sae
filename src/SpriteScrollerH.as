@@ -1,22 +1,35 @@
 package {
 	import org.flixel.*;
 	
-	public class SpriteScrollerH extends FlxGroup
-	{
-		public var offset:Number;
-		
+	public class SpriteScrollerH extends FlxSprite
+	{	
 		private var sp1:FlxSprite;
 		private var sp2:FlxSprite;
 		
-		public var alpha:Number = 1.0;
-		
-		public function SpriteScrollerH(SPRITE:Class):void
+		public function SpriteScrollerH(X:Number, Y:Number):void
 		{
-			offset = 0;
-			sp1 = new FlxSprite(0, 0, SPRITE);
-			sp2 = new FlxSprite(-sp1.width, 0, SPRITE);
-			add(sp1);
-			add(sp2);
+			sp1 = new FlxSprite();
+			sp2 = new FlxSprite();
+			sp1.x = X; sp1.y = Y;
+			sp2.x = X - sp1.width; sp2.y = Y;
+			super(X,Y);
+		}
+		
+		public override function loadGraphic (Graphic:Class,Animated:Boolean=false,Reverse:Boolean=false,Width:uint=0,Height:uint=0,Unique:Boolean=false):FlxSprite
+		{
+			sp1.loadGraphic(Graphic, Animated, Reverse, Width, Height, Unique);
+			sp2.loadGraphic(Graphic, Animated, Reverse, Width, Height, Unique);
+			return this;
+		}
+		
+		public override function get frame():uint
+		{
+			return sp1.frame;
+		}
+		
+		public override function set frame(Frame:uint):void
+		{
+			sp1.frame = sp2.frame = Frame;
 		}
 		
 		public function setBlendMode(BLEND:String):void
@@ -27,15 +40,19 @@ package {
 		
 		public override function update():void
 		{
-			sp1.x = offset;
-			sp2.x = offset - sp1.width;
+			sp1.blend = sp2.blend = this.blend;
+			sp1.alpha = sp2.alpha = this.alpha;
+			sp1.x = this.x;
+			sp2.x = this.x - sp1.width;
+			sp1.update();
+			sp2.update();
 			super.update();
 		}
 		
 		public override function draw():void
 		{
-			sp1.alpha = sp2.alpha = this.alpha;
-			super.draw();
+			sp1.draw();
+			sp2.draw();
 		}
 	}
 }
