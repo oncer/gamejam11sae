@@ -172,13 +172,10 @@ var __start__:int = flash.utils.getTimer();
 		
 		private function isLevelCompletelyOver():Boolean
 		{
-var __start__:int = flash.utils.getTimer();
-			{ var __ret1__:* = levelManager.isLevelElapsed() &&
+			return levelManager.isLevelElapsed() &&
 			       (visitors.countLiving() <= 0) &&
 			       helicopter.isEverythingOut();
-Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTimer() - __start__); return __ret1__; }
-		Profiler.profiler.profile('IngameState.isLevelCompletelyOver', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function showLevelIntro():void
 		{
