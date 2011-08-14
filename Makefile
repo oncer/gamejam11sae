@@ -1,5 +1,6 @@
 MXMLC = ./fcsh-wrap
 #MXMLC = mxmlc
+#MXMLC = fcsh
 OPTIONS = -debug=true -static-link-runtime-shared-libraries=true\
 	  -library-path+=lib/MinimalComps_0_9_9.swc
 FLIXEL = src

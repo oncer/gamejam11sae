@@ -139,18 +139,17 @@ package
 				gfxBig.x = x;
 				gfxBig.y = y;
 				gfxBig.postUpdate(); // set frame according to angle
+				width = gfxBig.width;
 				height = gfxBig.height;
 			} else {
 				gfxDefault.angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
 				gfxDefault.x = x;
 				gfxDefault.y = y;
 				gfxDefault.postUpdate();
+				width = gfxDefault.width;
 				height = gfxDefault.height;
 			}
 			
-			
-			//trace("spit vel x: " + velocity.x + ", y:" + velocity.y);
-			//trace("spit acc x: " + acceleration.x + ", y:" + acceleration.y);
 			
 			if (_canHit && y + height >= Globals.GROUND_LEVEL) {
 				hitGround();
@@ -173,12 +172,10 @@ package
 			
 			if (floorDead && !gfxFloor.flickering && !isType(TYPE_BIGSPIT))
 			{
-				//trace("[spit] kill");
 				kill();
 			}
 			
-			if (x > FlxG.width || x < -32) {
-				//trace("[spit] kill after getting out of screen");
+			if (x > FlxG.width || x < -width) {
 				kill();
 			}
 			

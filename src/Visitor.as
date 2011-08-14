@@ -49,7 +49,7 @@ package
 		
 		public function Visitor():void
 		{
-			super(0,0);
+			super(-50,-50);
 			exists = false;
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			addAnimation("float", [7], Globals.ANIM_SPEED);
@@ -66,6 +66,8 @@ package
 		//     the visitor appear on stage later.
 		public function init (visitorType:int, spacing:uint, facing:uint = 0, isFloating:Boolean = false):void
 		{
+			trace("Visitor.init spacing=" + spacing.toString());
+			
 			var __start__:int = flash.utils.getTimer();
 			health = 1;
 			comboCounter = 1;
@@ -155,14 +157,14 @@ package
 					
 			}
 			
-			var distanceFromScreenBorder:Number = (walkSpeed+1) * spacing;
+			var distanceFromScreenBorder:Number = walkSpeed * spacing;
 			
 			// set direction-dependent values
 			if (facing == 0)
 			{
-				if (Math.random()*2 < 1) // enter from left side
+				if (Math.random() < .5) // enter from left side
 				{
-					x = -distanceFromScreenBorder;
+					x = -distanceFromScreenBorder - width;
 					facing = RIGHT;
 				}
 				else // enter from right side

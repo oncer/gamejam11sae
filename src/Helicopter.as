@@ -63,8 +63,8 @@ package
 			add(crateDestroySprite);
 			
 			isUpgradeHit = false;
-			isUpgradeDead = false;
-			isChopperOut = false;
+			isUpgradeDead = true;
+			isChopperOut = true;
 			
 			explosion = new FlxEmitter();
 			add(explosion);
