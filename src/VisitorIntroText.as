@@ -44,10 +44,10 @@ package
 			text.text = INTRO_TEXT[visitorNr];
 			
 			var imageClass:Class = Visitor.getTypeImage(visitorNr);
-			var imgLeft:int = LEFT_X - Globals.LLAMA_SPRITE_WIDTH - X_SPACING;
+			var imgLeft:int = LEFT_X - Globals.VISITOR_SPRITE_WIDTH - X_SPACING;
 			var image:FlxSprite = new FlxSprite(imgLeft, top_y);
 			image.loadGraphic(imageClass, true, true,
-				Globals.LLAMA_SPRITE_WIDTH, Globals.LLAMA_SPRITE_HEIGHT);
+				Globals.VISITOR_SPRITE_WIDTH, Globals.VISITOR_SPRITE_HEIGHT);
 			image.addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			image.play("walk");
 			

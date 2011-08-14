@@ -9,8 +9,8 @@ package
 		public static const MAX_FLYERS:uint = 40; // group capacity, max. # of collision checked flying visitors
 		public static const MAX_SCORETEXTS:uint = 256; // group capacity
 		
-		public static const LLAMA_SPRITE_WIDTH:uint = 32;
-		public static const LLAMA_SPRITE_HEIGHT:uint = 48;
+		public static const VISITOR_SPRITE_WIDTH:uint = 32;
+		public static const VISITOR_SPRITE_HEIGHT:uint = 48;
 		public static const GROUND_LEVEL:int = 416; // y coord in pixels
 		public static const FLOAT_LEVEL:Number = 150; // y coord in pixels
 		public static const ANIM_SPEED:Number = 10; // in fps
