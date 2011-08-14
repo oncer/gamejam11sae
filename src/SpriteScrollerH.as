@@ -6,11 +6,30 @@ package {
 		private var sp1:FlxSprite;
 		private var sp2:FlxSprite;
 		
-		public function SpriteScrollerH(X:Number, Y:Number, SPRITE:Class):void
+		public function SpriteScrollerH(X:Number, Y:Number):void
 		{
+			sp1 = new FlxSprite();
+			sp2 = new FlxSprite();
+			sp1.x = X; sp1.y = Y;
+			sp2.x = X - sp1.width; sp2.y = Y;
 			super(X,Y);
-			sp1 = new FlxSprite(X, Y, SPRITE);
-			sp2 = new FlxSprite(X - sp1.width, Y, SPRITE);
+		}
+		
+		public override function loadGraphic (Graphic:Class,Animated:Boolean=false,Reverse:Boolean=false,Width:uint=0,Height:uint=0,Unique:Boolean=false):FlxSprite
+		{
+			sp1.loadGraphic(Graphic, Animated, Reverse, Width, Height, Unique);
+			sp2.loadGraphic(Graphic, Animated, Reverse, Width, Height, Unique);
+			return this;
+		}
+		
+		public override function get frame():uint
+		{
+			return sp1.frame;
+		}
+		
+		public override function set frame(Frame:uint):void
+		{
+			sp1.frame = sp2.frame = Frame;
 		}
 		
 		public function setBlendMode(BLEND:String):void
