@@ -24,18 +24,17 @@ package
 		
 		public function TotalScoreText():void
 		{
-			super(fontClass, 32, 32, CHARS, 8, 1, 1, 0, 0, WIDTHS);
-			baseX = FlxG.width - 335;
-			baseY = 30;
-			x = FlxG.width - 335;
+			super(fontClass, 32, 32, CHARS, 8, 0, 0, 0, 0, WIDTHS);
+			customSpacingX = 1;
+			x = FlxG.width - 256;
 			y = 30 - 16;
 			text = "SCORE: 0";
 			color = 0xffffff;
 		}
 		
-		public function setText(score:int, gain:int):void
+		public function set score(SCORE:int):void
 		{
-			text = "SCORE: " + score.toString();
+			text = "SCORE: " + SCORE.toString();
 		}
 		
 		override public function update():void

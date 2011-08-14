@@ -187,8 +187,8 @@ package
 			if (isFloating)
 			{
 				state = STATE_FLOATING;
-				update_floating();
 				floatPattern = VisitorFloatPattern.sinusFactory(width, height, spacing, 60, 2, 30, facing);
+				update_floating();
 			}
 			else
 			{

@@ -141,6 +141,7 @@ package org.flixel
 		 */
         public function FlxBitmapFont(font:Class, width:uint, height:uint, chars:String, charsPerRow:uint, xSpacing:uint = 0, ySpacing:uint = 0, xOffset:uint = 0, yOffset:uint = 0, widthArray:Array = null):void
         {
+			var c:uint;
 			//	Take a copy of the font for internal use
 			fontSet = (new font).bitmapData;
 			
@@ -154,7 +155,7 @@ package org.flixel
 			
 			if (widthArray != null) {
 				characterWidthArray = new Array();
-				for (var c:uint = 0; c < chars.length; c++)
+				for (c = 0; c < chars.length; c++)
 				{
 					characterWidthArray[chars.charCodeAt(c)] = widthArray[c]
 				}
@@ -167,10 +168,14 @@ package org.flixel
 			var currentY:uint = offsetY;
 			var r:uint = 0;
 			
-			for (var c:uint = 0; c < chars.length; c++)
+			for (c = 0; c < chars.length; c++)
 			{
 				//	The rect is hooked to the ASCII value of the character
-				grabData[chars.charCodeAt(c)] = new Rectangle(currentX, currentY, characterWidth, characterHeight);
+				if (characterWidthArray == null) {
+					grabData[chars.charCodeAt(c)] = new Rectangle(currentX, currentY, characterWidth, characterHeight);
+				} else {
+					grabData[chars.charCodeAt(c)] = new Rectangle(currentX, currentY, characterWidthArray[chars.charCodeAt(c)], characterHeight);
+				}
 				
 				r++;
 				
@@ -245,6 +250,19 @@ package org.flixel
 			text = content;
 		}
 		
+		private function getLineWidth(line:String):uint
+		{
+			if (characterWidthArray == null) {
+				return line.length * (characterWidth + customSpacingX)
+			} else {
+				var len:uint = 0;
+				for (var i:uint = 0; i<text.length; i++) {
+					len += characterWidthArray[line.charCodeAt(i)] + customSpacingX;
+				}
+				return len;
+			}
+		}
+		
 		/**
 		 * Updates the BitmapData of the Sprite with the text
 		 * 
@@ -290,7 +308,7 @@ package org.flixel
 			}
 			else
 			{
-				temp = new BitmapData(_text.length * (characterWidth + customSpacingX), characterHeight, true, 0xf);
+				temp = new BitmapData(getLineWidth(_text), characterHeight, true, 0xf);
 			
 				pasteLine(temp, _text, 0, 0, customSpacingX);
 			}
