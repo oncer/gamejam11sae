@@ -29,11 +29,11 @@ package
 			_bg = new FlxSprite(0, 0, ImgMenu);
 			add(_bg);
 			
-			_play = new FlxButton(200 - 75, 200, null, onPlay);
+			_play = new FlxButton(320, 304, null, onPlay);
 			_play.loadGraphic(ImgButtonPlay, false, true, 160, 48);
 			add(_play);
 			
-			_credits = new FlxButton(200 - 75, 290, null, onCredits);
+			_credits = new FlxButton(320, 368, null, onCredits);
 			_credits.loadGraphic(ImgButtonCredits, false, true, 160, 48);
 			add(_credits);
 			
