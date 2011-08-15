@@ -82,7 +82,7 @@ package
 			super.reset(X,Y);
 			particles.kill();
 			bigsize = 1.0;
-			scale = new FlxPoint(bigsize, bigsize);
+			gfxBig.scale = new FlxPoint(bigsize, bigsize);
 			gfxFloor.visible = false;
 			floorTimer = 0;
 			floorDead = false;
@@ -240,7 +240,7 @@ package
 			else 
 			{ // BIGSPIT
 				bigsize -= 0.15;
-				gfx.scale = new FlxPoint(bigsize, bigsize);
+				gfxBig.scale = new FlxPoint(bigsize, bigsize);
 				if (bigsize < 0.2) {
 					_canHit = false;
 					particles.on = false;
