@@ -74,8 +74,8 @@ package
 			trace("start a new helicopter");
 			
 			var random:int = Math.ceil(Math.random() * 10);
-			// upgradeType = random % Globals.N_UPGRADE_TYPES + 1;
-			upgradeType = Llama.UPGRADE_BIGSPIT; // debug
+			upgradeType = random % Globals.N_UPGRADE_TYPES + 1;
+			// upgradeType = Llama.UPGRADE_BIGSPIT; // debug
 			trace("upgrade type: " + upgradeType);
 			upgradeSprite.frame = upgradeType-1;
 						
