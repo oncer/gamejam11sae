@@ -327,14 +327,16 @@ package
 					var currentState:IngameState = FlxG.state as IngameState;
 					
 					Globals.sfxPlayer.Spit();
-					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+					var spitType:int = Spit.TYPE_DEFAULT;
 					if (upgradeType == UPGRADE_MULTISPAWN) {
-						spit.setType(Spit.TYPE_MULTI_SPAWN);
+						spitType = Spit.TYPE_MULTI_SPAWN;
 					} else if (upgradeType == UPGRADE_BIGSPIT) {
-						spit.setType(Spit.TYPE_BIGSPIT);
+						spitType = Spit.TYPE_BIGSPIT;
 					} else if (upgradeType == UPGRADE_RAPIDFIRE) {
-						spit.setType(Spit.TYPE_FAST);
+						spitType = Spit.TYPE_FAST;
 					}
+					var spit:Spit = currentState.spawnSpit(spitType, lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+
 					
 					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
 					//spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);

@@ -157,7 +157,7 @@ package org.flixel
 				characterWidthArray = new Array();
 				for (c = 0; c < chars.length; c++)
 				{
-					characterWidthArray[chars.charCodeAt(c)] = widthArray[c]
+					characterWidthArray[chars.charCodeAt(c)] = widthArray[c];
 				}
 			}
 			
@@ -257,7 +257,11 @@ package org.flixel
 			} else {
 				var len:uint = 0;
 				for (var i:uint = 0; i<line.length; i++) {
-					len += characterWidthArray[line.charCodeAt(i)] + customSpacingX;
+					if (characterWidthArray[line.charCodeAt(i)] != null) {
+						len += characterWidthArray[line.charCodeAt(i)] + customSpacingX;
+					} else {
+						len += characterWidth + customSpacingX;
+					}
 				}
 				return len;
 			}
