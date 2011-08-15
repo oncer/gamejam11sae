@@ -103,8 +103,8 @@ package
 		 */
 		public function countUpgrade(upgradeType:uint):void
 		{
-			totalStats.upgrades[upgradeType]++;
-			currentLevelStats().upgrades[upgradeType]++;
+			totalStats.upgrades[upgradeType-1]++;
+			currentLevelStats().upgrades[upgradeType-1]++;
 		}
 		
 		
@@ -198,7 +198,7 @@ package
 		 */
 		public function getUpgradesOfType(upgradeType:uint):uint
 		{
-			return totalStats.upgrades[upgradeType];
+			return totalStats.upgrades[upgradeType-1];
 		}
 		
 		
@@ -300,7 +300,7 @@ package
 		 */
 		public function getLevelUpgradesOfType(upgradeType:uint, levelNr:int):uint
 		{
-			return statsOfLevel(levelNr).upgrades[upgradeType];
+			return statsOfLevel(levelNr).upgrades[upgradeType-1];
 		}
 		
 		/**

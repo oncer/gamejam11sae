@@ -8,7 +8,9 @@ package
 			spacing:Number = 0, amplitude:Number = 60, frequency:Number = 2, 
 			xspeed:Number = 30, facing:int = 0):VisitorFloatPattern
 		{
-			return new SinusFloatPattern(visitorWidth, visitorHeight, spacing, amplitude, frequency, xspeed, facing);
+			return new SinusFloatPattern(visitorWidth, visitorHeight,
+			                             spacing, amplitude, frequency,
+			                             xspeed, facing);
 		}
 		
 		public function update():void { }
@@ -63,7 +65,7 @@ class SinusFloatPattern extends VisitorFloatPattern
 			timeLeft = Globals.CAGE_LEFT / xspeed;
 		}
 		
-		timeLeft += spacing * xspeed;
+		timeLeft += spacing;
 	}
 	
 	public override function update():void

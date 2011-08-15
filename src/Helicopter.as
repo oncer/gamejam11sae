@@ -74,9 +74,10 @@ package
 			trace("start a new helicopter");
 			
 			var random:int = Math.ceil(Math.random() * 10);
-			upgradeType = random % Globals.N_UPGRADE_TYPES;
+			upgradeType = random % Globals.N_UPGRADE_TYPES + 1;
+			// upgradeType = Llama.UPGRADE_BIGSPIT; // debug
 			trace("upgrade type: " + upgradeType);
-			upgradeSprite.frame = upgradeType;
+			upgradeSprite.frame = upgradeType-1;
 						
 			// determine the facing direction
 			var randomDirection:int = random % 2;
@@ -189,7 +190,7 @@ package
 		 */
 		public function isEverythingOut():Boolean
 		{
-			return isChopperOut && isUpgradeDead;
+			return isChopperOut && (isUpgradeDead || !isUpgradeHit);
 		}
 	}
 
