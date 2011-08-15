@@ -12,7 +12,7 @@ package
 		private var elapsedTime:Number;
 		private var started:Boolean;
 		
-		private static const MUSIC_VOLUME:Number = 1.0; //1.0;
+		public var volume:Number = 1.0;
 		
 		public function AmbientPlayer():void
 		{
@@ -38,10 +38,10 @@ package
 		override public function update():void
 		{
 			if (!started) return;
-			if (music.volume < MUSIC_VOLUME) {
-				music.volume += (FlxG.elapsed / 2) * MUSIC_VOLUME;
-				if (music.volume > MUSIC_VOLUME) {
-					music.volume = MUSIC_VOLUME;
+			if (music.volume < volume) {
+				music.volume += (FlxG.elapsed / 2) * volume;
+				if (music.volume > volume) {
+					music.volume = volume;
 				}
 			}
 		}
