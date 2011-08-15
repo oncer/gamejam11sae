@@ -236,7 +236,7 @@ package
 			else 
 			{ // BIGSPIT
 				bigsize -= 0.15;
-				scale = new FlxPoint(bigsize, bigsize);
+				gfxBig.scale = new FlxPoint(bigsize, bigsize);
 				if (bigsize < 0.2) {
 					_canHit = false;
 					particles.on = false;

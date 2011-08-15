@@ -42,6 +42,8 @@ package
 			add(_credits);
 			
 			_preloading = new FlxSprite(280, 336, ImgPreloading);
+			_preloading.exists = false;
+			add(_preloading);
 			
 			FlxG.mouse.show();
 			
@@ -100,6 +102,7 @@ package
 			if (_nextAction == "play") {
 				var ingameState:IngameState = new IngameState();
 				FlxG.switchState(ingameState);
+				_nextAction = null;
 			}
 		}
 		
@@ -113,9 +116,9 @@ package
 		
 		public function onPlay():void
 		{
-			remove(_play);
-			remove(_credits);
-			add(_preloading);
+			_play.exists = false;
+			_credits.exists = false;
+			_preloading.exists = true;
 			_nextAction = "drawpreloading";
 			FlxG.mouse.hide();
 		}
