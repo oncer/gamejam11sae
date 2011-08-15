@@ -29,7 +29,7 @@ package
 		
 		public function init(X:int, Y:int, MULTIPLIER:int, SCORE:int):void
 		{
-			var fontIdx:int = MULTIPLIER;
+			var fontIdx:int = MULTIPLIER - 1;
 			if (fontIdx > 4) fontIdx = 4;
 			font = fonts[fontIdx];
 			if (MULTIPLIER > 1) {

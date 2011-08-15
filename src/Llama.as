@@ -332,6 +332,8 @@ package
 						spit.setType(Spit.TYPE_MULTI_SPAWN);
 					} else if (upgradeType == UPGRADE_BIGSPIT) {
 						spit.setType(Spit.TYPE_BIGSPIT);
+					} else if (upgradeType == UPGRADE_RAPIDFIRE) {
+						spit.setType(Spit.TYPE_FAST);
 					}
 					
 					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
