@@ -99,12 +99,15 @@ package
 		public function ScreamOldWoman():void { playSfxRandomPool(SndScreamOldWomanPool); }
 		public function ScreamWoman():void { playSfxRandomPool(SndScreamWomanPool); }
 		public function Upgrade():void { playSfxRandomPool(SndUpgradePool); }
-		public function Gameover():void { FlxG.play(SndGameover); }
+		public function Gameover():void { FlxG.play(SndGameover, volume); }
 		
 		private var sfxChopper:FlxSound;
+
+		public var volume:Number = 1.0;
 		
 		public function ChopperIn():void
 		{
+			sfxChopper.volume = volume;
 			sfxChopper.fadeIn(2);
 			sfxChopper.update();
 		}
@@ -127,7 +130,7 @@ package
 		{
 			if (POOL == null || POOL.length <= 0) return;
 			var i:uint = Math.random() * POOL.length;
-			FlxG.play(POOL[i]);
+			FlxG.play(POOL[i], volume);
 		}
 	}
 }

@@ -57,7 +57,6 @@ package
 		
 		override public function create():void
 		{
-var __start__:int = flash.utils.getTimer();
 			super.create();
 						
 			gameover = false;
@@ -155,8 +154,10 @@ var __start__:int = flash.utils.getTimer();
 			// sounds
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
+			ambientPlayer.volume = 0.0; // disable music
 			add(ambientPlayer);
 			Globals.sfxPlayer = new SfxPlayer();
+			Globals.sfxPlayer.volume = 0.0; // disable sfx
 			add(Globals.sfxPlayer);
 			
 			// level manager determines current level, difficulty etc.
@@ -167,8 +168,7 @@ var __start__:int = flash.utils.getTimer();
 			add(newLevelText);
 			newLevelText.displayText(levelManager.getLevelNr()); // Level 1
 			newLevelText.setDisappearHandler(this.showLevelIntro);
-		Profiler.profiler.profile('IngameState.create', flash.utils.getTimer() - __start__);
-}
+		}
 		
 		private function isLevelCompletelyOver():Boolean
 		{

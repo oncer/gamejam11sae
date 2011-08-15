@@ -9,6 +9,7 @@ package
 		[Embed(source="../gfx/button_play.png")] private var ImgButtonPlay:Class;
 		[Embed(source="../gfx/button_credits.png")] private var ImgButtonCredits:Class;
 		[Embed(source="../gfx/button_howto.png")] private var ImgButtonHowto:Class;
+		[Embed(source="../gfx/preloading.png")] private var ImgPreloading:Class;
 		
 		private var _title:FlxText;
 		private var _bg:FlxSprite;
@@ -16,6 +17,9 @@ package
 		private var _play:FlxButton;
 		private var _credits:FlxButton;
 		private var _howto:FlxButton;
+		private var _preloading:FlxSprite;
+		
+		private var _nextAction:String = null;
 		
 		private var _scores:Array;
 		private var timeout:Number;
@@ -36,6 +40,8 @@ package
 			_credits = new FlxButton(320, 368, null, onCredits);
 			_credits.loadGraphic(ImgButtonCredits, false, true, 160, 48);
 			add(_credits);
+			
+			_preloading = new FlxSprite(280, 336, ImgPreloading);
 			
 			FlxG.mouse.show();
 			
@@ -90,12 +96,28 @@ package
 					onPlay();
 				}
 			}
+			
+			if (_nextAction == "play") {
+				var ingameState:IngameState = new IngameState();
+				FlxG.switchState(ingameState);
+			}
+		}
+		
+		public override function draw():void
+		{
+			super.draw();
+			if (_nextAction == "drawpreloading") {
+				_nextAction = "play";
+			}
 		}
 		
 		public function onPlay():void
 		{
-			var ingameState:IngameState = new IngameState();
-			FlxG.switchState(ingameState);
+			remove(_play);
+			remove(_credits);
+			add(_preloading);
+			_nextAction = "drawpreloading";
+			FlxG.mouse.hide();
 		}
 		
 		public function onCredits():void

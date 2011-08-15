@@ -292,11 +292,11 @@ package org.flixel
 							break;
 							
 						case ALIGN_RIGHT:
-							cx = temp.width - (lines[i].length * (characterWidth + customSpacingX));
+							cx = temp.width - getLineWidth(lines[i]);
 							break;
 							
 						case ALIGN_CENTER:
-							cx = (temp.width / 2) - ((lines[i].length * (characterWidth + customSpacingX)) / 2);
+							cx = (temp.width / 2) - (getLineWidth(lines[i]) / 2);
 							cx += customSpacingX / 2;
 							break;
 					}
