@@ -74,7 +74,7 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray:Array = new Array(spitCooldown, 0.1, 0.7, 0.7);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.15, 0.7, 0.7);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
 		private var upgradeDuration:Array = new Array(0, 15, 10, 25);
 		private var upgradeDurationCounter:Number;
@@ -332,8 +332,6 @@ package
 						spitType = Spit.TYPE_MULTI_SPAWN;
 					} else if (upgradeType == UPGRADE_BIGSPIT) {
 						spitType = Spit.TYPE_BIGSPIT;
-					} else if (upgradeType == UPGRADE_RAPIDFIRE) {
-						spitType = Spit.TYPE_FAST;
 					}
 					var spit:Spit = currentState.spawnSpit(spitType, lama.x + spitOrigin.x, lama.y + spitOrigin.y);
 
