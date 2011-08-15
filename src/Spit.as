@@ -66,13 +66,15 @@ package
 		
 		private function initParticles():void
 		{
-			particles = new FlxEmitter();
-			particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
-			particles.setRotation(0, 0);
-			particles.setYSpeed(-50, 100);
-			particles.setXSpeed(-20, 20);
-			particles.gravity = 100;
-			particles.start (false,0.3,0.05,0);
+			if (!isType(TYPE_FAST)) {
+				particles = new FlxEmitter();
+				particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
+				particles.setRotation(0, 0);
+				particles.setYSpeed(-50, 100);
+				particles.setXSpeed(-20, 20);
+				particles.gravity = 100;
+				particles.start (false,0.3,0.05,0);
+			}
 		}
 		
 		private function commonReset(X:Number, Y:Number):void
@@ -137,13 +139,13 @@ package
 						gfx.angle -= 360;
 					}
 				} else {
-					gfxBig.angle -= FlxG.elapsed * 360;
+					gfx.angle -= FlxG.elapsed * 360;
 					if (gfx.angle <= -360) {
 						gfx.angle += 360;
 					}
 				}
 
-				gfxBig.postUpdate(); // set frame according to angle
+				gfx.postUpdate(); // set frame according to angle
 				width = gfxBig.width;
 				height = gfxBig.height;
 			} else { // default gfx

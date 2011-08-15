@@ -256,7 +256,7 @@ package org.flixel
 				return line.length * (characterWidth + customSpacingX)
 			} else {
 				var len:uint = 0;
-				for (var i:uint = 0; i<text.length; i++) {
+				for (var i:uint = 0; i<line.length; i++) {
 					len += characterWidthArray[line.charCodeAt(i)] + customSpacingX;
 				}
 				return len;
