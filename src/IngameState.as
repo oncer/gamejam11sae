@@ -414,7 +414,7 @@ var __start__:int = flash.utils.getTimer();
 		public function setUpgrade():void
 		{
 			var upgradeType:uint = helicopter.getUpgradeType();
-			llama.setUpgradeType(upgradeType + 1);
+			llama.setUpgradeType(upgradeType);
 			stats.countUpgrade (upgradeType);
 		}
 		

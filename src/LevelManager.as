@@ -4,9 +4,9 @@ package
 	
 	public class LevelManager extends FlxBasic
 	{
-		private const SECONDS_PER_LEVEL:Number = 40; // minimum time
-		private const SECONDS_BETWEEN_SPAWNS:Number = 5;
-		private const SPAWN_BATCHES_PER_LEVEL:Number = SECONDS_PER_LEVEL / SECONDS_BETWEEN_SPAWNS; // works only if integer divisible
+		private const SECONDS_BETWEEN_SPAWNS:Number = 5.382;
+		private const SPAWN_BATCHES_PER_LEVEL:Number = 8;
+		private const SECONDS_PER_LEVEL:Number = SPAWN_BATCHES_PER_LEVEL * SECONDS_BETWEEN_SPAWNS; // minimum time
 		
 		private var elapsedTime:Number; // total *time of all levels*, not game time, in seconds
 		private var levelTime:Number;   // elapsed time in this level in seconds
@@ -162,8 +162,6 @@ package
 			var l:int = spawnPool.length;
 			var vbegin:int = spawnBatch * l / SPAWN_BATCHES_PER_LEVEL;
 			var vend:int = (spawnBatch+1) * l / SPAWN_BATCHES_PER_LEVEL;
-			
-			trace("doOneSpawn with " + (vend - vbegin).toString() + " visitors.");
 			
 			for (var i:int = vbegin; i < Math.min(l, vend); i++)
 			{
