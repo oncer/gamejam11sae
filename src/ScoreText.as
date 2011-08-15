@@ -9,18 +9,18 @@ package
 		private var timer:Number;
 		
 		private var fonts:Array;
-		private static const CHARS:String = "x0123456789";
+		private static const CHARS:String = "X0123456789 ";
 		private var font:FlxBitmapFont = null;
 		
 		
 		public function ScoreText():void
 		{
 			fonts = new Array();
-			fonts[0] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 0,   [13,12, 9,13,13,12,13,13,13,13,13]);
-			fonts[1] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 32,  [13,12, 9,13,13,12,13,13,13,13,13]);
-			fonts[2] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 64,  [13,12, 9,13,13,12,13,13,13,13,13]);
-			fonts[3] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 96,  [16,14,11,16,16,14,16,16,16,16,16]);
-			fonts[4] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 128, [16,14,12,16,16,15,16,16,16,16,16]);
+			fonts[0] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 0,   [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[1] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 32,  [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[2] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 64,  [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[3] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 96,  [16,14,11,16,16,14,16,16,16,16,16, 8]);
+			fonts[4] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 128, [16,14,12,16,16,15,16,16,16,16,16, 8]);
 			for (var i:int = 0; i<5; i++) {
 				fonts[i].customSpacingX = 1;
 			}
@@ -33,7 +33,7 @@ package
 			if (fontIdx > 4) fontIdx = 4;
 			font = fonts[fontIdx];
 			if (MULTIPLIER > 1) {
-				font.text = "" + SCORE + "x" + MULTIPLIER;
+				font.text = "" + SCORE + "X" + MULTIPLIER;
 			} else {
 				font.text = "" + SCORE;
 			}

@@ -324,18 +324,18 @@ package
 		 * parent: shares a hit counter with the spawned spit such that
 		 *         hits are counted only once.
 		 */
-		public function spawnSpit(X:Number, Y:Number, parent:Spit = null, isCombo:Boolean = false):Spit
+		public function spawnSpit(TYPE:int, X:Number, Y:Number, parent:Spit = null, isCombo:Boolean = false):Spit
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
 			
 			if (parent === null)
 			{
 				stats.countSpit();
-				s.resetCreate (X, Y, stats.countHit);
+				s.resetCreate (TYPE, X, Y, stats.countHit);
 			}
 			else
 			{
-				s.resetAsChild (X, Y, parent);
+				s.resetAsChild (TYPE, X, Y, parent);
 				if (isCombo)
 				{
 					s.setCombo(2);
@@ -449,18 +449,18 @@ package
 		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit, isCombo:Boolean):void {
 			var speed:Number = 200;
 			var y_threshold:Number = 10;
-			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			var newSpit:Spit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
 			// angle 0 is to the right, 180 to the left, 270 up
 			newSpit.velocity = FlxVelocity.velocityFromAngle(0, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(180, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(270-30, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			newSpit.velocity = FlxVelocity.velocityFromAngle(270+30, speed);
 		}
 	} // end of class IngameState

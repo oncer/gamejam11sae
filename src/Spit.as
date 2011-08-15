@@ -60,27 +60,27 @@ package
 			gfxFloor = new FlxSprite(0,0);
 			gfxFloor.loadGraphic(SpitFloorClass);
 			
-			setType(TYPE_DEFAULT);
+			particles = new FlxEmitter();
+			particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
+			particles.setRotation(0, 0);
+			particles.setYSpeed(-50, 100);
+			particles.setXSpeed(-20, 20);
+			particles.gravity = 100;
+			
 			combo = 1;
+			
+			spitType = TYPE_DEFAULT;
 		}
 		
-		private function initParticles():void
+		private function startParticles():void
 		{
-			if (!isType(TYPE_FAST)) {
-				particles = new FlxEmitter();
-				particles.makeParticles (SpitParticleClass, 16, 0, true, 0);
-				particles.setRotation(0, 0);
-				particles.setYSpeed(-50, 100);
-				particles.setXSpeed(-20, 20);
-				particles.gravity = 100;
-				particles.start (false,0.3,0.05,0);
-			}
+			particles.start(false, 0.3, 0.05, 0);
 		}
 		
-		private function commonReset(X:Number, Y:Number):void
+		private function commonReset(TYPE:int, X:Number, Y:Number):void
 		{
 			super.reset(X,Y);
-			initParticles();
+			particles.kill();
 			bigsize = 1.0;
 			scale = new FlxPoint(bigsize, bigsize);
 			gfxFloor.visible = false;
@@ -95,18 +95,18 @@ package
 			
 			setCenterPosition(X, Y);
 			
-			setType(TYPE_DEFAULT);
+			setType(TYPE);
 		}
 		
-		public function resetAsChild(X:Number, Y:Number, parent:Spit):void
+		public function resetAsChild(TYPE:int, X:Number, Y:Number, parent:Spit):void
 		{
-			commonReset(X, Y);
+			commonReset(TYPE, X, Y);
 			hitTrigger = parent.hitTrigger;
 		}
 		
-		public function resetCreate(X:Number, Y:Number, onHitSomething:Function):void
+		public function resetCreate(TYPE:int, X:Number, Y:Number, onHitSomething:Function):void
 		{
-			commonReset (X, Y);
+			commonReset (TYPE, X, Y);
 			hitTrigger = new OnceTrigger(onHitSomething);
 		}
 		
@@ -129,8 +129,10 @@ package
 		override public function update():void
 		{
 			super.update();
-			particles.at(this);
-			particles.update();
+			if (particles.exists) {
+				particles.at(this);
+				particles.update();
+			}
 			
 			if (spitType == TYPE_BIGSPIT) {
 				if (velocity.x > 0) {
@@ -257,12 +259,16 @@ package
 			if(!isType(TYPE_BIGSPIT)) {
 				_canHit = false;
 				particles.on = false;
-				gfxFloor.x = x;
-				gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
-				gfxFloor.visible = true;
-				drag.x = Math.abs(velocity.x) * 10;
-				floorTimer = 0.5;
-				floorDead = false;
+				if (!isType(TYPE_FAST)) {
+					gfxFloor.x = x;
+					gfxFloor.y = Globals.GROUND_LEVEL - gfxFloor.height;
+					gfxFloor.visible = true;
+					drag.x = Math.abs(velocity.x) * 10;
+					floorTimer = 0.5;
+					floorDead = false;
+				} else {
+					kill();
+				}
 				
 				Globals.sfxPlayer.Splotsh();
 				
@@ -280,10 +286,12 @@ package
 			spitType = SpitType;
 			if (spitType == TYPE_BIGSPIT) {
 				gfx = gfxBig;
+				startParticles();
 			} else if (spitType == TYPE_FAST) {
 				gfx = gfxFast;
 			} else {
 				gfx = gfxDefault;
+				startParticles();
 			}
 		}
 		
