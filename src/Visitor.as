@@ -502,9 +502,5 @@ package
 		{
 			return visitorClasses[visitorType];
 		}
-		
-		public function jumpIntoCage():void
-		{
-		}
 	}
 }

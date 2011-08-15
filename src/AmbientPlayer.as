@@ -1,19 +1,18 @@
 package
 {
 	import org.flixel.*;
+	
 	public class AmbientPlayer extends FlxGroup
 	{
 		[Embed(source="../audio/main_theme.mp3")] private static var SndMusic:Class;
 		
-		private var city:FlxSound;
 		private var music:FlxSound;
-										   
+		
 		private var targetTime:Number;
 		private var elapsedTime:Number;
 		private var started:Boolean;
 		
-		private static const AMBIENT_VOLUME:Number = 0.33;
-		private static const MUSIC_VOLUME:Number = 0;//1.0;
+		private static const MUSIC_VOLUME:Number = 1.0; //1.0;
 		
 		public function AmbientPlayer():void
 		{
