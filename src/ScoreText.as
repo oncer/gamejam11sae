@@ -16,11 +16,14 @@ package
 		public function ScoreText():void
 		{
 			fonts = new Array();
-			fonts[0] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 0);
-			fonts[1] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 32);
-			fonts[2] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 64);
-			fonts[3] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 96);
-			fonts[4] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 128);
+			fonts[0] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 0,   [13,12, 9,13,13,12,13,13,13,13,13]);
+			fonts[1] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 32,  [13,12, 9,13,13,12,13,13,13,13,13]);
+			fonts[2] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 64,  [16,14,11,16,16,16,16,16,16,16,16]);
+			fonts[3] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 96,  [16,14,11,16,16,16,16,16,16,16,16]);
+			fonts[4] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 11, 0, 0, 0, 128, [16,14,11,16,16,16,16,16,16,16,16]);
+			for (var i:int = 0; i<5; i++) {
+				fonts[i].customSpacingX = 1;
+			}
 			this.exists = false;
 		}
 		

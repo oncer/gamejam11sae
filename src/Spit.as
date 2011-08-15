@@ -13,21 +13,25 @@ package
 		public static const TYPE_DEFAULT:uint = 0;
 		public static const TYPE_BIGSPIT:uint = 1;
 		public static const TYPE_MULTI_SPAWN:uint = 2;
+		public static const TYPE_FAST:uint = 3;
 		
 		private var spitType:uint;
 		
-		[Embed(source="../gfx/spit.png")] private var SpitClass:Class;
-		[Embed(source="../gfx/spitfloor.png")] private var SpitFloorClass:Class;
-		[Embed(source = "../gfx/spitparticle.png")] private var SpitParticleClass:Class;
-		[Embed(source="../gfx/spitbig.png")] private var SpitBigClass:Class;
+		[Embed(source="../gfx/spit.png")] private static var SpitClass:Class;
+		[Embed(source="../gfx/spitfloor.png")] private static var SpitFloorClass:Class;
+		[Embed(source = "../gfx/spitparticle.png")] private static var SpitParticleClass:Class;
+		[Embed(source="../gfx/spitbig.png")] private static var SpitBigClass:Class;
+		[Embed(source="../gfx/spitfast.png")] private static var SpitFastClass:Class;
 		
 		private var _canHit:Boolean;
 		
 		private var particles:FlxEmitter;
 		private var explosion:FlxEmitter;
 		private var gfxFloor:FlxSprite;
+		private var gfx:FlxSprite;
 		private var gfxDefault:FlxSprite;
 		private var gfxBig:FlxSprite;
+		private var gfxFast:FlxSprite;
 		
 		private var floorTimer:Number;
 		private var floorDead:Boolean;
@@ -46,6 +50,8 @@ package
 			gfxDefault.loadRotatedGraphic(SpitClass, 16, -1, true, true);
 			gfxBig = new FlxSprite(0,0);
 			gfxBig.loadRotatedGraphic(SpitBigClass, 32, -1, true, true);
+			gfxFast = new FlxSprite(0,0);
+			gfxFast.loadGraphic(SpitFastClass);
 			
 			exists = false;
 			_canHit = true;
@@ -54,7 +60,7 @@ package
 			gfxFloor = new FlxSprite(0,0);
 			gfxFloor.loadGraphic(SpitFloorClass);
 			
-			spitType = TYPE_DEFAULT;
+			setType(TYPE_DEFAULT);
 			combo = 1;
 		}
 		
@@ -126,30 +132,28 @@ package
 			
 			if (spitType == TYPE_BIGSPIT) {
 				if (velocity.x > 0) {
-					gfxBig.angle += FlxG.elapsed * 360;
-					if (gfxBig.angle >= 360) {
-						gfxBig.angle -= 360;
+					gfx.angle += FlxG.elapsed * 360;
+					if (gfx.angle >= 360) {
+						gfx.angle -= 360;
 					}
 				} else {
 					gfxBig.angle -= FlxG.elapsed * 360;
-					if (gfxBig.angle <= -360) {
-						gfxBig.angle += 360;
+					if (gfx.angle <= -360) {
+						gfx.angle += 360;
 					}
 				}
-				gfxBig.x = x;
-				gfxBig.y = y;
+
 				gfxBig.postUpdate(); // set frame according to angle
 				width = gfxBig.width;
 				height = gfxBig.height;
-			} else {
-				gfxDefault.angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
-				gfxDefault.x = x;
-				gfxDefault.y = y;
-				gfxDefault.postUpdate();
-				width = gfxDefault.width;
-				height = gfxDefault.height;
+			} else { // default gfx
+				gfx.angle = Math.atan2(velocity.y, velocity.x) * 180 / Math.PI;
+				gfx.postUpdate();
 			}
-			
+			gfx.x = x;
+			gfx.y = y;
+			width = gfx.width;
+			height = gfx.height;
 			
 			if (_canHit && y + height >= Globals.GROUND_LEVEL) {
 				hitGround();
@@ -187,11 +191,7 @@ package
 		override public function draw():void
 		{
 			if (_canHit) {
-				if (isType(TYPE_BIGSPIT)) {
-					gfxBig.draw();
-				} else {
-					gfxDefault.draw();
-				}
+				gfx.draw();
 			}
 			particles.draw();
 			if (gfxFloor.visible) {
@@ -236,7 +236,7 @@ package
 			else 
 			{ // BIGSPIT
 				bigsize -= 0.15;
-				gfxBig.scale = new FlxPoint(bigsize, bigsize);
+				gfx.scale = new FlxPoint(bigsize, bigsize);
 				if (bigsize < 0.2) {
 					_canHit = false;
 					particles.on = false;
@@ -276,6 +276,13 @@ package
 		
 		public function setType(SpitType:uint):void {
 			spitType = SpitType;
+			if (spitType == TYPE_BIGSPIT) {
+				gfx = gfxBig;
+			} else if (spitType == TYPE_FAST) {
+				gfx = gfxFast;
+			} else {
+				gfx = gfxDefault;
+			}
 		}
 		
 		public function isType(SpitType:uint):Boolean
