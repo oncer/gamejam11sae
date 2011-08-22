@@ -7,6 +7,7 @@
 package
 {
 	import org.flixel.*;
+	import org.flixel.plugin.photonstorm.*;
 	import flash.system.fscommand;
 	//import com.divillysausages.gameobjeditor.Editor;
 	import flash.utils.getTimer;
@@ -15,12 +16,14 @@ package
 	{
 		//internal var llama:FlxSprite;
 		
-		[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
+		//[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
 		[Embed(source="../gfx/trampolin.png")] private var TrampolinImage:Class;
 		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
 		
 		//private var _editor:Editor;
+		
+		private var bg:LevelBackground;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
 		public var trampolin:FlxSprite;
@@ -30,26 +33,33 @@ package
 		private var flyingVisitors:FlxGroup; // can hit normal visitors for combos
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
+		private var statsText:StatsText;
 		private var livesDisplay:FlxGroup; // contains 3 llama heads
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
+		private var visitorIntroTexts:FlxGroup;
 		
-		private var lives:uint; // 0 == game over
+		private var stats:Statistics;
+		private var lives:uint;         // 0 == game over
 		private var difficulty:Number;
-		public var elapsedTime:Number; // total in seconds
-		private var lastVisitor:uint; // most recent array index
-		private var lastSpit:uint; // most recent array index
+		public var elapsedTime:Number;  // total in seconds
+		private var lastVisitor:uint;   // most recent array index
+		private var lastSpit:uint;      // most recent array index
 		private var lastScoreText:uint; // most recent array index
+		private var statsDisplayCountdown:Number; 
 		
 		private var lastHelicopterSpawnedCounter:Number;
 		/** after this time (in seconds), the helicopter is started either from left or right */
 		private var DURATION_RESPAWN_HELICOPTER:Number = 25;
 		
 		private var ambientPlayer:AmbientPlayer;
+		private var gameover:Boolean;
 		
 		override public function create():void
 		{
 			super.create();
+						
+			gameover = false;
 			
 			/*trace("[loading editor] " + getTimer());
 			_editor = new Editor(FlxG.stage);
@@ -60,13 +70,10 @@ package
 			FlxG.mouse.show();*/
 			FlxG.mouse.hide();
 			
-			var bg:FlxSprite = new FlxSprite(0,0);
-			bg.loadGraphic(BackgroundImage);
+			bg = new LevelBackground(LevelBackground.TIME_DAY);
 			add(bg);
 			
-			FlxG.score = 0;
-			
-			lives = 10;
+			lives = 3;
 			elapsedTime = 0.0;
 			lastVisitor = 0;
 			lastSpit = 0;
@@ -116,16 +123,27 @@ package
 				scoretexts.add(new ScoreText());
 			}
 			add(scoretexts);
+			
+			// Initialize stats
+			stats = new Statistics ();
 
 			// total score display
-			totalScoreText = new TotalScoreText ();
+			totalScoreText = new TotalScoreText();
 			add(totalScoreText);
+			
+			// stats display (between levels)
+			statsText = new StatsText(stats);
+			add(statsText);
+			
+			// introductory texts for visitors
+			visitorIntroTexts = new FlxGroup();
+			add(visitorIntroTexts);
 			
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
 			
 			livesDisplay = new FlxGroup (lives);
-			for(i = 0; i < Globals.MAX_SPITS; i++)
+			for(i = 0; i < lives; i++)
 			{
 				var life:FlxSprite = new FlxSprite (10 + i * 40, 10);
 				life.loadGraphic(LifeImage);
@@ -136,8 +154,10 @@ package
 			// sounds
 			ambientPlayer = new AmbientPlayer();
 			ambientPlayer.start();
+			ambientPlayer.volume = 0.0; // disable music
 			add(ambientPlayer);
 			Globals.sfxPlayer = new SfxPlayer();
+			Globals.sfxPlayer.volume = 0.0; // disable sfx
 			add(Globals.sfxPlayer);
 			
 			// level manager determines current level, difficulty etc.
@@ -146,29 +166,82 @@ package
 			
 			newLevelText = new NewLevelText();
 			add(newLevelText);
+			newLevelText.displayText(levelManager.getLevelNr()); // Level 1
+			newLevelText.setDisappearHandler(this.showLevelIntro);
+		}
+		
+		private function isLevelCompletelyOver():Boolean
+		{
+			return levelManager.isLevelElapsed() &&
+			       (visitors.countLiving() <= 0) &&
+			       helicopter.isEverythingOut();
+		}
+		
+		private function showLevelIntro():void
+		{
+			visitorIntroTexts.clear();
+
+			var levelIntros:Vector.<int> = levelManager.getLevelIntroductions();
+			for (var i:int = 0; i < levelIntros.length; i++)
+			{
+				visitorIntroTexts.add(new VisitorIntroText(levelIntros[i], i));
+			}
+		}
+		
+		private function startDisplayingStatistics():void
+		{
+			bg.startShift();
+			statsText.playback(stats.getLevelNr());
+			helicopter.active = false;
+			llama.disableSpit();
+		}
+		
+		private function stopDisplayingStatistics():void
+		{
+			bg.startShift();
+			levelManager.gotoNextLevel ();
+			stats.countLevel ();
+			newLevelText.displayText(levelManager.getLevelNr());
+			statsText.finishPlayback ();
+			helicopter.active = true;
+			llama.enableSpit();
 		}
 		
 		override public function update():void
 		{
+			var tm:int = flash.utils.getTimer();
 			super.update();
+			Profiler.profiler.profile('IngameState.update__super.update', flash.utils.getTimer() - tm);
 			
-			if (levelManager.isLevelElapsed() && (visitors.countLiving() <= 0))
+			tm = flash.utils.getTimer();
+			stats.update();
+			Profiler.profiler.profile('IngameState.update__stats.update', flash.utils.getTimer() - tm);
+			
+			if (isLevelCompletelyOver())
 			{
-				levelManager.gotoNextLevel ();
-				newLevelText.displayText(levelManager.currentLevel);
+				if (statsText.canStartPlayback())
+				{
+					startDisplayingStatistics();
+				} else
+				if (statsText.canFinishPlayback())
+				{
+					stopDisplayingStatistics();
+				}
 			}
-			
+			else
+			{
+				lastHelicopterSpawnedCounter += FlxG.elapsed;
+				if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
+					helicopter.startHelicopter();
+					lastHelicopterSpawnedCounter = 0;
+				}
+			}
+		
 			// update time & difficulty
 			// elapsedTime = SECONDS
 			// difficulty = 1.0 + 0.3 * SECONDS
 			elapsedTime += FlxG.elapsed;
 			difficulty = levelManager.getDifficulty ();
-			
-			lastHelicopterSpawnedCounter += FlxG.elapsed;			
-			if (lastHelicopterSpawnedCounter > DURATION_RESPAWN_HELICOPTER) {
-				helicopter.startHelicopter();
-				lastHelicopterSpawnedCounter = 0;
-			}
 			
 			if (trampolin.y < Globals.TRAMPOLIN_TOP) {
 				trampolin.y = Globals.TRAMPOLIN_TOP;
@@ -186,16 +259,24 @@ package
 			}
 			
 			// Visitors
-			spawnVisitors (levelManager.amountSpawns());
+			levelManager.doSpawns(this.getUnusedVisitor);
 			
 			// Collision visitors vs. spit, visitors vs flying
+			tm = flash.utils.getTimer();
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
+			Profiler.profiler.profile('IngameState.update__overlap(visitors,spits)', flash.utils.getTimer() - tm);
+			tm = flash.utils.getTimer();
 			FlxG.overlap(visitors, flyingVisitors, visitorsVsFlying, canFlyingHit);
+			Profiler.profiler.profile('IngameState.update__overlap(visitors,flyingVisitors)', flash.utils.getTimer() - tm);
+			tm = flash.utils.getTimer();
 			FlxG.overlap(helicopter.getUpgradeSprite(), spits, upgradeVsSpits, canSpitAndUpgradeHit);
+			Profiler.profiler.profile('IngameState.update__overlap(helicopter,spits)', flash.utils.getTimer() - tm);
 			
 			// Continually remove some from flying array if possible
+			tm = flash.utils.getTimer();
 			var trash:FlxBasic = flyingVisitors.getFirstAvailable();
 			if (trash) flyingVisitors.remove(trash);
+			Profiler.profiler.profile('IngameState.update__flyingVisitors_trash', flash.utils.getTimer() - tm);
 			
 			//FlxG.log(llama.y);
 			//trace("test");
@@ -222,40 +303,45 @@ package
 				//trace("quit");
 				//fscommand("quit");
 			}
-		} // end of update
-		
-		
-		private function spawnVisitors (amount:uint):void
-		{
-			//trace("spawn");
 			
-			for (var i:uint = 0; i < amount; i++)
-			{
-				var v:Visitor = visitors.members[lastVisitor % Globals.MAX_VISITORS];
-				
-				if (v.exists) return; // keep on screen until dead
-				
-				lastVisitor++;
-				
-				// distribute left/right somewhat randomly, but avoid long streaks
-				if (lastVisitor % 6 == 0) 
-				{
-					v.init(levelManager.currentLevel, i, FlxObject.LEFT);
-				} else
-				if (lastVisitor % 6 == 3) 
-				{
-					v.init(levelManager.currentLevel, i, FlxObject.RIGHT);
-				} else
-				{
-					v.init(levelManager.currentLevel, i);
-				}
-			}
+			var currentLevel:int = stats.getLevelNr();
+			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
+		} // end of update
+
+		override public function draw():void
+		{
+			var __start__:int = flash.utils.getTimer();
+			super.draw();
+			Profiler.profiler.profile('IngameState.draw', flash.utils.getTimer() - __start__);
 		}
 		
-		public function spawnSpit(X:Number, Y:Number):Spit
+		private function getUnusedVisitor():Visitor
+		{
+			return visitors.members[(lastVisitor++) % Globals.MAX_VISITORS];
+		}
+		
+		/**
+		 * parent: shares a hit counter with the spawned spit such that
+		 *         hits are counted only once.
+		 */
+		public function spawnSpit(TYPE:int, X:Number, Y:Number, parent:Spit = null, isCombo:Boolean = false):Spit
 		{
 			var s:Spit = spits.members[lastSpit++ % Globals.MAX_SPITS];
-			s.reset(X,Y);
+			
+			if (parent === null)
+			{
+				stats.countSpit();
+				s.resetCreate (TYPE, X, Y, stats.countHit);
+			}
+			else
+			{
+				s.resetAsChild (TYPE, X, Y, parent);
+				if (isCombo)
+				{
+					s.setCombo(2);
+				}
+			}
+			
 			return s;
 		}
 		
@@ -278,7 +364,7 @@ package
 		}
 		
 		private function upgradeVsSpits(upgrade:FlxObject,spit:FlxObject):void
-		{			
+		{	
 			// there is only 1 upgrade, so the 1st argument is never needed - this is only called if a collision with the upgrade occured			
 			var s:Spit = spit as Spit;
 			s.hitSomething();
@@ -294,17 +380,13 @@ package
 			s.hitSomething();
 			v.getSpitOn(s);
 			flyingVisitors.add(v);
+			trace("flyingVisitors count: " + flyingVisitors.length);
 			
 			Globals.sfxPlayer.Splotsh();
-			
-			if (s.isType(Spit.TYPE_MULTI_SPAWN))
-			{
-				spawnMultipleNewSpitsAtSpitPosition(s);				
-			}
 		}
 		
 		private function canFlyingHit(victim:FlxObject,flying:FlxObject):Boolean
-		{ 
+		{
 			return (flying as Visitor).canHitSomeone() && (victim as Visitor).canBeHit();
 		}
 		
@@ -320,10 +402,10 @@ package
 		
 		public function causeScore (killed:Visitor, score:int, combo:int):void
 		{
-			FlxG.score += score * combo;
+			stats.countKill(killed, score, combo);
 			
 			// total score display (top right)
-			totalScoreText.setText(FlxG.score, combo * 2.1);
+			totalScoreText.score = stats.getTotalScore();
 			
 			// temporary points display everywhere
 			spawnScoreText(killed.x + killed.width / 2, killed.y, combo, killed.scorePoints);
@@ -331,7 +413,9 @@ package
 		
 		public function setUpgrade():void
 		{
-			llama.setUpgradeType(helicopter.getUpgradeType() + 1);
+			var upgradeType:uint = helicopter.getUpgradeType();
+			llama.setUpgradeType(upgradeType);
+			stats.countUpgrade (upgradeType);
 		}
 		
 		public function loseLife ():void
@@ -342,16 +426,19 @@ package
 				livesDisplay.length = lives;
 			}
 			
-			if (lives <= 0)
+			if (lives <= 0 && !gameover)
 			{
 				Globals.sfxPlayer.Gameover();
 				FlxG.fade(0xff000000, 2, gameOverFunction);
+				gameover = true;
 			}
 		}
 		
 		private function gameOverFunction():void
 		{
+			trace(Profiler.profiler.stats);
 			ambientPlayer.stop();
+			FlxG.score = stats.getTotalScore(); // GameoverState picks score from there
 			FlxG.switchState(new GameoverState());
 		}
 	
@@ -359,22 +446,22 @@ package
 		 * Needs to be public, because also gets called from Spit when a MULTI_SPAWN spit hits the ground.
 		 * @param	collidingSpit
 		 */		
-		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit):void {
+		public function spawnMultipleNewSpitsAtSpitPosition(collidingSpit:Spit, isCombo:Boolean):void {
 			var speed:Number = 200;
 			var y_threshold:Number = 10;
-			var newSpit:Spit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
+			var newSpit:Spit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
 			// 3rd parameter is the same like in Llama.spitStrengthModifier
 			// angle 0 is to the right, 180 to the left, 270 up
-			Llama.moveWithAngle(newSpit, 0, speed);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(0, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 180, speed);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(180, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 270-30, speed);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(270-30, speed);
 			
-			newSpit = spawnSpit(collidingSpit.x, collidingSpit.y - y_threshold);
-			Llama.moveWithAngle(newSpit, 270+30, speed);
+			newSpit = spawnSpit(Spit.TYPE_DEFAULT, collidingSpit.x, collidingSpit.y - y_threshold, collidingSpit, isCombo);
+			newSpit.velocity = FlxVelocity.velocityFromAngle(270+30, speed);
 		}
 	} // end of class IngameState
 } // end of package

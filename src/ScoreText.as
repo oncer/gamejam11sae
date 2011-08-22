@@ -2,67 +2,64 @@ package
 {
 	import org.flixel.*;
 	
-	public class ScoreText extends FlxText
+	public class ScoreText extends FlxGroup
 	{
+		[Embed(source="../gfx/fontdamage.png")] private static var ImgDamageFont:Class;
+		
 		private var timer:Number;
+		
+		private var fonts:Array;
+		private static const CHARS:String = "X0123456789 ";
+		private var font:FlxBitmapFont = null;
 		
 		
 		public function ScoreText():void
 		{
-			super(0,0,100);
-			this.size = 16;
-			this.alignment = "center";
-			this.shadow = 0x333333;
+			fonts = new Array();
+			fonts[0] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 0,   [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[1] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 32,  [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[2] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 64,  [13,12, 9,13,13,12,13,13,13,13,13, 6]);
+			fonts[3] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 96,  [16,14,11,16,16,14,16,16,16,16,16, 8]);
+			fonts[4] = new FlxBitmapFont(ImgDamageFont, 16, 32, CHARS, 12, 0, 0, 0, 128, [16,14,12,16,16,15,16,16,16,16,16, 8]);
+			for (var i:int = 0; i<5; i++) {
+				fonts[i].customSpacingX = 1;
+			}
 			this.exists = false;
 		}
 		
 		public function init(X:int, Y:int, MULTIPLIER:int, SCORE:int):void
 		{
+			var fontIdx:int = MULTIPLIER - 1;
+			if (fontIdx > 4) fontIdx = 4;
+			font = fonts[fontIdx];
 			if (MULTIPLIER > 1) {
-				this.text = "" + SCORE + "x" + MULTIPLIER;
+				font.text = "" + SCORE + "X" + MULTIPLIER;
 			} else {
-				this.text = "" + SCORE;
+				font.text = "" + SCORE;
 			}
-			this.x = X - this.width / 2;
-			this.y = Y - this.height;
+			font.x = X - font.width / 2;
+			font.y = Y - font.height;
 			this.exists = true;
 			timer = 0.7;
 			
-			switch (MULTIPLIER)
-			{
-				case 1:
-					this.color = 0xffffff; break;
-					this.shadow = 0x333333; break;
-				case 2:
-					this.color = 0xffff00; break;
-					this.shadow = 0x333300; break;
-				case 3:
-					this.color = 0xffcc00; break;
-					this.shadow = 0x333300; break;
-				case 4:
-					this.color = 0xff5500; break;
-					this.shadow = 0x331100; break;
-				default:
-					this.color = 0xff0000; break;
-					this.shadow = 0x330000; break;
-			}
+			font.alpha = 0;
 			
-			this.alpha = 0;
+			clear();
+			add(font);
 		}
 		
 		override public function update():void
 		{
 			timer -= FlxG.elapsed;
 			if (timer > 0.5) {
-				this.alpha += FlxG.elapsed * 5;
+				font.alpha += FlxG.elapsed * 5;
 			} else if (timer > 0) {
-				this.alpha = 1;
+				font.alpha = 1;
 			} else {
-				this.shadow = 0;
-				this.y -= FlxG.elapsed * 50;
-				this.alpha -= FlxG.elapsed * 1;
+				font.y -= FlxG.elapsed * 50;
+				font.alpha -= FlxG.elapsed * 1;
 			}
-			if (this.alpha <= 0)
+			if (font.alpha <= 0)
 			{
 				this.exists = false;
 			}

@@ -1,37 +1,35 @@
 package
 {
+	import flash.utils.*;
 	import org.flixel.*;
 
 	// Visitors run towards the center and climb up on the cage.
 	// When they reach the top and jump down the other side, you lose.
 	public class Visitor extends FlxSprite
 	{
-		[Embed(source="../gfx/visitor1.png")]  private var Visitor1Image:Class;
-		[Embed(source="../gfx/visitor2.png")]  private var Visitor2Image:Class;
-		[Embed(source="../gfx/visitor3.png")]  private var Visitor3Image:Class;
-		[Embed(source="../gfx/visitor4.png")]  private var Visitor4Image:Class;
-		[Embed(source="../gfx/visitor5.png")]  private var Visitor5Image:Class;
-		[Embed(source="../gfx/visitor6.png")]  private var Visitor6Image:Class;
-		[Embed(source="../gfx/visitor7.png")]  private var Visitor7Image:Class;
-		[Embed(source="../gfx/visitor8.png")]  private var Visitor8Image:Class;
-		[Embed(source="../gfx/visitor9.png")]  private var Visitor9Image:Class;
-		[Embed(source="../gfx/visitor10.png")] private var Visitor10Image:Class;
+		[Embed(source="../gfx/visitor1.png")]  private static const Visitor1Image:Class;
+		[Embed(source="../gfx/visitor2.png")]  private static const Visitor2Image:Class;
+		[Embed(source="../gfx/visitor3.png")]  private static const Visitor3Image:Class;
+		[Embed(source="../gfx/visitor4.png")]  private static const Visitor4Image:Class;
+		[Embed(source="../gfx/visitor5.png")]  private static const Visitor5Image:Class;
+		[Embed(source="../gfx/visitor6.png")]  private static const Visitor6Image:Class;
+		[Embed(source="../gfx/visitor7.png")]  private static const Visitor7Image:Class;
+		[Embed(source="../gfx/visitor8.png")]  private static const Visitor8Image:Class;
+		[Embed(source="../gfx/visitor9.png")]  private static const Visitor9Image:Class;
+		[Embed(source="../gfx/visitor10.png")] private static const Visitor10Image:Class;
 		
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
 		
-		private var visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
+		private static const visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
 			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
 			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
 		
-		private static const SPRITE_WIDTH:uint = 32;
-		private static const SPRITE_HEIGHT:uint = 48;
-		
-		private static const STATE_WALKING:uint = 0;
-		private static const STATE_FLOATING:uint = 1;
-		private static const STATE_CLIMBING:uint = 2;
-		private static const STATE_JUMPING:uint = 3;
-		private static const STATE_FLYING:uint = 4;
-		private static const STATE_DYING:uint = 5;
+		public static const STATE_WALKING:uint = 0;
+		public static const STATE_FLOATING:uint = 1;
+		public static const STATE_CLIMBING:uint = 2;
+		public static const STATE_JUMPING:uint = 3;
+		public static const STATE_FLYING:uint = 4;
+		public static const STATE_DYING:uint = 5;
 		
 		private var walkSpeed:Number;
 		private var floatSpeed:Number;
@@ -45,12 +43,13 @@ package
 		private var floatTime:Number; // timestamp of last start flying
 		private var hasReachedGoal:Boolean; // then player loses a life
 		private var visitorType:int;
+		private var floatPattern:VisitorFloatPattern;
 		
 		private var explosion:FlxEmitter;
 		
-		public function Visitor()
+		public function Visitor():void
 		{
-			super(0,0);
+			super(-50,-50);
 			exists = false;
 			addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			addAnimation("float", [7], Globals.ANIM_SPEED);
@@ -65,18 +64,22 @@ package
 		// is inferred from the current game difficulty.
 		// spacing: adds additional distance from the screen border to make
 		//     the visitor appear on stage later.
-		public function init (level:Number, spacing:uint, facing:uint = 0):void
+		public function init (visitorType:int, spacing:uint, facing:uint = 0, isFloating:Boolean = false):void
 		{
+			trace("Visitor.init spacing=" + spacing.toString());
+			
+			var __start__:int = flash.utils.getTimer();
 			health = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
 			floatTime = 0;
 			
-			visitorType = Math.floor(Math.random()*5);
-			if (Math.random()*5 < 1) visitorType += 5; // rare variations
+			this.visitorType = visitorType;
 			
-			loadGraphic (visitorClasses[visitorType], true, true, SPRITE_WIDTH, SPRITE_HEIGHT);
+			loadGraphic (visitorClasses[visitorType], true, true,
+				Globals.VISITOR_SPRITE_WIDTH, Globals.VISITOR_SPRITE_HEIGHT);
 			floatSpeed = 30;
+			scorePoints = Globals.VISITOR_POINTS[visitorType];
 			
 			switch (visitorType)
 			{
@@ -90,12 +93,11 @@ package
 					height = 21;
 					offset.x = 8;
 					offset.y = 27;
-					scorePoints = 40;
 					break;
 					
 				case 1: // man with glasses & hat
 				case 6:
-					walkSpeed = 53;
+					walkSpeed = 30;
 					climbSpeed = 35;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -103,12 +105,11 @@ package
 					height = 28;
 					offset.x = 8;
 					offset.y = 20;
-					scorePoints = 15;
 					break;
 					
 				case 2: // woman
 				case 7:
-					walkSpeed = 38;
+					walkSpeed = 32;
 					climbSpeed = 70;
 					jumpSpeed = 130;
 					jumpHeight = -250;
@@ -116,12 +117,11 @@ package
 					height = 25;
 					offset.x = 7;
 					offset.y = 23;
-					scorePoints = 15;
 					break;
 					
 				case 3: // fat tourist
 				case 8:
-					walkSpeed = 30;
+					walkSpeed = 26;
 					climbSpeed = 28;
 					jumpSpeed = 80;
 					jumpHeight = -130;
@@ -130,11 +130,10 @@ package
 					offset.x = 7;
 					offset.y = 23;
 					health = 2;
-					scorePoints = 30;
 					break;
 					
 				case 4: // old lady
-					walkSpeed = 25;
+					walkSpeed = 21;
 					climbSpeed = 45;
 					jumpSpeed = 90;
 					jumpHeight = -150;
@@ -142,7 +141,6 @@ package
 					height = 24;
 					offset.x = 9;
 					offset.y = 24;
-					scorePoints = 10;
 					break;
 					
 				case 9: // zombie lady
@@ -155,21 +153,18 @@ package
 					offset.x = 9;
 					offset.y = 24;
 					health = 3;
-					scorePoints = 100;
 					break;
 					
 			}
 			
-			play("walk");
-			
-			var distanceFromScreenBorder:Number = (width+1) * spacing * 2.2;
+			var distanceFromScreenBorder:Number = walkSpeed * spacing;
 			
 			// set direction-dependent values
 			if (facing == 0)
 			{
-				if (Math.random()*2 < 1) // enter from left side
+				if (Math.random() < .5) // enter from left side
 				{
-					x = -distanceFromScreenBorder;
+					x = -distanceFromScreenBorder - width;
 					facing = RIGHT;
 				}
 				else // enter from right side
@@ -191,18 +186,20 @@ package
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			
-			// more level = floaters more likely, up to 40%
-			var floatChance:Number = 0.4 - Math.exp(-level/3) * 0.2;
-			if (Math.random() < floatChance)
+			if (isFloating)
 			{
 				state = STATE_FLOATING;
+				floatPattern = VisitorFloatPattern.sinusFactory(width, height, spacing, 60, 2, 30, facing);
+				update_floating();
 			}
 			else
 			{
 				state = STATE_WALKING;
+				update_walking();
 			}
 			
 			revive();
+			Profiler.profiler.profile('Visitor.init', flash.utils.getTimer() - __start__);
 		}
 		
 		override public function revive():void
@@ -213,6 +210,7 @@ package
 		
 		override public function update():void
 		{
+			var __start__:int = flash.utils.getTimer();
 			acceleration.x = 0;
 			acceleration.y = 0;
 			drag.x = 0;
@@ -250,6 +248,7 @@ package
 			
 			explosion.at(this);
 			explosion.update();
+			Profiler.profiler.profile('Visitor.update', flash.utils.getTimer() - __start__);
 		}
 		
 		override public function draw():void
@@ -290,44 +289,13 @@ package
 		private function update_floating():void
 		{
 			play("float");
-			floatTime += FlxG.elapsed;
-			velocity.y = 0;
-			var minY:int = y;
+			floatPattern.update();
 			
-			if (facing == LEFT)
-			{
-				velocity.x = -floatSpeed;
-				minY = Globals.CAGE_TOP - height - (x - Globals.CAGE_RIGHT);
-				
-				if (x < Globals.CAGE_RIGHT)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_RIGHT;
-					y = Globals.CAGE_TOP - height;
-				}
-			}
-			
-			if (facing == RIGHT)
-			{
-				velocity.x = floatSpeed;
-				minY = Globals.CAGE_TOP - height - (Globals.CAGE_LEFT - x - width);
-				
-				if (x > Globals.CAGE_LEFT - width)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_LEFT - width;
-					y = Globals.CAGE_TOP - height;
-				}
-			}
-			
-			if (y <= minY)
-			{
-				y = minY;
-			}
-			else
-			{
-				y = Globals.FLOAT_LEVEL + Math.sin(floatTime*2) * 30;
-			}
+			var info:Object = floatPattern.getInfo();
+			x = info.location.x;
+			y = info.location.y;
+			velocity = info.velocity;
+			state = info.state;
 		}
 		
 		private function update_climbing():void
@@ -476,6 +444,8 @@ package
 			velocity.x = spit.velocity.x;
 			velocity.y = spit.velocity.y;
 			
+			comboCounter = spit.getCombo();
+			
 			if (y > Globals.GROUND_LEVEL - height - 2) // if standing on ground
 			{
 				velocity.x /= 2;
@@ -483,7 +453,7 @@ package
 			
 			if (health <= 0)
 			{
-				(FlxG.state as IngameState).causeScore(this, scorePoints, 1);
+				(FlxG.state as IngameState).causeScore(this, scorePoints, comboCounter);
 			}
 			
 			startSpitExplosion(); // particle effects
@@ -521,6 +491,16 @@ package
 			{
 				(FlxG.state as IngameState).causeScore(this, scorePoints, comboCounter);
 			}
+		}
+		
+		public function getType():int
+		{
+			return visitorType;
+		}
+		
+		public static function getTypeImage(visitorType:int):Class
+		{
+			return visitorClasses[visitorType];
 		}
 	}
 }

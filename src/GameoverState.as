@@ -20,8 +20,6 @@ package
 			
 			FlxG.mouse.show();
 			
-			//FlxG.scores = new Array(1000, 800, 500, 300, 100);
-			//HighscoreManager.save();
 			HighscoreManager.load();
 				
 			var _scores:Array = new Array();

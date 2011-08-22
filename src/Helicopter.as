@@ -40,7 +40,7 @@ package
 		private var ingameState:IngameState;
 		
 		public function Helicopter(INGAMESTATE:IngameState) 
-		{			
+		{
 			ingameState = INGAMESTATE;
 			// x doesnt matter, gets set in startHelicopter
 			//super(0, HELICOPTER_Y);
@@ -63,17 +63,21 @@ package
 			add(crateDestroySprite);
 			
 			isUpgradeHit = false;
-			isUpgradeDead = false;
-			isChopperOut = false;
+			isUpgradeDead = true;
+			isChopperOut = true;
+			
+			explosion = new FlxEmitter();
+			add(explosion);
 		}
 		
 		public function startHelicopter():void {
 			trace("start a new helicopter");
 			
 			var random:int = Math.ceil(Math.random() * 10);
-			upgradeType = random % 3;
+			upgradeType = random % Globals.N_UPGRADE_TYPES + 1;
+			// upgradeType = Llama.UPGRADE_BIGSPIT; // debug
 			trace("upgrade type: " + upgradeType);
-			upgradeSprite.frame = upgradeType;
+			upgradeSprite.frame = upgradeType-1;
 						
 			// determine the facing direction
 			var randomDirection:int = random % 2;
@@ -160,10 +164,8 @@ package
 			
 			Globals.sfxPlayer.Splotsh();
 			
-			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			explosion.at(spit);
-			add(explosion);
 			explosion.setXSpeed(-50, 50);
 			explosion.setYSpeed(-50, 50);
 			explosion.gravity = upgradeSprite.acceleration.y;
@@ -178,6 +180,17 @@ package
 		public function canUpgradeHit():Boolean
 		{
 			return !isUpgradeHit;
+		}
+		
+		/**
+		 * "Everything" refers to the chopper and the upgrade box.
+		 * When those are all invisible, we can change level #
+		 * without statistics glitches (shoot upgrade & get on next
+		 * level)
+		 */
+		public function isEverythingOut():Boolean
+		{
+			return isChopperOut && (isUpgradeDead || !isUpgradeHit);
 		}
 	}
 

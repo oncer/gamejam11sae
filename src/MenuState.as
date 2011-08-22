@@ -9,6 +9,7 @@ package
 		[Embed(source="../gfx/button_play.png")] private var ImgButtonPlay:Class;
 		[Embed(source="../gfx/button_credits.png")] private var ImgButtonCredits:Class;
 		[Embed(source="../gfx/button_howto.png")] private var ImgButtonHowto:Class;
+		[Embed(source="../gfx/preloading.png")] private var ImgPreloading:Class;
 		
 		private var _title:FlxText;
 		private var _bg:FlxSprite;
@@ -16,6 +17,9 @@ package
 		private var _play:FlxButton;
 		private var _credits:FlxButton;
 		private var _howto:FlxButton;
+		private var _preloading:FlxSprite;
+		
+		private var _nextAction:String = null;
 		
 		private var _scores:Array;
 		private var timeout:Number;
@@ -29,19 +33,23 @@ package
 			_bg = new FlxSprite(0, 0, ImgMenu);
 			add(_bg);
 			
-			_play = new FlxButton(200 - 75, 200, null, onPlay);
-			_play.loadGraphic(ImgButtonPlay, false, true, 144, 64);
+			_play = new FlxButton(320, 304, null, onPlay);
+			_play.loadGraphic(ImgButtonPlay, false, true, 160, 48);
 			add(_play);
 			
-			_credits = new FlxButton(200 - 75, 290, null, onCredits);
-			_credits.loadGraphic(ImgButtonCredits, false, true, 144, 64);
+			_credits = new FlxButton(320, 368, null, onCredits);
+			_credits.loadGraphic(ImgButtonCredits, false, true, 160, 48);
 			add(_credits);
+			
+			_preloading = new FlxSprite(280, 336, ImgPreloading);
+			_preloading.exists = false;
+			add(_preloading);
 			
 			FlxG.mouse.show();
 			
 			//FlxG.scores = new Array(1000, 800, 500, 300, 100);
 			//HighscoreManager.save();
-			HighscoreManager.load();
+			/*HighscoreManager.load();
 			
 			_scores = new Array();
 			var x:int = 400;
@@ -65,7 +73,7 @@ package
 				add(text);
 			}
 			_scores[0].color = 0x333333;
-			_scores[0].shadow = 0xffffcc;
+			_scores[0].shadow = 0xffffcc;*/
 			
 			timeout = 0.5; // do not allow to leave screen while this is > 0
 		}
@@ -83,19 +91,36 @@ package
 				if (FlxG.keys.ESCAPE)
 				{
 					fscommand("quit");
-					FlxG.switchState(null);
+					//FlxG.switchState(null);
 				} else
 				if (FlxG.keys.any())
 				{
 					onPlay();
 				}
 			}
+			
+			if (_nextAction == "play") {
+				var ingameState:IngameState = new IngameState();
+				FlxG.switchState(ingameState);
+				_nextAction = null;
+			}
+		}
+		
+		public override function draw():void
+		{
+			super.draw();
+			if (_nextAction == "drawpreloading") {
+				_nextAction = "play";
+			}
 		}
 		
 		public function onPlay():void
 		{
-			var ingameState:IngameState = new IngameState();
-			FlxG.switchState(ingameState);
+			_play.exists = false;
+			_credits.exists = false;
+			_preloading.exists = true;
+			_nextAction = "drawpreloading";
+			FlxG.mouse.hide();
 		}
 		
 		public function onCredits():void

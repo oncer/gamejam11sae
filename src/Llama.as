@@ -6,12 +6,12 @@ package
 	//This is the class declaration for the little player ship that you fly around in	
 	public class Llama extends FlxGroup
 	{
-		[Embed(source = "../gfx/lama.png")] private var LamaClass:Class;
-		[Embed(source = "../gfx/crosshair.png")] private var TargetClass:Class;
-		[Embed(source = "../gfx/bar1.png")] private var Bar1Class:Class;
-		[Embed(source = "../gfx/bar2.png")] private var Bar2Class:Class;
+		[Embed(source = "../gfx/lama.png")] private static var LamaClass:Class;
+		[Embed(source = "../gfx/crosshair.png")] private static var TargetClass:Class;
+		[Embed(source = "../gfx/bar1.png")] private static var Bar1Class:Class;
+		[Embed(source = "../gfx/bar2.png")] private static var Bar2Class:Class;
 		
-		[Embed(source = "../gfx/boost02.png")] private var UpgradesClass:Class;
+		[Embed(source = "../gfx/boost02.png")] private static var UpgradesClass:Class;
 		
 		
 		public static const UPGRADE_NONE:uint = 0;
@@ -20,8 +20,6 @@ package
 		public static const UPGRADE_MULTISPAWN:uint = 3;
 		public var upgradeType:uint;
 		private var upgrade:FlxSprite;
-		
-		
 		
 		//We use this number to figure out how fast the ship is flying
 		protected var _thrust:Number;
@@ -52,15 +50,16 @@ package
 		private static const FRAME_HEIGHT:Number = 64;
 		
 		private static const UPPER_TARGET_LIMIT_DEGREE:Number = 170;
-		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 60;
+		private static const LOWER_TARGET_LIMIT_DEGREE:Number = 30;
 		// value needed, because the function rotatePoint() generates no exact results for the border values
 		private var degreeThreshold:Number = 0;			
 		// ATTENTION maybe change that in accordance to the range borders!
 		private var rotationDifferenceInDegreesPerFrame:Number = 4;
 		
 		
-		/** Gets increased by holding the space key - is in range between 0 and 100*/
+		/* Note: spit strength feature was dropped. */
 		private var spitStrength:Number;
+		private var spitEnabled:Boolean;
 		private var spitStrengthBar:FlxBar;
 		[Editable (type = "slider", min = "100", max = "300")]
 		// factor for balancing that regulates the power multiplication of strength
@@ -75,13 +74,13 @@ package
 		public var spitCooldown:Number = 0.5;
 		private var spitCooldownCounter:Number;
 		
-		private var spitCooldownArray:Array = new Array(spitCooldown, 0.1, 1, 0.7);
+		private var spitCooldownArray:Array = new Array(spitCooldown, 0.15, 0.7, 0.7);
 		// upgradeDuration for first upgrade doesnt make sense, no matter what value is set for that!
 		private var upgradeDuration:Array = new Array(0, 15, 10, 25);
 		private var upgradeDurationCounter:Number;
 		
 		// the spit animation in seconds, until the original random jump frame is set again
-		private static const SPIT_ANIMATION_DURATION:Number = 0.1;
+		private static const SPIT_ANIMATION_DURATION:Number = 0.33;
 		private var spitAnimationCounter:Number;
 		private var currentLamaJumpFrame:Number;
 		
@@ -129,7 +128,7 @@ package
 			add(spitStrengthBar);						
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;			
-			
+			spitEnabled = true;
 			
 			lama.maxVelocity.x = 150;
 			
@@ -193,13 +192,13 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 16) {
+			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
 				Globals.sfxPlayer.Trampolin();
 				
-				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 5;
+				lama.y = Globals.TRAMPOLIN_TOP - lama.height + 24;
 				lama.velocity.y = jumpUpVelocity;		
 				
 				//var currentFrame:Number = lama.frame;
@@ -328,12 +327,14 @@ package
 					var currentState:IngameState = FlxG.state as IngameState;
 					
 					Globals.sfxPlayer.Spit();
-					var spit:Spit = currentState.spawnSpit(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
-					if (upgradeType == UPGRADE_MULTISPAWN)
-						spit.setType(Spit.TYPE_MULTI_SPAWN);
-					else if (upgradeType == UPGRADE_BIGSPIT)					
-						spit.setType(Spit.TYPE_BIGSPIT);
-						
+					var spitType:int = Spit.TYPE_DEFAULT;
+					if (upgradeType == UPGRADE_MULTISPAWN) {
+						spitType = Spit.TYPE_MULTI_SPAWN;
+					} else if (upgradeType == UPGRADE_BIGSPIT) {
+						spitType = Spit.TYPE_BIGSPIT;
+					}
+					var spit:Spit = currentState.spawnSpit(spitType, lama.x + spitOrigin.x, lama.y + spitOrigin.y);
+
 					
 					// this is needed, because with reset when reusing a spit from a pool, the shift for width/2 and height/2 would be lost!
 					//spit.setCenterPosition(lama.x + spitOrigin.x, lama.y + spitOrigin.y);
@@ -373,6 +374,16 @@ package
 			spitCooldown = spitCooldownArray[upgradeType];
 			upgrade.frame = upgradeType;
 			upgradeDurationCounter = 0;
+		}
+        
+        public function enableSpit():void
+        {
+			spitEnabled = true;
+		}
+		
+        public function disableSpit():void
+        {
+			spitEnabled = false;
 		}
 		
 		static public function rotatePoint(X:Number, Y:Number, PivotX:Number, PivotY:Number, Angle:Number):FlxPoint {
