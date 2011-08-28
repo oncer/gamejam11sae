@@ -190,6 +190,9 @@ package
 		 */
 		private function fixButtonFrames():void
 		{
+			if (!pauseButton.on && FlxG.paused) {
+				pauseButton.on = true; // game paused by lost focus
+			}
 			if (pauseButton.on) {
 				pauseButton.frame = 4;
 			} else {
