@@ -25,7 +25,7 @@ package
 		public static const CAGE_TOP:int = 256; // px boundary
 		public static const TRAMPOLIN_TOP:int = 368;
 		public static const VISITOR_GOAL_Y:int = 320; // px value
-		public static const N_VISITOR_TYPES:int = 10;
+		public static const N_VISITOR_TYPES:int = 12;
 		public static const N_UPGRADE_TYPES:uint = 3;
 		
 		public static const FLY_TIMEOUT:Number = 1.3; // min fly time in seconds
@@ -40,8 +40,12 @@ package
 			15, // man with glasses & hat
 			15, // woman
 			30, // fat tourist
-			100 // zombie lady
+			100, // zombie lady
+			25, // tiger man
+			20 // circus director
 		]);
+		
+		public static const ASSERT_ENABLED:Boolean = true;
 		
 		public static var sfxPlayer:SfxPlayer;
 	}

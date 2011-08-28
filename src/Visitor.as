@@ -17,12 +17,15 @@ package
 		[Embed(source="../gfx/visitor8.png")]  private static const Visitor8Image:Class;
 		[Embed(source="../gfx/visitor9.png")]  private static const Visitor9Image:Class;
 		[Embed(source="../gfx/visitor10.png")] private static const Visitor10Image:Class;
+		[Embed(source="../gfx/visitor11.png")] private static const Visitor11Image:Class;
+		[Embed(source="../gfx/visitor12.png")] private static const Visitor12Image:Class;
 		
 		[Embed(source="../gfx/spitparticle.png")] private var SpitParticleClass:Class;
 		
-		private static const visitorClasses:Array = new Array(Visitor1Image, Visitor2Image,
-			Visitor3Image, Visitor4Image, Visitor5Image, Visitor6Image,
-			Visitor7Image, Visitor8Image, Visitor9Image, Visitor10Image);
+		private static const visitorClasses:Array = new Array(
+			Visitor1Image, Visitor2Image, Visitor3Image, Visitor4Image,
+			Visitor5Image, Visitor6Image, Visitor7Image, Visitor8Image,
+			Visitor9Image, Visitor10Image, Visitor11Image, Visitor12Image);
 		
 		public static const STATE_WALKING:uint = 0;
 		public static const STATE_FLOATING:uint = 1;
@@ -32,7 +35,6 @@ package
 		public static const STATE_DYING:uint = 5;
 		
 		private var walkSpeed:Number;
-		private var floatSpeed:Number;
 		private var climbSpeed:Number;
 		private var jumpSpeed:Number;
 		private var jumpHeight:Number; // not really height, just velocity.y
@@ -78,7 +80,6 @@ package
 			
 			loadGraphic (visitorClasses[visitorType], true, true,
 				Globals.VISITOR_SPRITE_WIDTH, Globals.VISITOR_SPRITE_HEIGHT);
-			floatSpeed = 30;
 			scorePoints = Globals.VISITOR_POINTS[visitorType];
 			
 			switch (visitorType)
@@ -153,6 +154,30 @@ package
 					offset.x = 9;
 					offset.y = 24;
 					health = 3;
+					break;
+					
+				case 10: // tiger costume man
+					walkSpeed = 32;
+					climbSpeed = 16;
+					jumpSpeed = 130;
+					jumpHeight = -250;
+					width = 18;
+					height = 28;
+					offset.x = 7;
+					offset.y = 20;
+					health = 1;
+					break;
+					
+				case 11: // circus director
+					walkSpeed = 27;
+					climbSpeed = 30;
+					jumpSpeed = 90;
+					jumpHeight = -340;
+					width = 17;
+					height = 36;
+					offset.x = 8;
+					offset.y = 12;
+					health = 1;
 					break;
 					
 			}

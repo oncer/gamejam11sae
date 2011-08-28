@@ -26,6 +26,7 @@ package
 			color = COLOR;
 			shadow = SHADOW;
 			size = FONT_SIZE;
+			textStage = 999;
 			timeToNextText = 0;
 			visible = false;
 			alive = false;
@@ -104,6 +105,8 @@ package
 				textStage++;
 				
 			}
+			
+			trace("timetoNextText=" + timeToNextText.toString());
 		}
 		
 		public function canStartPlayback():Boolean

@@ -5,6 +5,7 @@ package
 	
 	public class VisitorIntroText extends FlxGroup
 	{
+		private var textId:int;
 		private var visitorNr:int;
 		private var timeToLive:Number;
 		
@@ -18,7 +19,9 @@ package
 			"Tourists with cameras want a close-up shot.", // tourist
 			"Seniors get a discount on their tickets. " +
 			"Give them their money's worth!", // granny
-			"Zombies are coming. They want your brains!" // zombie
+			"Zombies are coming. They want your brains!", // zombie
+			"Circus directors", // circus director
+			"Tiger men" // tiger man
 		]);
 		private const DISPLAY_SECONDS:Number = 7;
 		private const LEFT_X:Number = 150;
@@ -30,10 +33,11 @@ package
 		private const COLOR:uint = 0xeeee9f;
 		private const SHADOW:uint = 0x999999;
 		
-		public function VisitorIntroText(visitorNr:int, y_index:int)
+		public function VisitorIntroText(textId:int, y_index:int)
 		{
 			timeToLive = DISPLAY_SECONDS;
-			this.visitorNr = visitorNr;
+			this.textId = textId;
+			this.visitorNr = visitorFromTextId(textId);
 			
 			var top_y:int = TOP_Y + Y_SPACING * y_index;
 			var text:FlxText = new FlxText(LEFT_X, top_y, FlxG.width - LEFT_X*2);
@@ -42,7 +46,7 @@ package
 			text.color = COLOR;
 			text.shadow = SHADOW;
 			text.size = FONT_SIZE;
-			text.text = INTRO_TEXT[visitorNr];
+			text.text = INTRO_TEXT[textId];
 			
 			var imageClass:Class = Visitor.getTypeImage(visitorNr);
 			var imgLeft:int = LEFT_X - Globals.VISITOR_SPRITE_WIDTH - X_SPACING;
@@ -66,6 +70,17 @@ package
 			{
 				kill();
 			}
+		}
+		
+		private function visitorFromTextId(textId:int):int
+		{
+			const VISITOR_TYPES:Vector.<int> = Vector.<int> (
+				[0, 1, 2, 3, 4, 9, 11, 10]);
+			
+			assert((textId >= 0) && (textId < INTRO_TEXT.length));
+			assert(VISITOR_TYPES.length == INTRO_TEXT.length);
+			
+			return VISITOR_TYPES[textId];
 		}
 	}
 }
