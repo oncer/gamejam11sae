@@ -137,11 +137,17 @@ package
 				case 2:
 					return Vector.<int>([2]); // woman
 					
+				case 3:
+					return Vector.<int>([6]); // circus director
+				
 				case 4:
 					return Vector.<int>([4]); // granny
 					
 				case 6:
 					return Vector.<int>([0]); // child
+					
+				case 7:
+					return Vector.<int>([7]); // tiger man
 					
 				case 8:
 					return Vector.<int>([3]); // tourist
@@ -210,6 +216,7 @@ package
 			case 1: // first visitors introduced, 8 total
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
+				assert(spawnPool.length == 8);
 				break;
 
 			case 2: // women introduced, 12 total
@@ -217,86 +224,107 @@ package
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
+				assert(spawnPool.length == 12);
 				break;
 
-			case 3: // nothing new, 16 total
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
+			case 3: // circus director, 16 total
+				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
+				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
+				for (i = 0; i < 8; i++) spawnPool.push(new VisitorSpawnDesc(11,0,0)); // circus director
+				assert(spawnPool.length == 16);
 				break;
 
 			case 4: // granny introduced. no alts, 20 total
-				for (i = 0; i < 4; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(1,0,0)); // man
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6,0,0)); // man alt.
-				for (i = 0; i < 4; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(2,0,0)); // woman
 				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7,0,0)); // woman alt.
+				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(11,0,0)); // circus director
 				for (i = 0; i < 8; i++) spawnPool.push(new VisitorSpawnDesc(4,0,0)); // granny
+				assert(spawnPool.length == 20);
 				break;
 
 			case 5: // nothing new, 24 total
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(11,0,0)); // circus director
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				assert(spawnPool.length == 24);
 				break;
 
 			case 6: // children introduced. have a lot of them! 28 total
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // 16 man
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // 4 man alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // 16 woman
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // 4 woman alt.
-				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // 20 granny
-				for (i = 0; i < 13; i++) spawnPool.push(new VisitorSpawnDesc(0)); // 40 child
-				for (i = 0; i < 5;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // 12 child alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 13; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 5;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
+				assert(spawnPool.length == 28);
 				break;
 				
-			case 7: // nothing new, equal quantities all types, 32 total
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1)); // 27 man
-				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(6)); // 5 man alt.
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2)); // 27 woman
-				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(7)); // 5 woman alt.
-				for (i = 0; i < 8; i++) spawnPool.push(new VisitorSpawnDesc(4)); // 32 granny
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(0)); // 27 child
-				for (i = 0; i < 2; i++) spawnPool.push(new VisitorSpawnDesc(5)); // 5 child alt.
+			case 7: // tiger man, 32 total
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
+				for (i = 0; i < 14;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
+				assert(spawnPool.length == 32);
 				break;
 				
 			case 8: // tourists introduced, more than usual, 36 total
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // 17 man
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // 4 man alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // 17 woman
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // 4 woman alt.
-				for (i = 0; i < 4;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // 21 granny
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // 21 child
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // 10 child alt.
-				for (i = 0; i < 16; i++) spawnPool.push(new VisitorSpawnDesc(3)); // 40 tourist
-				for (i = 0; i < 4;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // 10 tourist alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
+				for (i = 0; i < 16; i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
+				for (i = 0; i < 4;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
+				assert(spawnPool.length == 36);
 				break;
 				
 			case 9: // nothing new, all equal, 40 total
-				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(1)); // 25 man
-				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6)); // 7 man alt.
-				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(2)); // 25 woman
-				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(7)); // 7 woman alt.
-				for (i = 0; i < 8; i++) spawnPool.push(new VisitorSpawnDesc(4)); // 32 granny
-				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(0)); // 25 child
-				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(5)); // 7 child alt.
-				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(3)); // 25 tourist
-				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(8)); // 7 tourist alt.
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
+				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
+				for (i = 0; i < 5;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
+				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
+				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
+				assert(spawnPool.length == 40);
 				break;
 				
 			case 10: // zombie rush, 44 total
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // 20 man
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // 5 man alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // 20 woman
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // 5 woman alt.
-				for (i = 0; i < 4;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // 36 granny
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // 20 child
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // 5 child alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(3)); // 20 tourist
-				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // 5 tourist alt.
-				for (i = 0; i < 24; i++) spawnPool.push(new VisitorSpawnDesc(9)); // 40 zombies
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
+				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
+				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
+				for (i = 0; i < 24; i++) spawnPool.push(new VisitorSpawnDesc(9)); // zombies
+				assert(spawnPool.length == 44);
 				break;
 				
 			default:
@@ -304,8 +332,11 @@ package
 				for (i = 0; i < amount; i++)
 				{
 					// equal distribution among the normal variants
-					var type:int = Math.floor(Math.random() * 5);
-					if (Math.random() < .2) type += 5;
+					var type:int = Math.floor(Math.random() * Globals.N_VISITOR_TYPES);
+					if ((type >= 5) && (type <= 9)) // type is rare
+					{
+						if (Math.random() < .4) type -= 5; // revert to common variation
+					}
 					spawnPool[i] = new VisitorSpawnDesc(type,0,.4);
 				}
 				break;
