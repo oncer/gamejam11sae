@@ -44,7 +44,7 @@ package
 			
 			elapsedTime = 0;
 			_isNewLevel = false;
-			currentLevel = 8; // debug
+			currentLevel = 1;
 			
 			spawnPool = new Vector.<VisitorSpawnDesc>([]);
 			spawnedVisitors = new FlxGroup();
@@ -277,7 +277,7 @@ package
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
 				for (i = 0; i < 3; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
-				for (i = 0; i < 14;  i++) spawnPool.push(new VisitorSpawnDesc(12)); // tiger man
+				for (i = 0; i < 14;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
 				assert(spawnPool.length == 32);
 				break;
 				
@@ -290,23 +290,23 @@ package
 				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
 				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
 				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(12)); // tiger man
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
 				for (i = 0; i < 16; i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
 				for (i = 0; i < 4;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
 				assert(spawnPool.length == 36);
 				break;
 				
 			case 9: // nothing new, all equal, 40 total
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(1)); // man
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(6)); // man alt.
 				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(2)); // woman
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(7)); // woman alt.
 				for (i = 0; i < 5;  i++) spawnPool.push(new VisitorSpawnDesc(11)); // circus director
 				for (i = 0; i < 7; i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(12)); // tiger man
-				for (i = 0; i < 6; i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
+				for (i = 0; i < 5; i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
 				for (i = 0; i < 1; i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
 				assert(spawnPool.length == 40);
 				break;
@@ -320,7 +320,7 @@ package
 				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(4)); // granny
 				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(0)); // child
 				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(5)); // child alt.
-				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(12)); // tiger man
+				for (i = 0; i < 3;  i++) spawnPool.push(new VisitorSpawnDesc(10)); // tiger man
 				for (i = 0; i < 2;  i++) spawnPool.push(new VisitorSpawnDesc(3)); // tourist
 				for (i = 0; i < 1;  i++) spawnPool.push(new VisitorSpawnDesc(8)); // tourist alt.
 				for (i = 0; i < 24; i++) spawnPool.push(new VisitorSpawnDesc(9)); // zombies
