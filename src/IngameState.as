@@ -14,19 +14,15 @@ package
 
 	public class IngameState extends FlxState
 	{
-		//internal var llama:FlxSprite;
-		
-		//[Embed(source="../gfx/map.png")] private var BackgroundImage:Class; // Fullscreen bg
 		[Embed(source="../gfx/cage.png")] private var CageImage:Class;
-		[Embed(source="../gfx/trampolin.png")] private var TrampolinImage:Class;
-		[Embed(source="../gfx/life.png")] private var LifeImage:Class;
+		[Embed(source="../gfx/soundsettings.png")] private var SoundSettingsImage:Class;
 		
 		//private var _editor:Editor;
 		
 		private var bg:LevelBackground;
 		public var llama:Llama;  //Refers to the little player llama
 		public var cage:FlxSprite;
-		public var trampolin:FlxSprite;
+		public var trampolin:Trampolin;
 		private var visitors:FlxGroup;
 		private var spits:FlxGroup;
 		private var helicopter:Helicopter;
@@ -34,13 +30,17 @@ package
 		private var scoretexts:FlxGroup;
 		private var totalScoreText:TotalScoreText;
 		private var statsText:StatsText;
-		private var livesDisplay:FlxGroup; // contains 3 llama heads
+		private var lifesDisplay:HealthBar;
 		private var levelManager:LevelManager;
 		private var newLevelText:NewLevelText;
 		private var visitorIntroTexts:FlxGroup;
 		
+		private var musicButton:FlxButton;
+		private var sfxButton:FlxButton;
+		private var pauseButton:FlxButton;
+		
 		private var stats:Statistics;
-		private var lives:uint;         // 0 == game over
+		private var lifes:uint;         // 0 == game over
 		private var difficulty:Number;
 		public var elapsedTime:Number;  // total in seconds
 		private var lastVisitor:uint;   // most recent array index
@@ -50,7 +50,7 @@ package
 		
 		private var lastHelicopterSpawnedCounter:Number;
 		/** after this time (in seconds), the helicopter is started either from left or right */
-		private var DURATION_RESPAWN_HELICOPTER:Number = 25;
+		private static const DURATION_RESPAWN_HELICOPTER:Number = 25;
 		
 		private var ambientPlayer:AmbientPlayer;
 		private var gameover:Boolean;
@@ -68,12 +68,11 @@ package
 			_editor.registerClass(Llama);
 			_editor.visible = true;
 			FlxG.mouse.show();*/
-			FlxG.mouse.hide();
 			
 			bg = new LevelBackground(LevelBackground.TIME_DAY);
 			add(bg);
 			
-			lives = 3;
+			lifes = Globals.MAX_LIFES;
 			elapsedTime = 0.0;
 			lastVisitor = 0;
 			lastSpit = 0;
@@ -82,14 +81,15 @@ package
 			
 			var i:uint = 0;
 			
+			// Initialize trampolin
+			trampolin = new Trampolin();
+			add(trampolin.bgSprite);
+			
 			// Initialize llama
 			llama = new Llama(this);
 			//_editor.registerObject(llama);
 			add(llama);
 			
-			// Initialize trampolin
-			trampolin = new FlxSprite (Globals.CAGE_LEFT, Globals.TRAMPOLIN_TOP);
-			trampolin.loadGraphic(TrampolinImage);
 			add(trampolin);
 
 			helicopter = new Helicopter(this);
@@ -142,14 +142,8 @@ package
 			// Flying visitors group
 			flyingVisitors = new FlxGroup (Globals.MAX_FLYERS);
 			
-			livesDisplay = new FlxGroup (lives);
-			for(i = 0; i < lives; i++)
-			{
-				var life:FlxSprite = new FlxSprite (10 + i * 40, 10);
-				life.loadGraphic(LifeImage);
-				livesDisplay.add(life);
-			}
-			add(livesDisplay);
+			lifesDisplay = new HealthBar();
+			add(lifesDisplay);
 			
 			// sounds
 			ambientPlayer = new AmbientPlayer();
@@ -160,6 +154,27 @@ package
 			Globals.sfxPlayer.volume = 0.0; // disable sfx
 			add(Globals.sfxPlayer);
 			
+			// buttons
+			var x:uint = 8, y:uint = FlxG.height - 40;
+			pauseButton = new FlxButton(x, y);
+			pauseButton.loadGraphic(SoundSettingsImage, false, false, 32, 32);
+			pauseButton.onUp = pauseButtonPressed;
+			pauseButton.on = false;
+			add(pauseButton);
+			x += 36;
+			musicButton = new FlxButton(x, y);
+			musicButton.loadGraphic(SoundSettingsImage, false, false, 32, 32);
+			musicButton.onUp = musicButtonPressed;
+			musicButton.on = (ambientPlayer.volume > 0);
+			add(musicButton);
+			x += 36;
+			sfxButton = new FlxButton(x, y);
+			sfxButton.loadGraphic(SoundSettingsImage, false, false, 32, 32);
+			sfxButton.onUp = sfxButtonPressed;
+			sfxButton.on = (Globals.sfxPlayer.volume > 0);
+			add(sfxButton);
+			
+			
 			// level manager determines current level, difficulty etc.
 			levelManager = new LevelManager();
 			add(levelManager);
@@ -168,6 +183,58 @@ package
 			add(newLevelText);
 			newLevelText.displayText(levelManager.getLevelNr()); // Level 1
 			newLevelText.setDisappearHandler(this.showLevelIntro);
+		}
+		
+		/**
+		 * call this somewhere in update() to fix default FlxButton behaviour
+		 */
+		private function fixButtonFrames():void
+		{
+			if (pauseButton.on) {
+				pauseButton.frame = 4;
+			} else {
+				pauseButton.frame = 5;
+			}
+			if (musicButton.on) {
+				musicButton.frame = 0;
+			} else {
+				musicButton.frame = 1;
+			}
+			if (sfxButton.on) {
+				sfxButton.frame = 2;
+			} else {
+				sfxButton.frame = 3;
+			}
+		}
+		
+		private function pauseButtonPressed():void
+		{
+			pauseButton.on = !pauseButton.on;
+			if (pauseButton.on) {
+				FlxG.paused = true;
+			} else {
+				FlxG.paused = false;
+			}
+		}
+		
+		private function musicButtonPressed():void
+		{
+			musicButton.on = !musicButton.on;
+			if (musicButton.on) {
+				ambientPlayer.volume = 1.0;
+			} else {
+				ambientPlayer.volume = 0.0;
+			}
+		}
+		
+		private function sfxButtonPressed():void
+		{
+			sfxButton.on = !sfxButton.on;
+			if (sfxButton.on) {
+				Globals.sfxPlayer.volume = 1.0;
+			} else {
+				Globals.sfxPlayer.volume = 0.0;
+			}
 		}
 		
 		private function isLevelCompletelyOver():Boolean
@@ -209,13 +276,19 @@ package
 		
 		override public function update():void
 		{
-			var tm:int = flash.utils.getTimer();
-			super.update();
-			Profiler.profiler.profile('IngameState.update__super.update', flash.utils.getTimer() - tm);
+			if (FlxG.paused) {
+				pauseButton.update();
+				musicButton.update();
+				sfxButton.update();
+				ambientPlayer.update();
+				Globals.sfxPlayer.update();
+				fixButtonFrames();
+				return;
+			}
 			
-			tm = flash.utils.getTimer();
+			super.update();
+			
 			stats.update();
-			Profiler.profiler.profile('IngameState.update__stats.update', flash.utils.getTimer() - tm);
 			
 			if (isLevelCompletelyOver())
 			{
@@ -243,10 +316,10 @@ package
 			elapsedTime += FlxG.elapsed;
 			difficulty = levelManager.getDifficulty ();
 			
-			if (trampolin.y < Globals.TRAMPOLIN_TOP) {
+			/*if (trampolin.y < Globals.TRAMPOLIN_TOP) {
 				trampolin.y = Globals.TRAMPOLIN_TOP;
 				trampolin.velocity.y = 0;
-			}
+			}*/
 			
 			if (llama.lama.x < cage.x + 10) {
 				llama.lama.x = cage.x + 10;
@@ -262,21 +335,13 @@ package
 			levelManager.doSpawns(this.getUnusedVisitor);
 			
 			// Collision visitors vs. spit, visitors vs flying
-			tm = flash.utils.getTimer();
 			FlxG.overlap(visitors, spits, visitorsVsSpits, canSpitAndVisitorHit);
-			Profiler.profiler.profile('IngameState.update__overlap(visitors,spits)', flash.utils.getTimer() - tm);
-			tm = flash.utils.getTimer();
 			FlxG.overlap(visitors, flyingVisitors, visitorsVsFlying, canFlyingHit);
-			Profiler.profiler.profile('IngameState.update__overlap(visitors,flyingVisitors)', flash.utils.getTimer() - tm);
-			tm = flash.utils.getTimer();
 			FlxG.overlap(helicopter.getUpgradeSprite(), spits, upgradeVsSpits, canSpitAndUpgradeHit);
-			Profiler.profiler.profile('IngameState.update__overlap(helicopter,spits)', flash.utils.getTimer() - tm);
 			
 			// Continually remove some from flying array if possible
-			tm = flash.utils.getTimer();
 			var trash:FlxBasic = flyingVisitors.getFirstAvailable();
 			if (trash) flyingVisitors.remove(trash);
-			Profiler.profiler.profile('IngameState.update__flyingVisitors_trash', flash.utils.getTimer() - tm);
 			
 			//FlxG.log(llama.y);
 			//trace("test");
@@ -306,6 +371,8 @@ package
 			
 			var currentLevel:int = stats.getLevelNr();
 			var max_combos:int = stats.getLevelMaxCombo(currentLevel);
+			
+			fixButtonFrames();
 		} // end of update
 
 		override public function draw():void
@@ -420,13 +487,13 @@ package
 		
 		public function loseLife ():void
 		{
-			if (lives > 0)
+			if (lifes > 0)
 			{
-				lives--;
-				livesDisplay.length = lives;
+				lifes--;
+				lifesDisplay.value = (lifes as Number) / (Globals.MAX_LIFES as Number);
 			}
 			
-			if (lives <= 0 && !gameover)
+			if (lifes <= 0 && !gameover)
 			{
 				Globals.sfxPlayer.Gameover();
 				FlxG.fade(0xff000000, 2, gameOverFunction);

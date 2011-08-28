@@ -26,8 +26,8 @@ package
 		{
 			super(fontClass, 32, 32, CHARS, 8, 0, 0, 0, 0, WIDTHS);
 			customSpacingX = 1;
-			x = FlxG.width - 256;
-			y = 30 - 16;
+			x = 16;
+			y = 16;
 			text = "SCORE: 0";
 			color = 0xffffff;
 		}

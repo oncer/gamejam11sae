@@ -691,10 +691,10 @@ package org.flixel
 				//Volume display tab
 				createSoundTray();
 				
-				//Focus gained/lost monitoring
-				stage.addEventListener(Event.DEACTIVATE, onFocusLost);
-				stage.addEventListener(Event.ACTIVATE, onFocus);
-				createFocusScreen();
+				//Focus gained/lost monitoring // disabled by simon
+				//stage.addEventListener(Event.DEACTIVATE, onFocusLost);
+				//stage.addEventListener(Event.ACTIVATE, onFocus);
+				//createFocusScreen();
 			}
 			
 			//Finally, set up an event for the actual game loop stuff.

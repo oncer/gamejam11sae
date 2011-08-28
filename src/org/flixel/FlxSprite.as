@@ -408,6 +408,17 @@ package org.flixel
 		}
 		
 		/**
+		 * Set src rect, to make things like health bar, etc. possible
+		 */
+		public function setSrcRect(x:uint, y:uint, w:uint, h:uint):void
+		{
+			_flashRect.x = x;
+			_flashRect.y = y;
+			_flashRect.width = w;
+			_flashRect.height = h;
+		}
+		
+		/**
 		 * Automatically called after update() by the game loop,
 		 * this function just calls updateAnimation().
 		 */

@@ -8,10 +8,10 @@ package
 	{
 		[Embed(source = "../gfx/lama.png")] private static var LamaClass:Class;
 		[Embed(source = "../gfx/crosshair.png")] private static var TargetClass:Class;
-		[Embed(source = "../gfx/bar1.png")] private static var Bar1Class:Class;
-		[Embed(source = "../gfx/bar2.png")] private static var Bar2Class:Class;
+		//[Embed(source = "../gfx/bar1.png")] private static var Bar1Class:Class;
+		//[Embed(source = "../gfx/bar2.png")] private static var Bar2Class:Class;
 		
-		[Embed(source = "../gfx/boost02.png")] private static var UpgradesClass:Class;
+		//[Embed(source = "../gfx/boost02.png")] private static var UpgradesClass:Class;
 		
 		
 		public static const UPGRADE_NONE:uint = 0;
@@ -26,19 +26,12 @@ package
 		
 		public var lama:FlxSprite;
 		private var target:FlxSprite;
-		public var jumpUpAcceleration : int;	
-		
-		[Editable (type = "slider", min = "-2000", max = "-100")]
-		public var jumpUpVelocity:Number;	
 		
 		[Editable (type="slider", min="100", max="1000")]
 		public var max_acceleration_x:Number;
 		
 		[Editable (type="slider", min="10", max="5000")]
 		public var drag_x:Number;
-		
-		[Editable (type="slider", min="100", max="1000")]
-		public var acceleration_y:Number;
 		
 		private var spitOrigin:FlxPoint;
 		// this is the px size from the left when the lama is facing right
@@ -88,6 +81,8 @@ package
 		
 		private var upgradeDisplayManager:UpgradeDisplayManager;
 		
+		private var time:Number; // for calculating jump height
+		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama(INGAMESTATE:IngameState)
 		{
@@ -102,11 +97,9 @@ package
 			
 			
 			
-			jumpUpVelocity = -560;
+			//jumpUpVelocity = -560;
 			
 			max_acceleration_x = 1000;
-			lama.acceleration.y = 800;
-			acceleration_y = lama.acceleration.y
 			lama.drag.x = 400;
 			drag_x = lama.drag.x;
 			add(lama);
@@ -120,12 +113,12 @@ package
 			target.loadGraphic(TargetClass);
 			add(target);
 			
-			var barBorder:FlxSprite = new FlxSprite(FlxG.width - 40, 30);
-			barBorder.loadGraphic(Bar1Class);
-			add(barBorder);
-			spitStrengthBar = new FlxBar(barBorder.x, barBorder.y, FlxBar.FILL_BOTTOM_TO_TOP, 32, 96);
-			spitStrengthBar.createImageBar(null, Bar2Class, 0x00000000);
-			add(spitStrengthBar);						
+			//var barBorder:FlxSprite = new FlxSprite(FlxG.width - 40, 30);
+			//barBorder.loadGraphic(Bar1Class);
+			//add(barBorder);
+			//spitStrengthBar = new FlxBar(barBorder.x, barBorder.y, FlxBar.FILL_BOTTOM_TO_TOP, 32, 96);
+			//spitStrengthBar.createImageBar(null, Bar2Class, 0x00000000);
+			//add(spitStrengthBar);						
 			spitStrength = 0;
 			spitIncreasePerSecond = 200;			
 			spitEnabled = true;
@@ -137,12 +130,12 @@ package
 			currentLamaJumpFrame = 0;					
 			
 			// TODO this can be removed in the end! is not used any more
-			upgrade = new FlxSprite(FlxG.width / 2, FlxG.height - 40);
-			upgrade.loadGraphic(UpgradesClass, false, false, 32, 32);
+			//upgrade = new FlxSprite(FlxG.width / 2, FlxG.height - 40);
+			//upgrade.loadGraphic(UpgradesClass, false, false, 32, 32);
 			// do not display the upgrade like that, use the displayManager below
 			//add(upgrade);
 			
-			upgradeDisplayManager = new UpgradeDisplayManager(barBorder.x, barBorder.y+barBorder.height);			
+			upgradeDisplayManager = new UpgradeDisplayManager(FlxG.width - 40, 94);			
 			add(upgradeDisplayManager);
 			
 			// change to this in the end, for testing now use the rapid fire upgrade from beginning
@@ -150,18 +143,60 @@ package
 			//setUpgradeType(UPGRADE_RAPIDFIRE);
 			
 			// this doesnt work, because th first frame always changes randomly !
-			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);			
+			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);	
+			
+			time = 0;		
+		}
+		
+		private function calcY_bot(x:Number):Number
+		{
+			return 8*x*x;
+		}
+		
+		private function calcY_top(x:Number):Number
+		{
+			return -4*x*x + 4*x;
+		}
+		
+		// call this from update(), it uses FlxG.elapsed
+		private function calcY():void
+		{
+			time += FlxG.elapsed;
+			var jump_time:Number = 7.0/5.0;
+			var iteration:Number = time / jump_time;
+			var x:Number = iteration - Math.floor(iteration);
+			var w1:Number, w2:Number;
+			var x1:Number = x;
+			const THR:Number = 0.1;
+			if (x < THR/2) {
+				w1 = 1.0;
+			} else if (x < THR) {
+				w1 = 1.0 - (x - THR/2) / THR/2;
+			} else if (x < 1.0 - THR) {
+				w1 = 0.0;
+			} else if (x < 1.0 - THR/2) {
+				w1 = (x - (1.0 - THR)) / (THR/2);
+				x1 = x - 1.0;
+			} else {
+				w1 = 1.0;
+				x1 = x - 1.0;
+			}
+			w2 = 1.0 - w1;
+			var y:Number = (w1 * calcY_bot(x1) + w2 * calcY_top(x)) * 200;
+			lama.y = Globals.TRAMPOLIN_TOP - y - lama.height + Trampolin.DENT_OFFSET + 6;
 		}
 		
 		//The main game loop function
 		override public function update():void
 		{	
 			super.update();
-			lama.acceleration.y = acceleration_y;
+			
+			calcY();
+			
 			lama.drag.x = drag_x;
 			// updating the bar - old, which was the spitStrength
 			//spitStrengthBar.percent = spitStrength;
-			spitStrengthBar.percent = (spitCooldownCounter / spitCooldown) * 100;
+			//spitStrengthBar.percent = (spitCooldownCounter / spitCooldown) * 100;
 			
 			// upgrade with type 0 has 0 duration, so otherwise division by 0 below
 			if (upgradeType == UPGRADE_NONE)
@@ -192,7 +227,7 @@ package
 				}
 			}
 			
-			if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
+			/*if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
 				ingameState.trampolin.y = Globals.TRAMPOLIN_TOP + 5;
 				ingameState.trampolin.velocity.y = -60;
 				
@@ -210,7 +245,24 @@ package
 				}
 				lama.frame = randomFrame;
 				currentLamaJumpFrame = randomFrame;	
-			}				
+			}*/
+			ingameState.trampolin.setDent(
+				lama.x + ((lama.facing == FlxObject.LEFT) ? 2 : -2), 
+				lama.y + lama.height - Globals.TRAMPOLIN_TOP + 4);
+			//if (lama.y > Globals.TRAMPOLIN_TOP - lama.height + 20) {
+				//Globals.sfxPlayer.Trampolin();
+				//lama.y = Globals.TRAMPOLIN_TOP - lama.height + 24;
+				//lama.velocity.y = jumpUpVelocity;
+				/*var randomFrame:uint = currentLamaJumpFrame;
+				while (currentLamaJumpFrame == randomFrame) {
+					var rand:Number = Math.random() * 100;
+					randomFrame = (rand as uint) % 3;
+				}
+				lama.frame = randomFrame;
+				currentLamaJumpFrame = randomFrame;*/
+			//} else {
+			//	ingameState.trampolin.setDent(0, 0);
+			//}		
 			
 			if(FlxG.keys.LEFT) {
 				lama.acceleration.x = -max_acceleration_x;				
@@ -372,7 +424,7 @@ package
 			upgradeType = UpgradeType;
 			spitCooldownCounter = spitCooldown; // can shoot instantly
 			spitCooldown = spitCooldownArray[upgradeType];
-			upgrade.frame = upgradeType;
+			//upgrade.frame = upgradeType;
 			upgradeDurationCounter = 0;
 		}
         

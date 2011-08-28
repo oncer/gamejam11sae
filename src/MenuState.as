@@ -102,6 +102,7 @@ package
 			if (_nextAction == "play") {
 				var ingameState:IngameState = new IngameState();
 				FlxG.switchState(ingameState);
+				FlxG.mouse.show();
 				_nextAction = null;
 			}
 		}

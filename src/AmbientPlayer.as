@@ -12,11 +12,12 @@ package
 		private var elapsedTime:Number;
 		private var started:Boolean;
 		
-		public var volume:Number = 1.0;
+		public var _volume:Number = 1.0;
 		
 		public function AmbientPlayer():void
 		{
 			music = new FlxSound();
+			add(music);
 			started = false;
 		}
 		
@@ -35,13 +36,29 @@ package
 			music.stop();
 		}
 		
+		public function set volume(v:Number):void
+		{
+			_volume = v;
+		}
+		
+		public function get volume():Number
+		{
+			return _volume;
+		}
+		
 		override public function update():void
 		{
 			if (!started) return;
-			if (music.volume < volume) {
-				music.volume += (FlxG.elapsed / 2) * volume;
-				if (music.volume > volume) {
-					music.volume = volume;
+			if (music.volume < _volume) {
+				music.volume += (FlxG.elapsed / 2);
+				if (music.volume > _volume) {
+					music.volume = _volume;
+				}
+			}
+			if (music.volume > _volume) {
+				music.volume -= (FlxG.elapsed * 2);
+				if (music.volume < _volume) {
+					music.volume = _volume;
 				}
 			}
 		}
