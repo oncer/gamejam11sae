@@ -44,7 +44,7 @@ package
 			
 			elapsedTime = 0;
 			_isNewLevel = false;
-			currentLevel = 1;
+			currentLevel = 8; // debug
 			
 			spawnPool = new Vector.<VisitorSpawnDesc>([]);
 			spawnedVisitors = new FlxGroup();

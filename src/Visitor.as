@@ -27,17 +27,16 @@ package
 			Visitor5Image, Visitor6Image, Visitor7Image, Visitor8Image,
 			Visitor9Image, Visitor10Image, Visitor11Image, Visitor12Image);
 		
-		public static const STATE_WALKING:uint = 0;
+		public static const STATE_PATTERN:uint = 0;
 		public static const STATE_FLOATING:uint = 1;
-		public static const STATE_CLIMBING:uint = 2;
-		public static const STATE_JUMPING:uint = 3;
-		public static const STATE_FLYING:uint = 4;
-		public static const STATE_DYING:uint = 5;
+		public static const STATE_JUMPING:uint = 2;
+		public static const STATE_FLYING:uint = 3;
+		public static const STATE_DYING:uint = 4;
 		
-		private var walkSpeed:Number;
-		private var climbSpeed:Number;
+		public var walkSpeed:Number;
+		public var climbSpeed:Number;
 		private var jumpSpeed:Number;
-		private var jumpHeight:Number; // not really height, just velocity.y
+		public var jumpHeight:Number; // not really height, just velocity.y
 		public var scorePoints:int; // killing this visitor is worth this much
 		public var comboCounter:int; // visitors colliding drive this up
 		private var state:uint;
@@ -211,19 +210,20 @@ package
 			explosion = new FlxEmitter();
 			explosion.makeParticles(SpitParticleClass, 20, 16, true, 0);
 			
+			state = STATE_PATTERN;
+			
 			if (isFloating)
 			{
-				state = STATE_FLOATING;
-				floatPattern = VisitorFloatPattern.sinusFactory(width, height, spacing, 60, 2, 30, facing);
-				update_floating();
+				floatPattern = VisitorFloatPattern.sinusFactory(this, spacing, 60, 2);
 			}
 			else
 			{
-				state = STATE_WALKING;
-				update_walking();
+				floatPattern = VisitorFloatPattern.walkFactory(this);
 			}
 			
 			revive();
+			update_pattern();
+			
 			Profiler.profiler.profile('Visitor.init', flash.utils.getTimer() - __start__);
 		}
 		
@@ -240,22 +240,12 @@ package
 			acceleration.y = 0;
 			drag.x = 0;
 			
-			if (state == STATE_WALKING)
+			if (state == STATE_PATTERN)
 			{
-				update_walking();
+				update_pattern();
 			}
 			
-			if (state == STATE_FLOATING)
-			{
-				update_floating();
-			}
-			
-			// not 'else if' because state may have changed in update_walking
-			if (state == STATE_CLIMBING)
-			{
-				update_climbing();
-			}
-			
+			// not 'else if' because state may have changed in update_pattern
 			if (state == STATE_JUMPING)
 			{
 				update_jumping();
@@ -282,38 +272,8 @@ package
 			explosion.draw();
 		}
 		
-		private function update_walking():void
+		private function update_pattern():void
 		{
-			y = Globals.GROUND_LEVEL - height;
-			velocity.y = 0;
-			play("walk");
-			
-			if (facing == LEFT)
-			{
-				velocity.x = -walkSpeed;
-				
-				if (x < Globals.CAGE_RIGHT)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_RIGHT;
-				}
-			}
-			
-			if (facing == RIGHT)
-			{
-				velocity.x = walkSpeed;
-				
-				if (x > Globals.CAGE_LEFT - width)
-				{
-					state = STATE_CLIMBING;
-					x = Globals.CAGE_LEFT - width;
-				}
-			}
-		}
-		
-		private function update_floating():void
-		{
-			play("float");
 			floatPattern.update();
 			
 			var info:Object = floatPattern.getInfo();
@@ -321,19 +281,7 @@ package
 			y = info.location.y;
 			velocity = info.velocity;
 			state = info.state;
-		}
-		
-		private function update_climbing():void
-		{
-			play("climb");
-			velocity.x = 0;
-			velocity.y = -climbSpeed;
-			
-			if (y < Globals.CAGE_TOP - height)
-			{
-				state = STATE_JUMPING;
-				velocity.y = jumpHeight;
-			}
+			play(info.anim);
 		}
 		
 		private function update_jumping():void
@@ -389,7 +337,7 @@ package
 					}
 					else
 					{
-						state = STATE_WALKING;
+						state = STATE_PATTERN;
 						if (x < FlxG.width/2)
 						{
 							facing = RIGHT;
@@ -398,6 +346,7 @@ package
 						{
 							facing = LEFT;
 						}
+						floatPattern = VisitorFloatPattern.walkFactory(this);
 					}
 				}
 			}

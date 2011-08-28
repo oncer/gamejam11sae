@@ -105,8 +105,6 @@ package
 				textStage++;
 				
 			}
-			
-			trace("timetoNextText=" + timeToNextText.toString());
 		}
 		
 		public function canStartPlayback():Boolean
