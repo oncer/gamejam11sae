@@ -105,7 +105,7 @@ package
 			jumpUpVelocity = -560;
 			
 			max_acceleration_x = 1000;
-			lama.acceleration.y = 800;
+			lama.acceleration.y = Globals.GRAVITY;
 			acceleration_y = lama.acceleration.y
 			lama.drag.x = 400;
 			drag_x = lama.drag.x;

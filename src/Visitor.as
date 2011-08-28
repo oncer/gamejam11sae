@@ -27,11 +27,10 @@ package
 			Visitor5Image, Visitor6Image, Visitor7Image, Visitor8Image,
 			Visitor9Image, Visitor10Image, Visitor11Image, Visitor12Image);
 		
-		public static const STATE_PATTERN:uint = 0;
-		public static const STATE_FLOATING:uint = 1;
-		public static const STATE_JUMPING:uint = 2;
-		public static const STATE_FLYING:uint = 3;
-		public static const STATE_DYING:uint = 4;
+		public static const STATE_PATTERN:uint = 0; // follow the pattern
+		public static const STATE_JUMPING:uint = 1; // from top of cage
+		public static const STATE_FLYING:uint = 2;  // after knock back
+		public static const STATE_DYING:uint = 3;
 		
 		public var walkSpeed:Number;
 		public var climbSpeed:Number;
@@ -41,10 +40,9 @@ package
 		public var comboCounter:int; // visitors colliding drive this up
 		private var state:uint;
 		private var flyStartTime:Number; // timestamp of last start flying
-		private var floatTime:Number; // timestamp of last start flying
 		private var hasReachedGoal:Boolean; // then player loses a life
 		private var visitorType:int;
-		private var floatPattern:VisitorFloatPattern;
+		private var pattern:VisitorPattern;
 		
 		private var explosion:FlxEmitter;
 		
@@ -73,7 +71,6 @@ package
 			health = 1;
 			comboCounter = 1;
 			hasReachedGoal = false;
-			floatTime = 0;
 			
 			this.visitorType = visitorType;
 			
@@ -214,11 +211,21 @@ package
 			
 			if (isFloating)
 			{
-				floatPattern = VisitorFloatPattern.sinusFactory(this, spacing, 60, 2);
+				pattern = VisitorPattern.sinusFactory(this, spacing, 60, 2);
 			}
 			else
 			{
-				floatPattern = VisitorFloatPattern.walkFactory(this);
+				if (Math.random() < 0.3) // use jumping
+				{
+					pattern = VisitorPattern.walkJumpClimbFactory(this,
+						30 + Math.random() * 40,  2 + Math.random() * 6,
+						40 + Math.random() * 100, 0.5 + Math.random() * 1);
+						// jumpReach, jumpInterval, jumpHeight, jumpTime);
+				}
+				else
+				{
+					pattern = VisitorPattern.walkClimbFactory(this);
+				}
 			}
 			
 			revive();
@@ -274,9 +281,9 @@ package
 		
 		private function update_pattern():void
 		{
-			floatPattern.update();
+			pattern.update();
 			
-			var info:Object = floatPattern.getInfo();
+			var info:Object = pattern.getInfo();
 			x = info.location.x;
 			y = info.location.y;
 			velocity = info.velocity;
@@ -294,7 +301,7 @@ package
 			{
 				velocity.x = jumpSpeed;
 			}
-			acceleration.y = 800;
+			acceleration.y = Globals.GRAVITY;
 			
 			play("jump");
 			
@@ -346,7 +353,7 @@ package
 						{
 							facing = LEFT;
 						}
-						floatPattern = VisitorFloatPattern.walkFactory(this);
+						pattern = VisitorPattern.walkClimbFactory(this);
 					}
 				}
 			}

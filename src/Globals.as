@@ -17,11 +17,12 @@ package
 		
 		public static const VISITOR_SPRITE_WIDTH:uint = 32;
 		public static const VISITOR_SPRITE_HEIGHT:uint = 48;
+		public static const GRAVITY:int = 800;
 		public static const GROUND_LEVEL:int = 416; // y coord in pixels
 		public static const FLOAT_LEVEL:Number = 150; // y coord in pixels
 		public static const ANIM_SPEED:Number = 10; // in fps
 		public static const CAGE_LEFT:int = 320;  // px boundary
-		public static const CAGE_RIGHT:int = 479; // px boundary
+		public static const CAGE_RIGHT:int = 480; // px boundary
 		public static const CAGE_TOP:int = 256; // px boundary
 		public static const TRAMPOLIN_TOP:int = 368;
 		public static const VISITOR_GOAL_Y:int = 320; // px value
