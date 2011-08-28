@@ -5,7 +5,8 @@ package
 	
 	public class MenuState extends FlxState
 	{
-		[Embed(source="../gfx/menu.png")] private var ImgMenu:Class;
+		[Embed(source="../gfx/menu_background.png")] private var ImgMenuBackground:Class;
+		[Embed(source="../gfx/menu_foreground.png")] private var ImgMenuForeground:Class;
 		[Embed(source="../gfx/button_play.png")] private var ImgButtonPlay:Class;
 		[Embed(source="../gfx/button_credits.png")] private var ImgButtonCredits:Class;
 		[Embed(source="../gfx/button_howto.png")] private var ImgButtonHowto:Class;
@@ -13,6 +14,7 @@ package
 		
 		private var _title:FlxText;
 		private var _bg:FlxSprite;
+		private var _fg:FlxSprite;
 		
 		private var _play:FlxButton;
 		private var _credits:FlxButton;
@@ -23,6 +25,8 @@ package
 		
 		private var _scores:Array;
 		private var timeout:Number;
+		
+		private static const FG_Y:uint = 30;
 	
 		override public function create():void
 		{
@@ -30,8 +34,12 @@ package
 			//_title.size = 24;
 			//_title.alignment = "center";
 			//add(_title);
-			_bg = new FlxSprite(0, 0, ImgMenu);
+			_bg = new FlxSprite(0, 0, ImgMenuBackground);
 			add(_bg);
+			_fg = new FlxSprite(0, 0, ImgMenuForeground);
+			_fg.x = (FlxG.width - _fg.width) / 2
+			_fg.y = FG_Y;
+			add(_fg);
 			
 			_play = new FlxButton(320, 304, null, onPlay);
 			_play.loadGraphic(ImgButtonPlay, false, true, 160, 48);
@@ -98,6 +106,8 @@ package
 					onPlay();
 				}
 			}
+			
+			_fg.y = FG_Y + Math.sin(FlxU.getTicks() / 777.0) * 16;
 			
 			if (_nextAction == "play") {
 				var ingameState:IngameState = new IngameState();

@@ -396,12 +396,12 @@ package org.flixel
 		 */
 		protected function onFocus(FlashEvent:Event=null):void
 		{
-			if(!_debuggerUp && !useSystemCursor)
+			/*if(!_debuggerUp && !useSystemCursor)
 				flash.ui.Mouse.hide();
 			FlxG.resetInput();
 			_lostFocus = _focus.visible = false;
 			stage.frameRate = _flashFramerate;
-			FlxG.resumeSounds();
+			FlxG.resumeSounds();*/
 		}
 		
 		/**
@@ -411,7 +411,8 @@ package org.flixel
 		 */
 		protected function onFocusLost(FlashEvent:Event=null):void
 		{
-			if((x != 0) || (y != 0))
+			FlxG.paused = true;
+			/*if((x != 0) || (y != 0))
 			{
 				x = 0;
 				y = 0;
@@ -419,7 +420,7 @@ package org.flixel
 			flash.ui.Mouse.show();
 			_lostFocus = _focus.visible = true;
 			stage.frameRate = 10;
-			FlxG.pauseSounds();
+			FlxG.pauseSounds();*/
 		}
 		
 		/**
@@ -691,9 +692,9 @@ package org.flixel
 				//Volume display tab
 				createSoundTray();
 				
-				//Focus gained/lost monitoring // disabled by simon
-				//stage.addEventListener(Event.DEACTIVATE, onFocusLost);
-				//stage.addEventListener(Event.ACTIVATE, onFocus);
+				//Focus gained/lost monitoring
+				stage.addEventListener(Event.DEACTIVATE, onFocusLost);
+				stage.addEventListener(Event.ACTIVATE, onFocus);
 				//createFocusScreen();
 			}
 			
