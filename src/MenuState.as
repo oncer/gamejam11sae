@@ -107,7 +107,7 @@ package
 				}
 			}
 			
-			_fg.y = FG_Y + Math.sin(FlxU.getTicks() / 777.0) * 16;
+			_fg.y = FG_Y + Math.sin(FlxU.getTicks() / 777.0) * 8;
 			
 			if (_nextAction == "play") {
 				var ingameState:IngameState = new IngameState();
