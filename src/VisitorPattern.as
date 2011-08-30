@@ -78,6 +78,9 @@ class SinusFloatPattern extends VisitorPattern
 		timeLeft -= FlxG.elapsed;
 	}
 	
+	/**
+	 * Quizfrage: wo ist der fatale Fehler in dieser Methode?
+	 */
 	public override function getInfo():Object
 	{
 		var location:FlxPoint = new FlxPoint();

@@ -82,6 +82,7 @@ package
 		private var upgradeDisplayManager:UpgradeDisplayManager;
 		
 		private var time:Number; // for calculating jump height
+		private var lastJumpIteration:uint = 0;
 		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama(INGAMESTATE:IngameState)
@@ -158,12 +159,28 @@ package
 			return -4*x*x + 4*x;
 		}
 		
+		private function setRandomJumpFrame():void
+		{
+			var randomFrame:Number = currentLamaJumpFrame;
+			while (currentLamaJumpFrame == randomFrame) {
+				var rand:Number = Math.random()*10.0;
+				randomFrame = Math.ceil(rand) % 3;
+			}
+			lama.frame = randomFrame;
+			currentLamaJumpFrame = randomFrame;
+		}
+		
 		// call this from update(), it uses FlxG.elapsed
 		private function calcY():void
 		{
 			time += FlxG.elapsed;
 			var jump_time:Number = 7.0/5.0;
 			var iteration:Number = time / jump_time;
+			if (Math.floor(iteration) > lastJumpIteration) {
+				lastJumpIteration = iteration;
+				setRandomJumpFrame();
+				Globals.sfxPlayer.Trampolin();
+			}
 			var x:Number = iteration - Math.floor(iteration);
 			var w1:Number, w2:Number;
 			var x1:Number = x;

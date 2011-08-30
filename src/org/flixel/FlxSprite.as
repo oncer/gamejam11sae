@@ -433,7 +433,7 @@ package org.flixel
 		 */
 		override public function draw():void
 		{
-			if(_flickerTimer != 0)
+			if(_flickerTimer != 0 && !FlxG.paused)
 			{
 				_flicker = !_flicker;
 				if(_flicker)
