@@ -8,6 +8,7 @@ package
 	{
 		[Embed(source = "../gfx/lama.png")] private static var LamaClass:Class;
 		[Embed(source = "../gfx/crosshair.png")] private static var TargetClass:Class;
+		[Embed(source = "../gfx/spitline.png")] private static var SpitLineClass:Class;
 		//[Embed(source = "../gfx/bar1.png")] private static var Bar1Class:Class;
 		//[Embed(source = "../gfx/bar2.png")] private static var Bar2Class:Class;
 		
@@ -84,6 +85,9 @@ package
 		private var time:Number; // for calculating jump height
 		private var lastJumpIteration:uint = 0;
 		
+		private var spitLineArray:Array;
+		private static const SPITLINE_CAPACITY:uint = 40;
+		
 		//This function creates the ship, taking the list of bullets as a parameter
 		public function Llama(INGAMESTATE:IngameState)
 		{
@@ -146,7 +150,15 @@ package
 			// this doesnt work, because th first frame always changes randomly !
 			//lama.addAnimation("spit", [3, 0], 1 / (FlxG.framerate * 3) , false);	
 			
-			time = 0;		
+			spitLineArray = new Array(SPITLINE_CAPACITY);
+			for (var i:uint = 0; i<SPITLINE_CAPACITY; i++) {
+				spitLineArray[i] = new FlxSprite(0,0);
+				spitLineArray[i].loadGraphic(SpitLineClass, true, false, 9, 9);
+				spitLineArray[i].exists = false;
+				add(spitLineArray[i]);
+			}
+			
+			time = 0;
 		}
 		
 		private function calcY_bot(x:Number):Number
@@ -203,12 +215,43 @@ package
 			lama.y = Globals.TRAMPOLIN_TOP - y - lama.height + Trampolin.DENT_OFFSET + 6;
 		}
 		
+		private function calcSpitLine():void
+		{
+			const dt:Number = 0.02;
+			const vl:Number = Math.sqrt(targetOffset.x*targetOffset.x + targetOffset.y*targetOffset.y);
+			const dx:Number = targetOffset.x / vl * dt * spitStrengthModifier;
+			var dy:Number = targetOffset.y / vl * dt * spitStrengthModifier;
+			var slx:Number = lama.x + spitOrigin.x;
+			var sly:Number = lama.y + spitOrigin.y;
+			var i:uint = 0;
+			var f:uint = 0;
+			for (i = 0; i < SPITLINE_CAPACITY; i++)
+			{
+				spitLineArray[i].exists = false;
+			}
+			i = 0;
+			while (i < SPITLINE_CAPACITY && sly < Globals.GROUND_LEVEL) {
+				spitLineArray[i].x = slx - 4;
+				spitLineArray[i].y = sly - 4;
+				spitLineArray[i].frame = f;
+				spitLineArray[i].exists = true;
+				
+				slx += dx;
+				sly += dy;
+				dy += Globals.SPIT_GRAVITY * dt * dt;
+				
+				f = (f+1) % 2;
+				i++;
+			}
+		}
+		
 		//The main game loop function
 		override public function update():void
 		{	
 			super.update();
 			
 			calcY();
+			calcSpitLine();
 			
 			lama.drag.x = drag_x;
 			// updating the bar - old, which was the spitStrength

@@ -89,7 +89,7 @@ package
 			velocity.x = 0;
 			velocity.y = 0;
 			acceleration.x = 0;
-			acceleration.y = 200;
+			acceleration.y = Globals.SPIT_GRAVITY;
 			drag.x = drag.y = 0;
 			combo = 1;
 			

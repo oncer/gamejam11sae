@@ -30,6 +30,7 @@ package
 		public static const VISITOR_GOAL_Y:int = 320; // px value
 		public static const N_VISITOR_TYPES:int = 12;
 		public static const N_UPGRADE_TYPES:uint = 3;
+		public static const SPIT_GRAVITY:int = 200;
 		
 		public static const FLY_TIMEOUT:Number = 1.3; // min fly time in seconds
 		
