@@ -5,6 +5,10 @@ package
 	
 	public class VisitorIntroText extends FlxGroup
 	{
+		[Embed(source = "../gfx/visitor_intro.png")] private static var PresentFrame:Class;
+		private static const PRESENT_FRAME_WIDTH:int = 64;
+		private static const PRESENT_FRAME_HEIGHT:int = 96;
+		
 		private var textId:int;
 		private var visitorNr:int;
 		private var timeToLive:Number;
@@ -48,15 +52,23 @@ package
 			text.size = FONT_SIZE;
 			text.text = INTRO_TEXT[textId];
 			
+			var bgLeft:int = LEFT_X - X_SPACING - PRESENT_FRAME_WIDTH;
+			var bgTop:int = top_y + (text.height - PRESENT_FRAME_HEIGHT) / 2;
+			var imageBackground:FlxSprite = new FlxSprite(bgLeft, bgTop);
+			imageBackground.loadGraphic(PresentFrame, false, false,
+				PRESENT_FRAME_WIDTH, PRESENT_FRAME_HEIGHT);
+			
 			var imageClass:Class = Visitor.getTypeImage(visitorNr);
-			var imgLeft:int = LEFT_X - Globals.VISITOR_SPRITE_WIDTH - X_SPACING;
-			var image:FlxSprite = new FlxSprite(imgLeft, top_y);
+			var imgLeft:int = bgLeft + 16;
+			var imgTop:int = bgTop + 16;
+			var image:FlxSprite = new FlxSprite(imgLeft, imgTop);
 			image.loadGraphic(imageClass, true, true,
 				Globals.VISITOR_SPRITE_WIDTH, Globals.VISITOR_SPRITE_HEIGHT);
 			image.addAnimation("walk", [0,1,2,3], Globals.ANIM_SPEED);
 			image.play("walk");
 			
 			add(text);
+			add(imageBackground);
 			add(image);
 		}
 		
